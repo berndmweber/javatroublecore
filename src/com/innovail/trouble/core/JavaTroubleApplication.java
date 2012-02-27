@@ -5,20 +5,24 @@
  */
 package com.innovail.trouble.core;
 
+import java.util.Random;
+
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL10;
 
 /**
  * 
  */
 public class JavaTroubleApplication implements ApplicationListener {
-
+    private Random rand;
+    
     /* (non-Javadoc)
      * @see com.badlogic.gdx.ApplicationListener#create()
      */
     @Override
     public void create () {
-        // TODO Auto-generated method stub
-
+        rand = new Random();
     }
 
     /* (non-Javadoc)
@@ -35,8 +39,8 @@ public class JavaTroubleApplication implements ApplicationListener {
      */
     @Override
     public void render () {
-        // TODO Auto-generated method stub
-
+        Gdx.gl.glClearColor (rand.nextFloat (), rand.nextFloat (), rand.nextFloat (), 1.0f);
+        Gdx.gl.glClear (GL10.GL_COLOR_BUFFER_BIT);
     }
 
     /* (non-Javadoc)
