@@ -18,6 +18,7 @@ public class Player {
     private Color _color;
     private String _name;
     private int _number;
+    private boolean _isActive = false;
     
     public Player (int playerNumber)
     {
@@ -66,5 +67,15 @@ public class Player {
             return _tokens.elementAt (number);
         }
         return null;
+    }
+
+    public void makeActive ()
+    {
+        _isActive = true;
+    }
+    
+    public boolean isActive ()
+    {
+        return _isActive;
     }
 }

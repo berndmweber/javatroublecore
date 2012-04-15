@@ -50,20 +50,22 @@ public class SettingLoader {
         Element numberOfPlayers = gameSettings.getChildByName ("numberofplayers");
         if (numberOfPlayers != null) {
             Settings.getInstance ().setNumberOfPlayers (numberOfPlayers.getInt ("default"));
+            Settings.getInstance ().setMinimumNumberOfPlayers (numberOfPlayers.getInt ("minimum"));
         }
         numberOfPlayers = null;
-        Element tokens = gameSettings.getChildByName ("tokens");
-        if (tokens != null) {
-            Array<Element> defaultTokens = tokens.getChildrenByName ("players");
-            if ((defaultTokens != null) && (defaultTokens.size > 0)) {
-                for (int i = 0; i < defaultTokens.size; i++) {
-                    Element defaultPlayers = defaultTokens.get (i);
-                    Settings.getInstance ().setNumberOfTokensPerPlayer (defaultPlayers.getInt ("number"),
-                                                                        Integer.parseInt (defaultPlayers.getText ()));
-                }
+        Array<Element> playersSettings = gameSettings.getChildrenByName ("players");
+        if ((playersSettings != null) && (playersSettings.size > 0)) {
+            for (int i = 0; i < playersSettings.size; i++) {
+                Element players = playersSettings.get (i);
+                Element defaultTokens = players.getChildByName ("tokens");
+                Settings.getInstance ().setNumberOfTokensPerPlayer (players.getInt ("number"),
+                                                                    defaultTokens.getInt ("number"));
+                Element defaultNormalSpots = players.getChildByName ("spots");
+                Settings.getInstance ().setNumberOfNormalSpots (players.getInt ("number"),
+                                                                defaultNormalSpots.getInt ("normal"));
             }
         }
-        tokens = null;
+        playersSettings = null;
         Element playerDefaults = gameSettings.getChildByName ("playerdefaults");
         if (playerDefaults != null) {
             Array<Element> players = playerDefaults.getChildrenByName ("player");

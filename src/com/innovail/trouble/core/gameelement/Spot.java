@@ -21,10 +21,48 @@ public class Spot {
     private Spot _nextSpot;
     private Spot _nextSpotWhenTurnOut;
     private Color _color;
+    
+    public enum Attributes {
+        SPOT_IS_NORMAL,
+        SPOT_IS_HOME,
+        SPOT_IS_START,
+        SPOT_IS_FINISH,
+        SPOT_IS_TURN_OUT
+    }
 
     public Spot ()
     {
         _color = Settings.getInstance ().getSpotDefaultColor ();
+    }
+    
+    public static Spot createSpot (Attributes attribute)
+    {
+        return createSpot (attribute, null);
+    }
+    
+    public static Spot createSpot (Attributes attribute, Player player)
+    {
+        Spot spot = new Spot ();
+        
+        switch (attribute) {
+        case SPOT_IS_HOME:
+            spot.makeHome (player);
+            break;
+        case SPOT_IS_START:
+            spot.makeStart (player);
+            break;
+        case SPOT_IS_TURN_OUT:
+            spot.makeTurnout (player);
+            break;
+        case SPOT_IS_FINISH:
+            spot.makeFinish (player);
+            break;
+        case SPOT_IS_NORMAL:
+        default:
+            break;
+        }
+        
+        return spot;
     }
     
     public boolean isHome ()
@@ -108,7 +146,7 @@ public class Spot {
     
     public void setNextSpot (Spot spot)
     {
-        _nextSpot = null;
+        _nextSpot = spot;
     }
     
     public Spot getNextSpot (Player owner)
