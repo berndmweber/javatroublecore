@@ -10,19 +10,21 @@ import java.util.Random;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
+import com.innovail.trouble.utils.SettingLoader;
 
 /**
  * 
  */
 public class JavaTroubleApplication implements ApplicationListener {
-    private Random rand;
+    private static String TAG = "JavaTroubleApplication";
     
     /* (non-Javadoc)
      * @see com.badlogic.gdx.ApplicationListener#create()
      */
     @Override
     public void create () {
-        rand = new Random();
+        Gdx.app.log (TAG, "Creating JavaTroubleApplication.");
+        SettingLoader.loadSettings ();
     }
 
     /* (non-Javadoc)
@@ -39,7 +41,7 @@ public class JavaTroubleApplication implements ApplicationListener {
      */
     @Override
     public void render () {
-        Gdx.gl.glClearColor (rand.nextFloat (), rand.nextFloat (), rand.nextFloat (), 1.0f);
+        Gdx.gl.glClearColor (0.2f, 0.0f, 0.0f, 1.0f);
         Gdx.gl.glClear (GL10.GL_COLOR_BUFFER_BIT);
     }
 
