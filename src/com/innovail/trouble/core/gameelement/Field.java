@@ -7,7 +7,7 @@ package com.innovail.trouble.core.gameelement;
 
 import java.util.Vector;
 
-import com.innovail.trouble.core.Settings;
+import com.innovail.trouble.core.GameSettings;
 import com.innovail.trouble.core.gameelement.Spot.Attributes;
 
 /**
@@ -32,7 +32,7 @@ public class Field {
             Spot lastNormalSpot = null;
             Spot firstTurnOutSpot = null;
             for (int i = 0; i < players.size (); i++) {
-                Spot[] homeSpot = new Spot[Settings.getInstance ().getNumberOfTokensPerPlayer(players.size ())];
+                Spot[] homeSpot = new Spot[GameSettings.getInstance ().getNumberOfTokensPerPlayer(players.size ())];
                 for (int j = 0; j < homeSpot.length; j++) {
                     homeSpot[j] = Spot.createSpot (Attributes.SPOT_IS_HOME, players.get (i));
                     if (j > 0) {
@@ -60,7 +60,7 @@ public class Field {
                 if (i == 0) {
                     firstTurnOutSpot = turnOutSpot;
                 }
-                Spot[] finishSpot = new Spot[Settings.getInstance ().getNumberOfTokensPerPlayer(players.size ())];
+                Spot[] finishSpot = new Spot[GameSettings.getInstance ().getNumberOfTokensPerPlayer(players.size ())];
                 for (int j = 0; j < finishSpot.length; j++) {
                     finishSpot[j] = Spot.createSpot (Attributes.SPOT_IS_FINISH, players.get (i));
                     if (j > 0) {

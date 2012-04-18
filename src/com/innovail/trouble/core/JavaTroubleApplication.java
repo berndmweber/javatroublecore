@@ -26,6 +26,7 @@ public class JavaTroubleApplication extends Game {
         SettingLoader.loadSettings ();
         myGame = new TroubleGame ();
         myGame.createGame ();
+        setScreen (new MainMenuScreen ());
     }
 
     /* (non-Javadoc)
@@ -33,8 +34,10 @@ public class JavaTroubleApplication extends Game {
      */
     @Override
     public void render () {
-        Gdx.gl.glClearColor (0.2f, 0.0f, 0.0f, 1.0f);
-        Gdx.gl.glClear (GL10.GL_COLOR_BUFFER_BIT);
+        TroubleScreen currentScreen = getScreen();
+
+        // update the screen
+        currentScreen.render(Gdx.graphics.getDeltaTime());
     }
 
     /**

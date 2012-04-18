@@ -13,7 +13,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
-import com.innovail.trouble.core.Settings;
+import com.innovail.trouble.core.ApplicationSettings;
+import com.innovail.trouble.core.GameSettings;
 
 /**
  * 
@@ -39,18 +40,42 @@ public class SettingLoader {
 
     private static void parseSettings ()
     {
+        Element applicationSettings = defaultSettings.getChildByName ("application");
+        if (applicationSettings != null) {
+            parseApplicationSettings (applicationSettings);
+        }
+        applicationSettings = null;
         Element gameSettings = defaultSettings.getChildByName ("game");
         if (gameSettings != null) {
             parseGameSettings (gameSettings);
         }
+        gameSettings = null;
+    }
+    
+    private static void parseApplicationSettings (Element applicationSettings)
+    {
+        Array<Element> menus = applicationSettings.getChildrenByName ("menu");
+        if ((menus != null) && (menus.size > 0)) {
+            for (int i = 0; i < menus.size; i++) {
+                Element menu = menus.get (i);
+                Element font = menu.getChildByName ("font");
+                if (font != null) {
+                    ApplicationSettings.getInstance ().setGameFont (menu.getAttribute ("type") + "Menu",
+                                                                    font.getAttribute ("file"),
+                                                                    font.getAttribute ("image"),
+                                                                    font.getBoolean ("is_internal"));
+                }
+            }
+        }
+        menus = null;
     }
     
     private static void parseGameSettings (Element gameSettings)
     {
         Element numberOfPlayers = gameSettings.getChildByName ("numberofplayers");
         if (numberOfPlayers != null) {
-            Settings.getInstance ().setNumberOfPlayers (numberOfPlayers.getInt ("default"));
-            Settings.getInstance ().setMinimumNumberOfPlayers (numberOfPlayers.getInt ("minimum"));
+            GameSettings.getInstance ().setNumberOfPlayers (numberOfPlayers.getInt ("default"));
+            GameSettings.getInstance ().setMinimumNumberOfPlayers (numberOfPlayers.getInt ("minimum"));
         }
         numberOfPlayers = null;
         Array<Element> playersSettings = gameSettings.getChildrenByName ("players");
@@ -58,10 +83,10 @@ public class SettingLoader {
             for (int i = 0; i < playersSettings.size; i++) {
                 Element players = playersSettings.get (i);
                 Element defaultTokens = players.getChildByName ("tokens");
-                Settings.getInstance ().setNumberOfTokensPerPlayer (players.getInt ("number"),
+                GameSettings.getInstance ().setNumberOfTokensPerPlayer (players.getInt ("number"),
                                                                     defaultTokens.getInt ("number"));
                 Element defaultNormalSpots = players.getChildByName ("spots");
-                Settings.getInstance ().setNumberOfNormalSpots (players.getInt ("number"),
+                GameSettings.getInstance ().setNumberOfNormalSpots (players.getInt ("number"),
                                                                 defaultNormalSpots.getInt ("normal"));
             }
         }
@@ -75,7 +100,7 @@ public class SettingLoader {
                     Element colorE = player.getChildByName ("color");
                     Color color = new Color ();
                     color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
-                    Settings.getInstance ().setPlayerColor (player.getInt ("number"), color);
+                    GameSettings.getInstance ().setPlayerColor (player.getInt ("number"), color);
                 }
             }
         }
@@ -86,7 +111,7 @@ public class SettingLoader {
             if (colorE != null) {
                 Color color = new Color ();
                 color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
-                Settings.getInstance ().setSpotDefaultColor (color);
+                GameSettings.getInstance ().setSpotDefaultColor (color);
             }
         }
         spots = null;

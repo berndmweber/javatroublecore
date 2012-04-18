@@ -8,7 +8,7 @@ package com.innovail.trouble.core.gameelement;
 import java.util.Vector;
 
 import com.badlogic.gdx.graphics.Color;
-import com.innovail.trouble.core.Settings;
+import com.innovail.trouble.core.GameSettings;
 
 /**
  * 
@@ -23,7 +23,7 @@ public class Player {
     public Player (int playerNumber)
     {
         _tokens = new Vector<Token> ();
-        _color = Settings.getInstance ().getPlayerColor (playerNumber);
+        _color = GameSettings.getInstance ().getPlayerColor (playerNumber);
         _name = new String ("Player " + playerNumber);
     }
     

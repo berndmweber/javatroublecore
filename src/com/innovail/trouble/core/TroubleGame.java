@@ -23,9 +23,9 @@ public class TroubleGame {
     public void createGame ()
     {
         players = new Vector<Player> ();
-        int numberOfPlayers = Settings.getInstance ().getNumberOfPlayers ();
-        if (numberOfPlayers < Settings.getInstance ().getMinimumNumberOfPlayers ()) {
-            numberOfPlayers = Settings.getInstance ().getMinimumNumberOfPlayers ();
+        int numberOfPlayers = GameSettings.getInstance ().getNumberOfPlayers ();
+        if (numberOfPlayers < GameSettings.getInstance ().getMinimumNumberOfPlayers ()) {
+            numberOfPlayers = GameSettings.getInstance ().getMinimumNumberOfPlayers ();
         }
         for (int i = 0; i < numberOfPlayers; i++) {
             players.add (new Player (i));

@@ -13,7 +13,7 @@ import com.badlogic.gdx.graphics.Color;
 /**
  * 
  */
-public class Settings {
+public class GameSettings {
     /* SETTINGS */
     private int _NumberOfPlayers = 0;
     
@@ -29,14 +29,14 @@ public class Settings {
     
     /* END SETTINGS */
     
-    private static Settings instance;
+    private static GameSettings instance;
 
-    private Settings () {};
+    private GameSettings () {};
 
-    public static Settings getInstance ()
+    public static GameSettings getInstance ()
     {
         if (instance == null) {
-            instance = new Settings();
+            instance = new GameSettings();
         }
         return instance;
     }

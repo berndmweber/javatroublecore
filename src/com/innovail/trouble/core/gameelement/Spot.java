@@ -6,7 +6,7 @@
 package com.innovail.trouble.core.gameelement;
 
 import com.badlogic.gdx.graphics.Color;
-import com.innovail.trouble.core.Settings;
+import com.innovail.trouble.core.GameSettings;
 
 /**
  * 
@@ -32,7 +32,7 @@ public class Spot {
 
     public Spot ()
     {
-        _color = Settings.getInstance ().getSpotDefaultColor ();
+        _color = GameSettings.getInstance ().getSpotDefaultColor ();
     }
     
     public static Spot createSpot (Attributes attribute)
