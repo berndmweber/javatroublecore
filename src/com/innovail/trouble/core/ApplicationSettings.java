@@ -8,6 +8,7 @@ package com.innovail.trouble.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.innovail.trouble.utils.BackgroundImage;
 import com.innovail.trouble.utils.GameFont;
 
 /**
@@ -16,6 +17,8 @@ import com.innovail.trouble.utils.GameFont;
 public class ApplicationSettings {
     /* SETTINGS */
     private Map<String, GameFont> _GameFonts;
+    
+    private Map<String, BackgroundImage> _BackgroundImages;
     /* END SETTINGS */
     
     private static ApplicationSettings instance;
@@ -44,6 +47,25 @@ public class ApplicationSettings {
         if ((_GameFonts != null) && !_GameFonts.isEmpty ()) {
             if (_GameFonts.containsKey (appPart)) {
                 return _GameFonts.get (appPart);
+            }
+        }
+        return null;
+    }
+    
+    public void setBackgroundImage (String appPart, String path, int width,
+                                    int height, boolean isInternal)
+    {
+        if (_BackgroundImages == null) {
+            _BackgroundImages = new HashMap<String, BackgroundImage> ();
+        }
+        _BackgroundImages.put (appPart, new BackgroundImage (path, width, height, isInternal));
+    }
+    
+    public BackgroundImage getBackgroundImage (String appPart)
+    {
+        if ((_BackgroundImages != null) && !_BackgroundImages.isEmpty ()) {
+            if (_BackgroundImages.containsKey (appPart)) {
+                return _BackgroundImages.get (appPart);
             }
         }
         return null;

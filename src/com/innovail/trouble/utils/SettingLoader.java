@@ -65,6 +65,14 @@ public class SettingLoader {
                                                                     font.getAttribute ("image"),
                                                                     font.getBoolean ("is_internal"));
                 }
+                Element background = menu.getChildByName ("background");
+                if (background != null) {
+                    ApplicationSettings.getInstance ().setBackgroundImage (menu.getAttribute ("type") + "Menu",
+                                                                           background.getAttribute ("file"),
+                                                                           background.getInt ("width"),
+                                                                           background.getInt ("height"),
+                                                                           background.getBoolean ("is_internal"));
+                }
             }
         }
         menus = null;
