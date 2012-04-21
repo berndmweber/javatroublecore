@@ -77,80 +77,109 @@ public class MainMenuScreen extends TroubleScreen {
     public void render (float delta)
     {
         GL10 gl = Gdx.graphics.getGL10();
+        Color currentColor = Color.BLACK;
 
         gl.glClear (GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-        gl.glClearColor (Color.RED.r, Color.RED.g, Color.RED.b, Color.RED.a);
+        gl.glClearColor (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
         gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         
-        renderBackground (Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        //renderBackground (Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         
         gl.glDisable(GL10.GL_DITHER);
         gl.glEnable(GL10.GL_DEPTH_TEST);
         gl.glEnable(GL10.GL_CULL_FACE);
 
         setProjectionAndCamera(gl);
-        //setLighting(gl);
+        setLighting(gl);
 
-        gl.glEnable(GL10.GL_TEXTURE_2D);
+        //gl.glEnable(GL10.GL_TEXTURE_2D);
 
         renderLogo(gl);
 
-        gl.glDisable(GL10.GL_TEXTURE_2D);
+        //gl.glDisable(GL10.GL_TEXTURE_2D);
         gl.glDisable(GL10.GL_CULL_FACE);
         gl.glDisable(GL10.GL_DEPTH_TEST);
-
-        _spriteBatch.setProjectionMatrix(_viewMatrix);
-        _spriteBatch.setTransformMatrix(_transformMatrix);
-
     }
 
     private void renderBackground (float width, float height)
     {
-        _viewMatrix.setToOrtho2D(0.0f, 0.0f, width, height);
-        _spriteBatch.setProjectionMatrix(_viewMatrix);
-        _spriteBatch.setTransformMatrix(_transformMatrix);
-        _spriteBatch.begin();
-        _spriteBatch.disableBlending();
-        _spriteBatch.setColor(Color.WHITE);
-        _spriteBatch.draw((Texture)_backgroundImage.getImageObject (),
+        _viewMatrix.setToOrtho2D (0.0f, 0.0f, width, height);
+        _spriteBatch.setProjectionMatrix (_viewMatrix);
+        _spriteBatch.setTransformMatrix (_transformMatrix);
+        _spriteBatch.begin ();
+        _spriteBatch.disableBlending ();
+        _spriteBatch.setColor (Color.WHITE);
+        _spriteBatch.draw ((Texture)_backgroundImage.getImageObject (),
                           0, 0, width, height,
                           0, 0,
                           _backgroundImage.getWidth (),
                           _backgroundImage.getHeight (),
                           false, false);
-        _spriteBatch.enableBlending();
-        _spriteBatch.setBlendFunction(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        _spriteBatch.enableBlending ();
+        _spriteBatch.setBlendFunction (GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
         String text = "~`1!2@3#4$5%6^7&8*9(0)-_=+qQwWeErRtTyYuUiIoOpP[{]}\\|aAsSdDfFgGhHjJkKlL;:'\"zZxXcCvVbBnNmM,<.>/?";
-        float textWidth = _menuFont.getBounds(text).width;
+        float textWidth = _menuFont.getBounds (text).width;
         _menuFont.draw (_spriteBatch, text,
                         Gdx.graphics.getWidth () / 2 - textWidth / 2,
                         Gdx.graphics.getHeight () / 2);
-        _spriteBatch.end();
+        _spriteBatch.end ();
     }
     
     private void setProjectionAndCamera (GL10 gl) {
-        _camera.position.set(0, 0, 2);
-        _camera.direction.set(0, 0, -4).sub(_camera.position).nor();
-        _camera.update();
-        _camera.apply(gl);
+        _camera.position.set (0, 0, 2);
+        _camera.direction.set (0, 0, -4).sub (_camera.position).nor ();
+        _camera.update ();
+        _camera.apply (gl);
     }
     
     private void setLighting (GL10 gl) {
-        float[] direction = {1, 0.5f, 0, 0};
-        gl.glEnable(GL10.GL_LIGHTING);
-        gl.glEnable(GL10.GL_LIGHT0);
-        gl.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, direction, 0);
-        gl.glEnable(GL10.GL_COLOR_MATERIAL);
+        float[] direction = {-2.0f, 2.0f, 1.0f, 0.0f};
+        float[] ambient = {0.0f, 0.0f, 0.0f, 1.0f};
+        float[] diffuse = {1.0f, 1.0f, 1.0f, 1.0f};
+        float[] specular = {1.0f, 1.0f, 1.0f, 1.0f};
+        
+        gl.glEnable (GL10.GL_LIGHTING);
+        gl.glLightModelf (GL10.GL_LIGHT_MODEL_TWO_SIDE, 0.0f);
+        gl.glEnable (GL10.GL_LIGHT0);
+        /*gl.glEnable (GL10.GL_LIGHT1);
+        gl.glLightfv (GL10.GL_LIGHT1, GL10.GL_AMBIENT, ambient, 0);
+        gl.glLightfv (GL10.GL_LIGHT1, GL10.GL_DIFFUSE, diffuse, 0);
+        gl.glLightfv (GL10.GL_LIGHT1, GL10.GL_SPECULAR, specular, 0);
+        gl.glLightfv (GL10.GL_LIGHT1, GL10.GL_POSITION, direction, 0);*/
+        gl.glEnable (GL10.GL_COLOR_MATERIAL);
+        gl.glEnable (GL10.GL_BLEND);
     }
 
     private void renderLogo (GL10 gl)
     {
-        gl.glMatrixMode(GL10.GL_MODELVIEW);
-        gl.glPushMatrix();
-        gl.glTranslatef(0.0f, 0.0f, -0.9f);
+        Color currentColor = Color.GREEN;
+        int frontAndOrBack = GL10.GL_FRONT;
+        float[] matNoMat = {0.0f, 0.0f, 0.0f, 1.0f};
+        float[] matAmbient = {0.7f, 0.7f, 0.7f, 1.0f};
+        float[] matAmbientColor = {0.8f, 0.8f, 0.2f, 1.0f};
+        float[] matDiffuse = {0.1f, 0.5f, 0.8f, 1.0f};
+        float[] matSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
+        float[] matNoShininess = {0.0f};
+        float[] matLowShininess = {5.0f};
+        float[] matHighShininess = {100.0f};
+        float[] matEmission = {0.3f, 0.2f, 0.2f, 0.0f};
+        
+        //gl.glEnable (GL10.GL_COLOR_MATERIAL);
+        //gl.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_LINE);
+        gl.glMatrixMode (GL10.GL_MODELVIEW);
+        gl.glShadeModel (GL10.GL_SMOOTH);
+        gl.glPushMatrix ();
+        //gl.glTranslatef (0.0f, 0.0f, -1.9f);
         gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
+        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+        gl.glMaterialfv (frontAndOrBack, GL10.GL_AMBIENT, matNoMat, 0);
+        gl.glMaterialfv (frontAndOrBack, GL10.GL_DIFFUSE, matDiffuse, 0);
+        gl.glMaterialfv (frontAndOrBack, GL10.GL_SPECULAR, matSpecular, 0);
+        gl.glMaterialfv (frontAndOrBack, GL10.GL_SHININESS, matHighShininess, 0);
+        gl.glMaterialfv (frontAndOrBack, GL10.GL_EMISSION, matNoMat, 0);
         _logo.render (GL10.GL_TRIANGLES);
-        gl.glPopMatrix();
+        gl.glPopMatrix ();
+        //gl.glDisable (GL10.GL_COLOR_MATERIAL);
      }
 
 }
