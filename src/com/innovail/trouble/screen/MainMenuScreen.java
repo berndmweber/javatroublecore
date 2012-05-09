@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.innovail.trouble.core.ApplicationSettings;
+import com.innovail.trouble.core.TroubleApplicationState;
 import com.innovail.trouble.utils.BackgroundImage;
 import com.innovail.trouble.utils.MenuEntryMesh;
 import com.innovail.trouble.utils.MenuMesh;
@@ -30,10 +31,12 @@ import com.innovail.trouble.utils.MenuMesh;
 /**
  * 
  */
-public class MainMenuScreen extends TroubleScreen {
+public class MainMenuScreen implements TroubleScreen {
     private static final String TAG = "MainMenuScreen";
-    private static final String _AppPartName = "mainMenu";
-    
+    private static final String _AppPartName = TroubleApplicationState.MAIN_MENU;
+
+    private String _currentState = TroubleApplicationState.MAIN_MENU;
+
     private boolean _filling = true;
     
     private final BitmapFont _menuFont;
@@ -239,7 +242,7 @@ public class MainMenuScreen extends TroubleScreen {
         }
     }
 
-    private void createInputProcessor ()
+    public void createInputProcessor ()
     {
         Gdx.input.setInputProcessor (new InputProcessor() {
             /* (non-Javadoc)
@@ -308,8 +311,11 @@ public class MainMenuScreen extends TroubleScreen {
                 Iterator <MenuMesh> currentMesh = _menuEntries.iterator ();
                 int j = 0;
                 while (currentMesh.hasNext ()) {
-                    if (((MenuEntryMesh)currentMesh.next ()).isTouched (x, y)) {
-                        Gdx.app.log (TAG, "Mesh " + j + " touched.");
+                    MenuEntryMesh currentEntry = (MenuEntryMesh)currentMesh.next ();
+                    if (currentEntry.isTouched (x, y)) {
+                        _currentState = currentEntry.getName ();
+                        Gdx.app.log (TAG, "Mesh " + j + " touched -> " + _currentState);
+                        break;
                     }
                     j++;
                 }
@@ -351,5 +357,59 @@ public class MainMenuScreen extends TroubleScreen {
                 // TODO Auto-generated method stub
                 return false;
             }
-        });    }
+        });
+    }
+
+    /* (non-Javadoc)
+     * @see com.badlogic.gdx.Screen#dispose()
+     */
+    @Override
+    public void dispose () {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see com.badlogic.gdx.Screen#hide()
+     */
+    @Override
+    public void hide () {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see com.badlogic.gdx.Screen#pause()
+     */
+    @Override
+    public void pause () {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see com.badlogic.gdx.Screen#resume()
+     */
+    @Override
+    public void resume () {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see com.badlogic.gdx.Screen#show()
+     */
+    @Override
+    public void show () {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see com.innovail.trouble.screen.TroubleScreen#getState()
+     */
+    @Override
+    public String getState () {
+        return _currentState;
+    }
 }
