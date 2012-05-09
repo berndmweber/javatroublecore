@@ -3,7 +3,7 @@
  * @date:   Apr 15, 2012
  * @author: bweber
  */
-package com.innovail.trouble.core;
+package com.innovail.trouble.screen;
 
 import com.badlogic.gdx.Screen;
 

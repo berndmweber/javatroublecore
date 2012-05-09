@@ -8,6 +8,8 @@ package com.innovail.trouble.core;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
+import com.innovail.trouble.screen.MainMenuScreen;
+import com.innovail.trouble.screen.TroubleScreen;
 import com.innovail.trouble.utils.SettingLoader;
 
 /**

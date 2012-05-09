@@ -3,7 +3,7 @@
  * @date:   Apr 15, 2012
  * @author: bweber
  */
-package com.innovail.trouble.core;
+package com.innovail.trouble.screen;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
+import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.utils.BackgroundImage;
 import com.innovail.trouble.utils.MenuEntryMesh;
 import com.innovail.trouble.utils.MenuMesh;
