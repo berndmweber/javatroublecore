@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
@@ -21,6 +23,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.innovail.trouble.utils.BackgroundImage;
+import com.innovail.trouble.utils.MenuEntryMesh;
 import com.innovail.trouble.utils.MenuMesh;
 
 /**
@@ -29,7 +32,8 @@ import com.innovail.trouble.utils.MenuMesh;
 public class MainMenuScreen extends TroubleScreen {
     private static final String TAG = "MainMenuScreen";
     private static final String _AppPartName = "mainMenu";
-    //private Random rand;
+    
+    private boolean _filling = true;
     
     private final BitmapFont _menuFont;
     private final SpriteBatch _spriteBatch;
@@ -52,12 +56,16 @@ public class MainMenuScreen extends TroubleScreen {
     public MainMenuScreen ()
     {
         Gdx.app.log (TAG, "MainMenuScreen()");
+        
+        createInputProcessor ();
+        
         _spriteBatch = new SpriteBatch ();
         _menuFont = ApplicationSettings.getInstance ().getGameFont (_AppPartName).createBitmapFont ();
         _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (_AppPartName);
         _backgroundImage.createTexture ().setFilter (TextureFilter.Linear, TextureFilter.Linear);
         
         _logo = ApplicationSettings.getInstance ().getLogo ();
+        
         _menuEntriesMap = ApplicationSettings.getInstance ().getMenuEntries (_AppPartName);
         _menuEntries = _menuEntriesMap.values ();
         _yRotationAngle = new float[_menuEntriesMap.size ()];
@@ -68,7 +76,12 @@ public class MainMenuScreen extends TroubleScreen {
             _yRotationAngle[i] *= rand.nextBoolean () ? 1.0f : -1.0f;
             _yRotationDirection[i] = rand.nextBoolean () ? 1 : -1;
         }
-
+        Iterator <MenuMesh> currentMesh = _menuEntries.iterator ();
+        int j = 0;
+        while (currentMesh.hasNext ()) {
+            ((MenuEntryMesh)currentMesh.next ()).setTouchRectangle (325, 290 + (112 * j++), 630, 92);
+        }
+        
         _viewMatrix = new Matrix4 ();
         _transformMatrix = new Matrix4 ();
         
@@ -204,6 +217,7 @@ public class MainMenuScreen extends TroubleScreen {
             gl.glRotatef (_yRotationAngle[i], 0.0f, 1.0f, 0.0f);
             currentMesh.next ().getMesh ().render (GL10.GL_TRIANGLES);
             gl.glPopMatrix ();
+            
             if (_rotationDelta >= _RotationMaxDelta) {
                 if (_yRotationDirection[i] == 1) {
                     _yRotationAngle[i] += _RotationAngleIncrease;
@@ -224,4 +238,117 @@ public class MainMenuScreen extends TroubleScreen {
         }
     }
 
+    private void createInputProcessor ()
+    {
+        Gdx.input.setInputProcessor (new InputProcessor() {
+            /* (non-Javadoc)
+             * @see com.badlogic.gdx.InputProcessor#keyDown(int)
+             */
+            @Override
+            public boolean keyDown (int keycode) {
+                boolean rv = true;
+                
+                switch (keycode) {
+                case Input.Keys.SPACE:
+                    Gdx.app.log (TAG, "keyDown() - SPACE");
+                    break;
+                case Input.Keys.R:
+                    if (!_filling) {
+                        Gdx.app.log (TAG, "keyDown() - Filling");
+                        Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
+                        _filling = true;
+                    } else {
+                        Gdx.app.log (TAG, "keyDown() - wireframing");
+                        Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_LINE);
+                        _filling = false;
+                    }
+                    break;
+                case Input.Keys.UP:
+                    Gdx.app.log (TAG, "keyDown() - UP");
+                    break;
+                case Input.Keys.DOWN:
+                    Gdx.app.log (TAG, "keyDown() - DOWN");
+                    break;
+                case Input.Keys.LEFT:
+                    Gdx.app.log (TAG, "keyDown() - LEFT");
+                    break;
+                case Input.Keys.RIGHT:
+                    Gdx.app.log (TAG, "keyDown() - RIGHT");
+                    break;
+                default:
+                    rv = false;
+                }
+                return rv;
+            }
+
+            /* (non-Javadoc)
+             * @see com.badlogic.gdx.InputProcessor#keyUp(int)
+             */
+            @Override
+            public boolean keyUp (int keycode) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            /* (non-Javadoc)
+             * @see com.badlogic.gdx.InputProcessor#keyTyped(char)
+             */
+            @Override
+            public boolean keyTyped (char character) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            /* (non-Javadoc)
+             * @see com.badlogic.gdx.InputProcessor#touchDown(int, int, int, int)
+             */
+            @Override
+            public boolean touchDown (int x, int y, int pointer, int button) {
+                Iterator <MenuMesh> currentMesh = _menuEntries.iterator ();
+                int j = 0;
+                while (currentMesh.hasNext ()) {
+                    if (((MenuEntryMesh)currentMesh.next ()).isTouched (x, y)) {
+                        Gdx.app.log (TAG, "Mesh " + j + " touched.");
+                    }
+                    j++;
+                }
+                return false;
+            }
+
+            /* (non-Javadoc)
+             * @see com.badlogic.gdx.InputProcessor#touchUp(int, int, int, int)
+             */
+            @Override
+            public boolean touchUp (int x, int y, int pointer, int button) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            /* (non-Javadoc)
+             * @see com.badlogic.gdx.InputProcessor#touchDragged(int, int, int)
+             */
+            @Override
+            public boolean touchDragged (int x, int y, int pointer) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            /* (non-Javadoc)
+             * @see com.badlogic.gdx.InputProcessor#touchMoved(int, int)
+             */
+            @Override
+            public boolean touchMoved (int x, int y) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            /* (non-Javadoc)
+             * @see com.badlogic.gdx.InputProcessor#scrolled(int)
+             */
+            @Override
+            public boolean scrolled (int amount) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+        });    }
 }
