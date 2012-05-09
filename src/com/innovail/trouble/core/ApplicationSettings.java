@@ -5,11 +5,15 @@
  */
 package com.innovail.trouble.core;
 
+import java.awt.Menu;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.badlogic.gdx.graphics.Color;
 import com.innovail.trouble.utils.BackgroundImage;
 import com.innovail.trouble.utils.GameFont;
+import com.innovail.trouble.utils.MenuEntryMesh;
+import com.innovail.trouble.utils.MenuMesh;
 
 /**
  * 
@@ -19,6 +23,12 @@ public class ApplicationSettings {
     private Map<String, GameFont> _GameFonts;
     
     private Map<String, BackgroundImage> _BackgroundImages;
+    
+    private String _CopyRightNotice;
+    
+    private MenuMesh _Logo;
+    
+    private Map<String, Map<String, MenuMesh>> _MenuEntries;
     /* END SETTINGS */
     
     private static ApplicationSettings instance;
@@ -69,5 +79,81 @@ public class ApplicationSettings {
             }
         }
         return null;
+    }
+    
+    public void setMenuEntry (String appPart, String entryName, String path,
+                               boolean isInternal)
+    {
+        if (_MenuEntries == null) {
+            _MenuEntries = new HashMap <String, Map <String, MenuMesh>> ();
+        }
+        if (!_MenuEntries.containsKey (appPart)) {
+            _MenuEntries.put (appPart, new HashMap <String, MenuMesh> ());
+        }
+        HashMap <String, MenuMesh> currentMap = (HashMap <String, MenuMesh>) _MenuEntries.get (appPart);
+        currentMap.put (entryName, new MenuEntryMesh (entryName, path, isInternal));
+    }
+
+    public void setMenuEntry (String appPart, String entryName, String path,
+                               Color color, boolean isInternal)
+    {
+        if (_MenuEntries == null) {
+            _MenuEntries = new HashMap <String, Map <String, MenuMesh>> ();
+        }
+        if (!_MenuEntries.containsKey (appPart)) {
+            _MenuEntries.put (appPart, new HashMap <String, MenuMesh> ());
+        }
+        HashMap <String, MenuMesh> currentMap = (HashMap <String, MenuMesh>) _MenuEntries.get (appPart);
+        currentMap.put (entryName, new MenuEntryMesh (entryName, path, color, isInternal));
+    }
+    
+    public MenuMesh getMenuEntry (String appPart, String name)
+    {
+        if ((_MenuEntries != null) && !_MenuEntries.isEmpty ()) {
+            if (_MenuEntries.containsKey (appPart)) {
+                 Map <String, MenuMesh> currentMap = _MenuEntries.get (appPart);
+                 if ((currentMap != null) && !currentMap.isEmpty ()) {
+                     if (currentMap.containsKey (name)) {
+                         return currentMap.get (name);
+                     }
+                 }
+            }
+        }
+        return null;
+    }
+
+    public HashMap <String, MenuMesh> getMenuEntries (String appPart)
+    {
+        if ((_MenuEntries != null) && !_MenuEntries.isEmpty ()) {
+            if (_MenuEntries.containsKey (appPart)) {
+                return (HashMap <String, MenuMesh>) _MenuEntries.get (appPart);
+            }
+        }
+        return null;
+    }
+
+    public void setLogo (String path, Color color, boolean isInternal)
+    {
+        _Logo = new MenuMesh (path, color, isInternal);
+    }
+    
+    public void setLogo (String path, boolean isInternal)
+    {
+        _Logo = new MenuMesh (path, isInternal);
+    }
+    
+    public MenuMesh getLogo ()
+    {
+        return _Logo;
+    }
+    
+    public String getCopyRightNotice ()
+    {
+        return _CopyRightNotice;
+    }
+    
+    public void setCopyRightNotice (String notice)
+    {
+        _CopyRightNotice = notice;
     }
  }

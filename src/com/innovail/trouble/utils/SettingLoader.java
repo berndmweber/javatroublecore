@@ -65,6 +65,12 @@ public class SettingLoader {
                                                                     font.getAttribute ("image"),
                                                                     font.getBoolean ("is_internal"));
                 }
+                font = null;
+                Element copyright = menu.getChildByName ("copyright");
+                if (copyright != null) {
+                    ApplicationSettings.getInstance ().setCopyRightNotice (copyright.getText ());
+                }
+                copyright = null;
                 Element background = menu.getChildByName ("background");
                 if (background != null) {
                     ApplicationSettings.getInstance ().setBackgroundImage (menu.getAttribute ("type") + "Menu",
@@ -73,6 +79,33 @@ public class SettingLoader {
                                                                            background.getInt ("height"),
                                                                            background.getBoolean ("is_internal"));
                 }
+                background = null;
+                Element logo = menu.getChildByName ("logo");
+                if (logo != null) {
+                    Element colorE = logo.getChildByName ("color");
+                    if (colorE != null) {
+                        Color color = new Color ();
+                        color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
+                        ApplicationSettings.getInstance ().setLogo (logo.getAttribute ("file"), color, logo.getBoolean ("is_internal"));
+                    } else {
+                        ApplicationSettings.getInstance ().setLogo (logo.getAttribute ("file"), logo.getBoolean ("is_internal"));
+                    }
+                }
+                logo = null;
+                Array<Element> entries = menu.getChildrenByName ("entry");
+                if ((entries != null) && (entries.size > 0)) {
+                    for (int j = 0; j < entries.size; j++) {
+                        Element entry = entries.get (j);
+                        if (entry != null) {
+                            ApplicationSettings.getInstance ().setMenuEntry (menu.getAttribute ("type") + "Menu",
+                                                                             entry.getAttribute ("name"),
+                                                                             entry.getAttribute ("file"),
+                                                                             entry.getBoolean ("is_internal"));
+                        }
+                    }
+                }
+                entries = null;
+                menu = null;
             }
         }
         menus = null;
