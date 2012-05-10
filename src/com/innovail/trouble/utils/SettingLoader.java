@@ -154,7 +154,7 @@ public class SettingLoader {
                     Element colorE = player.getChildByName ("color");
                     Color color = new Color ();
                     color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
-                    GameSettings.getInstance ().setPlayerColor (player.getInt ("number"), color);
+                    GameSettings.getInstance ().setPlayerColor (player.getInt ("number") - 1, color);
                 }
             }
         }
