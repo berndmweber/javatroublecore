@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * 
  */
-public class MenuEntryMesh extends MenuMesh {
+public class MenuEntryMesh extends GameMesh {
 
     private final String _name;
     private Rectangle _touchArea;

@@ -109,6 +109,19 @@ public class SettingLoader {
             }
         }
         menus = null;
+        Element game = applicationSettings.getChildByName ("game");
+        if (game != null) {
+            Element background = game.getChildByName ("background");
+            if (background != null) {
+                ApplicationSettings.getInstance ().setBackgroundImage ("game",
+                                                                       background.getAttribute ("file"),
+                                                                       background.getInt ("width"),
+                                                                       background.getInt ("height"),
+                                                                       background.getBoolean ("is_internal"));
+            }
+            background = null;
+        }
+        game = null;
     }
     
     private static void parseGameSettings (Element gameSettings)
@@ -152,7 +165,9 @@ public class SettingLoader {
             if (colorE != null) {
                 Color color = new Color ();
                 color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
-                GameSettings.getInstance ().setSpotDefaultColor (color);
+                GameSettings.getInstance ().setSpotMesh (spots.getAttribute ("file"),
+                                                         color,
+                                                         spots.getBoolean ("is_internal"));
             }
         }
         spots = null;

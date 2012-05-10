@@ -7,6 +7,8 @@ package com.innovail.trouble.core.gameelement;
 
 import java.util.Vector;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.innovail.trouble.core.GameSettings;
 import com.innovail.trouble.core.gameelement.Spot.Attributes;
 
@@ -18,6 +20,85 @@ public class Field {
     
     private static Field instance;
     
+    /* This will only work for 4 players right now... */
+    private static Vector3[] _spotPosition = {
+                                        new Vector3 (0, 0, 0), //0 HP P0
+                                        new Vector3 (1, 0, 0), //1 HP P0
+                                        new Vector3 (1, 0, 1), //2 HP P0
+                                        new Vector3 (0, 0, 1), //3 HP P0
+                                        new Vector3 (0, 0, 4), //4 SP P0
+                                        new Vector3 (1, 0, 4), //5
+                                        new Vector3 (2, 0, 4), //6
+                                        new Vector3 (3, 0, 4), //7
+                                        new Vector3 (4, 0, 4), //8
+                                        new Vector3 (4, 0, 3), //9
+                                        new Vector3 (4, 0, 2), //10
+                                        new Vector3 (4, 0, 1), //11
+                                        new Vector3 (4, 0, 0), //12
+                                        new Vector3 (0, 0, 5), //13 TO P0
+                                        new Vector3 (1, 0, 5), //14 FP P0
+                                        new Vector3 (2, 0, 5), //15 FP P0
+                                        new Vector3 (3, 0, 5), //16 FP P0
+                                        new Vector3 (4, 0, 5), //17 FP P0
+                                        
+                                        new Vector3 (10, 0, 0), //0 HP P1
+                                        new Vector3 (10, 0, 1), //1 HP P1
+                                        new Vector3 (9, 0, 1), //2 HP P1
+                                        new Vector3 (9, 0, 0), //3 HP P1
+                                        new Vector3 (6, 0, 0), //4 SP P1
+                                        new Vector3 (6, 0, 1), //5
+                                        new Vector3 (6, 0, 2), //6
+                                        new Vector3 (6, 0, 3), //7
+                                        new Vector3 (6, 0, 4), //8
+                                        new Vector3 (7, 0, 4), //9
+                                        new Vector3 (8, 0, 4), //10
+                                        new Vector3 (9, 0, 4), //11
+                                        new Vector3 (10, 0, 4), //12
+                                        new Vector3 (5, 0, 0), //13 TO P1
+                                        new Vector3 (5, 0, 1), //14 FP P1
+                                        new Vector3 (5, 0, 2), //15 FP P1
+                                        new Vector3 (5, 0, 3), //16 FP P1
+                                        new Vector3 (5, 0, 4), //17 FP P1
+                                        
+                                        new Vector3 (10, 0, 10), //0 HP P2
+                                        new Vector3 (9, 0, 10), //1 HP P2
+                                        new Vector3 (9, 0, 9), //2 HP P2
+                                        new Vector3 (10, 0, 9), //3 HP P2
+                                        new Vector3 (10, 0, 6), //4 SP P2
+                                        new Vector3 (9, 0, 6), //5
+                                        new Vector3 (8, 0, 6), //6
+                                        new Vector3 (7, 0, 6), //7
+                                        new Vector3 (6, 0, 6), //8
+                                        new Vector3 (6, 0, 7), //9
+                                        new Vector3 (6, 0, 8), //10
+                                        new Vector3 (6, 0, 9), //11
+                                        new Vector3 (6, 0, 10), //12
+                                        new Vector3 (10, 0, 5), //13 TO P2
+                                        new Vector3 (9, 0, 5), //14 FP P2
+                                        new Vector3 (8, 0, 5), //15 FP P2
+                                        new Vector3 (7, 0, 5), //16 FP P2
+                                        new Vector3 (6, 0, 5), //17 FP P2
+                                        
+                                        new Vector3 (0, 0, 10), //0 HP P3
+                                        new Vector3 (0, 0, 9), //1 HP P3
+                                        new Vector3 (1, 0, 9), //2 HP P3
+                                        new Vector3 (1, 0, 10), //3 HP P3
+                                        new Vector3 (4, 0, 10), //4 SP P3
+                                        new Vector3 (4, 0, 9), //5
+                                        new Vector3 (4, 0, 8), //6
+                                        new Vector3 (4, 0, 7), //7
+                                        new Vector3 (4, 0, 6), //8
+                                        new Vector3 (3, 0, 6), //9
+                                        new Vector3 (2, 0, 6), //10
+                                        new Vector3 (1, 0, 6), //11
+                                        new Vector3 (0, 0, 6), //12
+                                        new Vector3 (5, 0, 10), //13 TO P3
+                                        new Vector3 (5, 0, 9), //14 FP P3
+                                        new Vector3 (5, 0, 8), //15 FP P3
+                                        new Vector3 (5, 0, 7), //16 FP P3
+                                        new Vector3 (5, 0, 6), //17 FP P3
+                                        };
+    
     private Field ()
     {}
 
@@ -26,8 +107,12 @@ public class Field {
         if (instance == null) {
             instance = new Field ();
         }
+        
         instance._spots = new Vector<Spot> ();
+        /* We need to do this since the OpenGl coordinate system has the (0,0) point in the center */
+        normalizeVectors (new Vector3 (-5, 0, -5));
 
+        int positionIndex = 0;
         if ((players != null) && (players.size () > 0)) {
             Spot lastNormalSpot = null;
             Spot firstTurnOutSpot = null;
@@ -38,12 +123,14 @@ public class Field {
                     if (j > 0) {
                         homeSpot[j-1].setNextSpot (homeSpot[j]);
                     }
+                    homeSpot[j].setPosition (_spotPosition[positionIndex++]);
                     instance._spots.add (homeSpot[j]);
                 }
                 Spot startSpot = Spot.createSpot (Attributes.SPOT_IS_START, players.get (i));
                 instance._spots.lastElement ().setNextSpot (startSpot);
+                startSpot.setPosition (_spotPosition[positionIndex++]);
                 instance._spots.add (startSpot);
-                Spot[] normalSpot = new Spot[9];
+                Spot[] normalSpot = new Spot[8];
                 /* TODO: Need to get the number of normal spots from settings. */
                 for (int j = 0; j < normalSpot.length; j++) {
                     normalSpot[j] = Spot.createSpot (Attributes.SPOT_IS_NORMAL);
@@ -52,10 +139,12 @@ public class Field {
                     } else {
                         startSpot.setNextSpot (normalSpot[j]);
                     }
+                    normalSpot[j].setPosition (_spotPosition[positionIndex++]);
                     instance._spots.add (normalSpot[j]);
                 }
                 Spot turnOutSpot = Spot.createSpot (Attributes.SPOT_IS_TURN_OUT, players.get (i));
                 turnOutSpot.setNextSpot (startSpot);
+                turnOutSpot.setPosition (_spotPosition[positionIndex++]);
                 instance._spots.add (turnOutSpot);
                 if (i == 0) {
                     firstTurnOutSpot = turnOutSpot;
@@ -68,6 +157,7 @@ public class Field {
                     } else {
                         turnOutSpot.setNextTurnOutSpot (finishSpot[j]);
                     }
+                    finishSpot[j].setPosition (_spotPosition[positionIndex++]);
                     instance._spots.add (finishSpot[j]);
                  }
                 if (i > 0) {
@@ -81,5 +171,17 @@ public class Field {
         }
         
         return instance;
+    }
+    
+    public Vector<Spot> getSpots ()
+    {
+        return _spots;
+    }
+    
+    public static void normalizeVectors (Vector3 normal)
+    {
+        for (int i = 0; i < _spotPosition.length; i++) {
+            _spotPosition[i].add (normal);
+        }
     }
 }

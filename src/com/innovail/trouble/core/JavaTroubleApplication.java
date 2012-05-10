@@ -17,7 +17,7 @@ import com.innovail.trouble.utils.SettingLoader;
  */
 public class JavaTroubleApplication extends Game {
     private static String TAG = "JavaTroubleApplication";
-    //private TroubleGame myGame;
+
     public String currentState = TroubleApplicationState.MAIN_MENU;
     
     /* (non-Javadoc)
@@ -27,8 +27,6 @@ public class JavaTroubleApplication extends Game {
     public void create () {
         Gdx.app.log (TAG, "Creating JavaTroubleApplication.");
         SettingLoader.loadSettings ();
-        /*myGame = new TroubleGame ();
-        myGame.createGame ();*/
         setScreen (new MainMenuScreen ());
     }
 
@@ -42,13 +40,15 @@ public class JavaTroubleApplication extends Game {
         if (currentState != currentScreen.getState ()) {
             currentState = currentScreen.getState ();
             switch (TroubleApplicationState.getState (currentState)) {
-            case E_MAIN_MENU:
-                setScreen (new MainMenuScreen ());
-                break;
             case E_NEW_GAME:
                 currentState = TroubleApplicationState.GAME;
             case E_GAME:
                 setScreen (new GameScreen ());
+                break;
+            case E_SETTINGS:
+            case E_MAIN_MENU:
+            default:
+                setScreen (new MainMenuScreen ());
                 break;
             }
         }

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.badlogic.gdx.graphics.Color;
+import com.innovail.trouble.utils.GameMesh;
 
 /**
  * 
@@ -25,9 +26,10 @@ public class GameSettings {
     
     private Map<Integer, Color> _PlayerColors;
     
-    private Color _SpotDefaultColor;
+    private GameMesh _SpotMesh;
     
     /* END SETTINGS */
+    
     
     private static GameSettings instance;
 
@@ -117,13 +119,13 @@ public class GameSettings {
         _PlayerColors.put (new Integer(player), color);
     }
     
-    public Color getSpotDefaultColor ()
+    public GameMesh getSpotMesh ()
     {
-        return _SpotDefaultColor;
+        return _SpotMesh;
     }
     
-    public void setSpotDefaultColor (Color color)
+    public void setSpotMesh (String path, Color color, boolean isInternal)
     {
-        _SpotDefaultColor = color;
+        _SpotMesh = new GameMesh (path, color, isInternal);
     }
 }

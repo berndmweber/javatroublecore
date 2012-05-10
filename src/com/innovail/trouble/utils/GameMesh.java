@@ -1,5 +1,5 @@
 /**
- * @file:   com.innovail.trouble.utils - MenuMesh.java
+ * @file:   com.innovail.trouble.utils - GameMesh.java
  * @date:   May 8, 2012
  * @author: bweber
  */
@@ -16,35 +16,35 @@ import com.badlogic.gdx.graphics.g3d.loaders.obj.ObjLoader;
 /**
  * 
  */
-public class MenuMesh {
+public class GameMesh {
     private final boolean _isInternal;
     private final Color _color;
     private final String _path;
     
     private Mesh _mesh;
 
-    public MenuMesh (String path, Color color, boolean isInternal)
+    public GameMesh (String path, Color color, boolean isInternal)
     {
         _path = path;
         _color = color;
         _isInternal = isInternal;
     }
     
-    public MenuMesh (String path, Color color)
+    public GameMesh (String path, Color color)
     {
         _path = path;
         _color = color;
         _isInternal = true;
     }
 
-    public MenuMesh (String path, boolean isInternal)
+    public GameMesh (String path, boolean isInternal)
     {
         _path = path;
         _color = Color.WHITE;
         _isInternal = isInternal;
     }
 
-    public MenuMesh (String path)
+    public GameMesh (String path)
     {
         _path = path;
         _color = Color.WHITE;

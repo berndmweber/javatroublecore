@@ -26,7 +26,7 @@ import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.TroubleApplicationState;
 import com.innovail.trouble.utils.BackgroundImage;
 import com.innovail.trouble.utils.MenuEntryMesh;
-import com.innovail.trouble.utils.MenuMesh;
+import com.innovail.trouble.utils.GameMesh;
 
 /**
  * 
@@ -43,9 +43,9 @@ public class MainMenuScreen implements TroubleScreen {
     private final SpriteBatch _spriteBatch;
     private final BackgroundImage _backgroundImage;
 
-    private MenuMesh _logo;
-    private HashMap <String, MenuMesh> _menuEntriesMap;
-    private Collection <MenuMesh> _menuEntries;
+    private GameMesh _logo;
+    private HashMap <String, GameMesh> _menuEntriesMap;
+    private Collection <GameMesh> _menuEntries;
     private float[] _yRotationAngle;
     private int[] _yRotationDirection;
     private final float _RotationMaxAngle = 2.0f;
@@ -80,7 +80,7 @@ public class MainMenuScreen implements TroubleScreen {
             _yRotationAngle[i] *= rand.nextBoolean () ? 1.0f : -1.0f;
             _yRotationDirection[i] = rand.nextBoolean () ? 1 : -1;
         }
-        Iterator <MenuMesh> currentMesh = _menuEntries.iterator ();
+        Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
         int j = 0;
         while (currentMesh.hasNext ()) {
             ((MenuEntryMesh)currentMesh.next ()).setTouchRectangle (325, 290 + (112 * j++), 630, 92);
@@ -121,15 +121,12 @@ public class MainMenuScreen implements TroubleScreen {
         setProjectionAndCamera (gl);
         setLighting (gl);
 
-        //gl.glEnable (GL10.GL_TEXTURE_2D);
-        //gl.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_LINE);
         gl.glMatrixMode (GL10.GL_MODELVIEW);
         gl.glShadeModel (GL10.GL_SMOOTH);
 
         renderLogo (gl);
         renderMenu (gl);
 
-        //gl.glDisable (GL10.GL_TEXTURE_2D);
         gl.glDisable (GL10.GL_CULL_FACE);
         gl.glDisable (GL10.GL_DEPTH_TEST);
     }
@@ -210,7 +207,7 @@ public class MainMenuScreen implements TroubleScreen {
     
     private void renderMenu (GL10 gl)
     {
-        Iterator <MenuMesh> currentMesh = _menuEntries.iterator ();
+        Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
         float yLocation = 0.0f;
         int i = 0;
         while (currentMesh.hasNext ()) {
@@ -308,7 +305,7 @@ public class MainMenuScreen implements TroubleScreen {
              */
             @Override
             public boolean touchDown (int x, int y, int pointer, int button) {
-                Iterator <MenuMesh> currentMesh = _menuEntries.iterator ();
+                Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
                 int j = 0;
                 while (currentMesh.hasNext ()) {
                     MenuEntryMesh currentEntry = (MenuEntryMesh)currentMesh.next ();

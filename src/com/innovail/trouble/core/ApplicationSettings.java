@@ -13,7 +13,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.innovail.trouble.utils.BackgroundImage;
 import com.innovail.trouble.utils.GameFont;
 import com.innovail.trouble.utils.MenuEntryMesh;
-import com.innovail.trouble.utils.MenuMesh;
+import com.innovail.trouble.utils.GameMesh;
 
 /**
  * 
@@ -26,9 +26,9 @@ public class ApplicationSettings {
     
     private String _CopyRightNotice;
     
-    private MenuMesh _Logo;
+    private GameMesh _Logo;
     
-    private Map<String, Map<String, MenuMesh>> _MenuEntries;
+    private Map<String, Map<String, GameMesh>> _MenuEntries;
     /* END SETTINGS */
     
     private static ApplicationSettings instance;
@@ -85,12 +85,12 @@ public class ApplicationSettings {
                                boolean isInternal)
     {
         if (_MenuEntries == null) {
-            _MenuEntries = new HashMap <String, Map <String, MenuMesh>> ();
+            _MenuEntries = new HashMap <String, Map <String, GameMesh>> ();
         }
         if (!_MenuEntries.containsKey (appPart)) {
-            _MenuEntries.put (appPart, new HashMap <String, MenuMesh> ());
+            _MenuEntries.put (appPart, new HashMap <String, GameMesh> ());
         }
-        HashMap <String, MenuMesh> currentMap = (HashMap <String, MenuMesh>) _MenuEntries.get (appPart);
+        HashMap <String, GameMesh> currentMap = (HashMap <String, GameMesh>) _MenuEntries.get (appPart);
         currentMap.put (entryName, new MenuEntryMesh (entryName, path, isInternal));
     }
 
@@ -98,20 +98,20 @@ public class ApplicationSettings {
                                Color color, boolean isInternal)
     {
         if (_MenuEntries == null) {
-            _MenuEntries = new HashMap <String, Map <String, MenuMesh>> ();
+            _MenuEntries = new HashMap <String, Map <String, GameMesh>> ();
         }
         if (!_MenuEntries.containsKey (appPart)) {
-            _MenuEntries.put (appPart, new HashMap <String, MenuMesh> ());
+            _MenuEntries.put (appPart, new HashMap <String, GameMesh> ());
         }
-        HashMap <String, MenuMesh> currentMap = (HashMap <String, MenuMesh>) _MenuEntries.get (appPart);
+        HashMap <String, GameMesh> currentMap = (HashMap <String, GameMesh>) _MenuEntries.get (appPart);
         currentMap.put (entryName, new MenuEntryMesh (entryName, path, color, isInternal));
     }
     
-    public MenuMesh getMenuEntry (String appPart, String name)
+    public GameMesh getMenuEntry (String appPart, String name)
     {
         if ((_MenuEntries != null) && !_MenuEntries.isEmpty ()) {
             if (_MenuEntries.containsKey (appPart)) {
-                 Map <String, MenuMesh> currentMap = _MenuEntries.get (appPart);
+                 Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
                  if ((currentMap != null) && !currentMap.isEmpty ()) {
                      if (currentMap.containsKey (name)) {
                          return currentMap.get (name);
@@ -122,11 +122,11 @@ public class ApplicationSettings {
         return null;
     }
 
-    public HashMap <String, MenuMesh> getMenuEntries (String appPart)
+    public HashMap <String, GameMesh> getMenuEntries (String appPart)
     {
         if ((_MenuEntries != null) && !_MenuEntries.isEmpty ()) {
             if (_MenuEntries.containsKey (appPart)) {
-                return (HashMap <String, MenuMesh>) _MenuEntries.get (appPart);
+                return (HashMap <String, GameMesh>) _MenuEntries.get (appPart);
             }
         }
         return null;
@@ -134,15 +134,15 @@ public class ApplicationSettings {
 
     public void setLogo (String path, Color color, boolean isInternal)
     {
-        _Logo = new MenuMesh (path, color, isInternal);
+        _Logo = new GameMesh (path, color, isInternal);
     }
     
     public void setLogo (String path, boolean isInternal)
     {
-        _Logo = new MenuMesh (path, isInternal);
+        _Logo = new GameMesh (path, isInternal);
     }
     
-    public MenuMesh getLogo ()
+    public GameMesh getLogo ()
     {
         return _Logo;
     }

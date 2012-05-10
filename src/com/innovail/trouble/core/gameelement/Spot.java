@@ -6,6 +6,7 @@
 package com.innovail.trouble.core.gameelement;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector3;
 import com.innovail.trouble.core.GameSettings;
 
 /**
@@ -21,6 +22,7 @@ public class Spot {
     private Spot _nextSpot;
     private Spot _nextSpotWhenTurnOut;
     private Color _color;
+    private Vector3 _position;
     
     public enum Attributes {
         SPOT_IS_NORMAL,
@@ -32,7 +34,7 @@ public class Spot {
 
     public Spot ()
     {
-        _color = GameSettings.getInstance ().getSpotDefaultColor ();
+        _color = GameSettings.getInstance ().getSpotMesh ().getColor ();
     }
     
     public static Spot createSpot (Attributes attribute)
@@ -172,5 +174,25 @@ public class Spot {
             return _color;
         }
         return _owner.getColor ();
+    }
+    
+    public void setPosition (float x, float y, float z)
+    {
+        if (_position == null) {
+            _position = new Vector3 ();
+        }
+        _position.x = x;
+        _position.y = y;
+        _position.z = z;
+    }
+    
+    public void setPosition (Vector3 position)
+    {
+        _position = position;
+    }
+    
+    public Vector3 getPosition ()
+    {
+        return _position;
     }
 }
