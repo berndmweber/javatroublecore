@@ -180,7 +180,7 @@ public class GameScreen implements TroubleScreen {
                                  currentSpot.getPosition ().y,
                                  currentSpot.getPosition ().z);
                 
-                Color currentColor = spotMesh.getColor ();
+                Color currentColor = currentSpot.getColor ();
                 gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
                 //gl.glMaterialfv (frontAndOrBack, GL10.GL_SPECULAR, matSpecular, 0);
                 //gl.glMaterialfv (frontAndOrBack, GL10.GL_SHININESS, matShininess, 0);

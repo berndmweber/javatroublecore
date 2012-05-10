@@ -170,7 +170,7 @@ public class Spot {
     
     public Color getColor ()
     {
-        if (_owner == null) {
+        if ((_owner == null) || (_isTurnOut)) {
             return _color;
         }
         return _owner.getColor ();
