@@ -171,6 +171,11 @@ public class SettingLoader {
             }
         }
         spots = null;
+        Element tokens = gameSettings.getChildByName ("tokens");
+        if (tokens != null) {
+            GameSettings.getInstance ().setTokenMesh (tokens.getAttribute ("file"), tokens.getBoolean ("is_internal"));
+        }
+        tokens = null;
     }
     
 }

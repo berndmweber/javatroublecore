@@ -23,7 +23,9 @@ import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.GameSettings;
 import com.innovail.trouble.core.TroubleApplicationState;
 import com.innovail.trouble.core.TroubleGame;
+import com.innovail.trouble.core.gameelement.Player;
 import com.innovail.trouble.core.gameelement.Spot;
+import com.innovail.trouble.core.gameelement.Token;
 import com.innovail.trouble.utils.BackgroundImage;
 import com.innovail.trouble.utils.GameMesh;
 
@@ -122,7 +124,7 @@ public class GameScreen implements TroubleScreen {
         gl.glShadeModel (GL10.GL_SMOOTH);
 
         renderField (gl);
-        //renderMenu (gl);
+        renderTokens (gl);
 
         //gl.glDisable (GL10.GL_TEXTURE_2D);
         gl.glDisable (GL10.GL_CULL_FACE);
@@ -186,6 +188,34 @@ public class GameScreen implements TroubleScreen {
                 //gl.glMaterialfv (frontAndOrBack, GL10.GL_SHININESS, matShininess, 0);
                 spotMesh.getMesh ().render (GL10.GL_TRIANGLES);
                 gl.glPopMatrix ();
+            }
+        }
+    }
+
+    private void renderTokens (GL10 gl)
+    {
+        if (_myGame != null) {
+            GameMesh tokenMesh = GameSettings.getInstance ().getTokenMesh ();
+            Vector <Player> players = _myGame.getPlayers ();
+            Iterator <Player> player = players.iterator ();
+            int i = 0;
+            while (player.hasNext ()) {
+                Player currentPlayer = player.next ();
+                Vector <Token> tokens = currentPlayer.getTokens ();
+                Iterator <Token> token = tokens.iterator ();
+                while (token.hasNext ()) {
+                    Token currentToken = token.next ();
+                    Spot currentSpot = currentToken.getPosition ();
+                    gl.glPushMatrix ();
+                    gl.glTranslatef (currentSpot.getPosition ().x,
+                                     currentSpot.getPosition ().y,
+                                     currentSpot.getPosition ().z);
+                    gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
+                    Color currentColor = currentPlayer.getColor ();
+                    gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+                    tokenMesh.getMesh ().render (GL10.GL_TRIANGLES);
+                    gl.glPopMatrix ();
+                }
             }
         }
     }

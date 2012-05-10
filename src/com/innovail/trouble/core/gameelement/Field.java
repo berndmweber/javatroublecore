@@ -126,6 +126,7 @@ public class Field {
                         homeSpot[j-1].setNextSpot (homeSpot[j]);
                     }
                     homeSpot[j].setPosition (_spotPosition[positionIndex++]);
+                    players.get (i).getToken (j).setPosition (homeSpot[j]);
                     instance._spots.add (homeSpot[j]);
                 }
                 Spot startSpot = Spot.createSpot (Attributes.SPOT_IS_START, players.get (i));

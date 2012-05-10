@@ -68,6 +68,13 @@ public class Player {
         }
         return null;
     }
+    
+    public void createTokens (int number)
+    {
+        for (int i = 0; i < number; i++) {
+            _tokens.add (new Token (this));
+        }
+    }
 
     public void makeActive ()
     {

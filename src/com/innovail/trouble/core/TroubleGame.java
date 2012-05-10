@@ -29,6 +29,7 @@ public class TroubleGame {
         }
         for (int i = 0; i < numberOfPlayers; i++) {
             _players.add (new Player (i));
+            _players.get (i).createTokens (GameSettings.getInstance ().getNumberOfTokensPerPlayer(numberOfPlayers));
         }
         _gameField = Field.createField (_players);
     }

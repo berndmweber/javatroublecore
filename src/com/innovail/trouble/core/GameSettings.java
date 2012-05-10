@@ -28,6 +28,8 @@ public class GameSettings {
     
     private GameMesh _SpotMesh;
     
+    private GameMesh _TokenMesh;
+    
     /* END SETTINGS */
     
     
@@ -127,5 +129,15 @@ public class GameSettings {
     public void setSpotMesh (String path, Color color, boolean isInternal)
     {
         _SpotMesh = new GameMesh (path, color, isInternal);
+    }
+    
+    public GameMesh getTokenMesh ()
+    {
+        return _TokenMesh;
+    }
+    
+    public void setTokenMesh (String path, boolean isInternal)
+    {
+        _TokenMesh = new GameMesh (path, isInternal);
     }
 }
