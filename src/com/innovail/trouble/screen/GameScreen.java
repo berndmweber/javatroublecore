@@ -179,7 +179,6 @@ public class GameScreen implements TroubleScreen {
                 gl.glTranslatef (currentSpot.getPosition ().x,
                                  currentSpot.getPosition ().y,
                                  currentSpot.getPosition ().z);
-                //gl.glRotatef (30.0f, 1.0f, 0.0f, 0.0f);
                 
                 Color currentColor = spotMesh.getColor ();
                 gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
@@ -187,8 +186,6 @@ public class GameScreen implements TroubleScreen {
                 //gl.glMaterialfv (frontAndOrBack, GL10.GL_SHININESS, matShininess, 0);
                 spotMesh.getMesh ().render (GL10.GL_TRIANGLES);
                 gl.glPopMatrix ();
-                //if (i++ == 4) break;
-                //if (i < )
             }
         }
     }

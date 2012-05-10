@@ -106,11 +106,13 @@ public class Field {
     {
         if (instance == null) {
             instance = new Field ();
+            /* We need to do this, but only once, since the OpenGl coordinate system has
+             * the (0,0) point in the center. Our coordinates start on the top left.
+             */
+            normalizeVectors (new Vector3 (-5, 0, -5));
         }
         
         instance._spots = new Vector<Spot> ();
-        /* We need to do this since the OpenGl coordinate system has the (0,0) point in the center */
-        normalizeVectors (new Vector3 (-5, 0, -5));
 
         int positionIndex = 0;
         if ((players != null) && (players.size () > 0)) {
