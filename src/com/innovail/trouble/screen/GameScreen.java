@@ -16,7 +16,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
@@ -40,7 +39,7 @@ public class GameScreen implements TroubleScreen {
     private String _currentState = TroubleApplicationState.GAME;
     
     private boolean _filling = true;
-    private float[]  _cameraPos = {0, 8, 6};
+    private float[]  _cameraPos = {0, 8, 8};
     private float[]  _cameraDir = {0, -6, -2};
 
     private final SpriteBatch _spriteBatch;
@@ -49,8 +48,6 @@ public class GameScreen implements TroubleScreen {
     private final GameMesh _spotMesh;
     private final GameMesh _diceMesh;
     private final GameMesh _tokenMesh;
-
-    private Texture _diceTexture;
 
     private Matrix4 _viewMatrix;
     private Matrix4 _transformMatrix;
@@ -72,8 +69,6 @@ public class GameScreen implements TroubleScreen {
         _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (_AppPartName);
         _backgroundImage.createTexture ().setFilter (TextureFilter.Linear, TextureFilter.Linear);
         _diceMesh = GameSettings.getInstance ().getDiceMesh ();
-        _diceTexture = new Texture(Gdx.files.internal("dice_face_all.png"), Format.RGB565, true);
-        _diceTexture.setFilter(TextureFilter.MipMap, TextureFilter.Linear);
 
         _viewMatrix = new Matrix4 ();
         _transformMatrix = new Matrix4 ();
@@ -190,10 +185,13 @@ public class GameScreen implements TroubleScreen {
 
     private void renderDice (GL10 gl)
     {
-        _diceTexture.bind();
+        _diceMesh.getTexture ().bind ();
         gl.glPushMatrix ();
         gl.glTranslatef (0.0f, 0.0f, 7.0f);
-        //gl.glScalef (0.5f, 0.5f, 0.5f);
+        if (_myGame != null) {
+            float [] angle = _myGame.getDice ().getFaceAngle (0);
+            gl.glRotatef (angle[0], angle[1], angle[2], angle[3]);
+        }
         
         Color currentColor = Color.WHITE;
         gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);

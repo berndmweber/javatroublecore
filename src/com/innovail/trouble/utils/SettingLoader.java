@@ -178,7 +178,11 @@ public class SettingLoader {
         tokens = null;
         Element dice = gameSettings.getChildByName ("dice");
         if (dice != null) {
-            GameSettings.getInstance ().setDiceMesh (dice.getAttribute ("file"), dice.getBoolean ("is_internal"));
+            GameSettings.getInstance ().setDiceMesh (dice.getAttribute ("file"),
+                                                     dice.getBoolean ("is_internal"),
+                                                     dice.getAttribute ("texture_file"),
+                                                     dice.getAttribute ("texture_color_format"));
+            GameSettings.getInstance ().setNumberOfDice (dice.getInt ("number"));
         }
         tokens = null;
     }

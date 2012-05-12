@@ -7,13 +7,21 @@ package com.innovail.trouble.core.gameelement;
 
 import java.util.Vector;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 
 /**
  * 
  */
 public class Dice {
+    private static final String TAG = "Dice";
     public static final int[] faceValues = {1, 2, 3, 4, 5, 6};
+    public static final float[][] faceAngles = {{-90.0f, 1.0f, 0.0f, 0.0f},
+                                                   { 90.0f, 0.0f, 0.0f, 1.0f},
+                                                   {  0.0f, 0.0f, 0.0f, 0.0f},
+                                                   {180.0f, 1.0f, 0.0f, 0.0f},
+                                                   {-90.0f, 0.0f, 0.0f, 1.0f},
+                                                   { 90.0f, 1.0f, 0.0f, 0.0f}};
     
     private Vector <Integer> _currentFace;
     private int _numberOfDice;
@@ -39,6 +47,17 @@ public class Dice {
         }
     }
     
+    public float[] getFaceAngle (int die)
+    {
+        /* We need to subtract one since the die faces start at 1 but the array starts at 0. */
+        return faceAngles[_currentFace.get (die) - 1];
+    }
+    
+    public int getNumberOfDice ()
+    {
+        return _numberOfDice;
+    }
+    
     public int[] roll ()
     {
         int [] results = roll (_numberOfDice);
@@ -54,6 +73,7 @@ public class Dice {
             int[] results = new int [numberOfDice];
             for (int roll = 0; roll < numberOfDice; roll++) {
                 results[roll] = MathUtils.random (1, 6);
+                Gdx.app.log (TAG, "Die " + roll + " rolled: " + results[roll]);
             }
             return results;
         }

@@ -7,6 +7,7 @@ package com.innovail.trouble.core;
 
 import java.util.Vector;
 
+import com.innovail.trouble.core.gameelement.Dice;
 import com.innovail.trouble.core.gameelement.Field;
 import com.innovail.trouble.core.gameelement.Player;
 
@@ -16,6 +17,7 @@ import com.innovail.trouble.core.gameelement.Player;
 public class TroubleGame {
     private Vector<Player> _players;
     private Field _gameField;
+    private Dice _dice;
     
     public TroubleGame ()
     {}
@@ -32,6 +34,8 @@ public class TroubleGame {
             _players.get (i).createTokens (GameSettings.getInstance ().getNumberOfTokensPerPlayer(numberOfPlayers));
         }
         _gameField = Field.createField (_players);
+        _dice = new Dice (GameSettings.getInstance ().getNumberOfDice ());
+        _dice.roll ();
     }
     
     public Field getField ()
@@ -42,6 +46,11 @@ public class TroubleGame {
     public Vector<Player> getPlayers ()
     {
         return _players;
+    }
+    
+    public Dice getDice ()
+    {
+        return _dice;
     }
 
 }

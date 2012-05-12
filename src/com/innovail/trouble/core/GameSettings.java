@@ -20,6 +20,8 @@ public class GameSettings {
     
     private int _MinimumNumberOfPlayers = 0;
     
+    private int _NumberOfDice = 0;
+    
     private Map<Integer, Integer> _NumberOfTokensPerPlayer;
     
     private Map<Integer, Integer> _NumberOfNormalSpots;
@@ -148,8 +150,19 @@ public class GameSettings {
         return _DiceMesh;
     }
     
-    public void setDiceMesh (String path, boolean isInternal)
+    public void setDiceMesh (String path, boolean isInternal,
+                              String texturePath, String textureColorFormat)
     {
-        _DiceMesh = new GameMesh (path, isInternal);
+        _DiceMesh = new GameMesh (path, isInternal, texturePath, textureColorFormat);
+    }
+    
+    public int getNumberOfDice ()
+    {
+        return _NumberOfDice;
+    }
+    
+    public void setNumberOfDice (int dice)
+    {
+        _NumberOfDice = dice;
     }
 }
