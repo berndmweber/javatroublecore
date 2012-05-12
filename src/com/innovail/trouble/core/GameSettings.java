@@ -30,6 +30,8 @@ public class GameSettings {
     
     private GameMesh _TokenMesh;
     
+    private GameMesh _DiceMesh;
+    
     /* END SETTINGS */
     
     
@@ -139,5 +141,15 @@ public class GameSettings {
     public void setTokenMesh (String path, boolean isInternal)
     {
         _TokenMesh = new GameMesh (path, isInternal);
+    }
+
+    public GameMesh getDiceMesh ()
+    {
+        return _DiceMesh;
+    }
+    
+    public void setDiceMesh (String path, boolean isInternal)
+    {
+        _DiceMesh = new GameMesh (path, isInternal);
     }
 }

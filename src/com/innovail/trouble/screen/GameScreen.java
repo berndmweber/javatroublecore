@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
@@ -39,17 +40,27 @@ public class GameScreen implements TroubleScreen {
     private String _currentState = TroubleApplicationState.GAME;
     
     private boolean _filling = true;
-    private float[]  _cameraPos = {0, 6, 4};
-    private float[]  _cameraDir = {0, -6, -1};
+    private float[]  _cameraPos = {0, 8, 6};
+    private float[]  _cameraDir = {0, -6, -2};
 
     private final SpriteBatch _spriteBatch;
     private final BackgroundImage _backgroundImage;
+    
+    private final GameMesh _spotMesh;
+    private final GameMesh _diceMesh;
+    private final GameMesh _tokenMesh;
+
+    private Texture _diceTexture;
 
     private Matrix4 _viewMatrix;
     private Matrix4 _transformMatrix;
     private Camera _camera;
 
     private TroubleGame _myGame;
+    private Vector <Spot> _spots;
+    private Iterator <Spot> _spot;
+    private Vector <Player> _players;
+    private Iterator <Player> _player;
 
     public GameScreen ()
     {
@@ -60,16 +71,24 @@ public class GameScreen implements TroubleScreen {
         _spriteBatch = new SpriteBatch ();
         _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (_AppPartName);
         _backgroundImage.createTexture ().setFilter (TextureFilter.Linear, TextureFilter.Linear);
+        _diceMesh = GameSettings.getInstance ().getDiceMesh ();
+        _diceTexture = new Texture(Gdx.files.internal("dice_face_all.png"), Format.RGB565, true);
+        _diceTexture.setFilter(TextureFilter.MipMap, TextureFilter.Linear);
 
         _viewMatrix = new Matrix4 ();
         _transformMatrix = new Matrix4 ();
         
         float aspectRatio = (float) Gdx.graphics.getWidth () / (float) Gdx.graphics.getHeight ();
-        _camera = new PerspectiveCamera (100, 2f * aspectRatio, 2f);
+        _camera = new PerspectiveCamera (67, 2f * aspectRatio, 2f);
         
         _myGame = new TroubleGame ();
         _myGame.createGame ();
-    }
+
+        _spotMesh = GameSettings.getInstance ().getSpotMesh ();
+        _spots = _myGame.getField ().getSpots ();
+        _tokenMesh = GameSettings.getInstance ().getTokenMesh ();
+        _players = _myGame.getPlayers ();
+}
 
     /* (non-Javadoc)
      * @see com.badlogic.gdx.Screen#dispose()
@@ -119,14 +138,16 @@ public class GameScreen implements TroubleScreen {
         setProjectionAndCamera (gl);
         setLighting (gl);
         
-        //gl.glEnable (GL10.GL_TEXTURE_2D);
         gl.glMatrixMode (GL10.GL_MODELVIEW);
         gl.glShadeModel (GL10.GL_SMOOTH);
 
         renderField (gl);
         renderTokens (gl);
 
-        //gl.glDisable (GL10.GL_TEXTURE_2D);
+        gl.glEnable (GL10.GL_TEXTURE_2D);
+        renderDice (gl);
+        gl.glDisable (GL10.GL_TEXTURE_2D);
+        
         gl.glDisable (GL10.GL_CULL_FACE);
         gl.glDisable (GL10.GL_DEPTH_TEST);
     }
@@ -167,16 +188,28 @@ public class GameScreen implements TroubleScreen {
         gl.glEnable (GL10.GL_BLEND);
     }
 
+    private void renderDice (GL10 gl)
+    {
+        _diceTexture.bind();
+        gl.glPushMatrix ();
+        gl.glTranslatef (0.0f, 0.0f, 7.0f);
+        //gl.glScalef (0.5f, 0.5f, 0.5f);
+        
+        Color currentColor = Color.WHITE;
+        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+        //gl.glMaterialfv (frontAndOrBack, GL10.GL_SPECULAR, matSpecular, 0);
+        //gl.glMaterialfv (frontAndOrBack, GL10.GL_SHININESS, matShininess, 0);
+        _diceMesh.getMesh ().render (GL10.GL_TRIANGLES);
+        gl.glPopMatrix ();
+    }
+
     private void renderField (GL10 gl)
     {
         if (_myGame != null) {
-            int frontAndOrBack = GL10.GL_FRONT;
-            GameMesh spotMesh = GameSettings.getInstance ().getSpotMesh ();
-            Vector <Spot> spots = _myGame.getField ().getSpots ();
-            Iterator <Spot> spot = spots.iterator ();
-            int i = 0;
-            while (spot.hasNext ()) {
-                Spot currentSpot = spot.next ();
+            //int frontAndOrBack = GL10.GL_FRONT;
+            _spot = _spots.iterator ();
+            while (_spot.hasNext ()) {
+                Spot currentSpot = _spot.next ();
                 gl.glPushMatrix ();
                 gl.glTranslatef (currentSpot.getPosition ().x,
                                  currentSpot.getPosition ().y,
@@ -186,7 +219,7 @@ public class GameScreen implements TroubleScreen {
                 gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
                 //gl.glMaterialfv (frontAndOrBack, GL10.GL_SPECULAR, matSpecular, 0);
                 //gl.glMaterialfv (frontAndOrBack, GL10.GL_SHININESS, matShininess, 0);
-                spotMesh.getMesh ().render (GL10.GL_TRIANGLES);
+                _spotMesh.getMesh ().render (GL10.GL_TRIANGLES);
                 gl.glPopMatrix ();
             }
         }
@@ -195,12 +228,9 @@ public class GameScreen implements TroubleScreen {
     private void renderTokens (GL10 gl)
     {
         if (_myGame != null) {
-            GameMesh tokenMesh = GameSettings.getInstance ().getTokenMesh ();
-            Vector <Player> players = _myGame.getPlayers ();
-            Iterator <Player> player = players.iterator ();
-            int i = 0;
-            while (player.hasNext ()) {
-                Player currentPlayer = player.next ();
+            _player = _players.iterator ();
+            while (_player.hasNext ()) {
+                Player currentPlayer = _player.next ();
                 Vector <Token> tokens = currentPlayer.getTokens ();
                 Iterator <Token> token = tokens.iterator ();
                 while (token.hasNext ()) {
@@ -213,7 +243,7 @@ public class GameScreen implements TroubleScreen {
                     gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
                     Color currentColor = currentPlayer.getColor ();
                     gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-                    tokenMesh.getMesh ().render (GL10.GL_TRIANGLES);
+                    _tokenMesh.getMesh ().render (GL10.GL_TRIANGLES);
                     gl.glPopMatrix ();
                 }
             }

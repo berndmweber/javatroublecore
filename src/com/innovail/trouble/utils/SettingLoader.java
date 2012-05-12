@@ -176,6 +176,11 @@ public class SettingLoader {
             GameSettings.getInstance ().setTokenMesh (tokens.getAttribute ("file"), tokens.getBoolean ("is_internal"));
         }
         tokens = null;
+        Element dice = gameSettings.getChildByName ("dice");
+        if (dice != null) {
+            GameSettings.getInstance ().setDiceMesh (dice.getAttribute ("file"), dice.getBoolean ("is_internal"));
+        }
+        tokens = null;
     }
     
 }

@@ -78,7 +78,7 @@ public class GameMesh {
                         objFile = Gdx.files.external (_path);
                     }
                     InputStream in = objFile.read ();
-                    _mesh = ObjLoader.loadObj (in, false);
+                    _mesh = ObjLoader.loadObj (in, true);
                     in.close ();
                 } catch (Exception ex) {
                     ex.printStackTrace ();
