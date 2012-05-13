@@ -18,7 +18,9 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.collision.Ray;
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.GameSettings;
 import com.innovail.trouble.core.TroubleApplicationState;
@@ -28,6 +30,7 @@ import com.innovail.trouble.core.gameelement.Spot;
 import com.innovail.trouble.core.gameelement.Token;
 import com.innovail.trouble.utils.BackgroundImage;
 import com.innovail.trouble.utils.GameMesh;
+import com.innovail.trouble.utils.MenuEntryMesh;
 
 /**
  * 
@@ -36,6 +39,8 @@ public class GameScreen implements TroubleScreen {
     private static final String TAG = "GameScreen";
     private static final String _AppPartName = TroubleApplicationState.GAME;
     
+    private final boolean _DEBUG = false;
+
     private String _currentState = TroubleApplicationState.GAME;
     
     private boolean _filling = true;
@@ -52,6 +57,7 @@ public class GameScreen implements TroubleScreen {
     private Matrix4 _viewMatrix;
     private Matrix4 _transformMatrix;
     private Camera _camera;
+    private Ray _touchRay;
 
     private TroubleGame _myGame;
     private Vector <Spot> _spots;
@@ -185,12 +191,18 @@ public class GameScreen implements TroubleScreen {
 
     private void renderDice (GL10 gl)
     {
+        Matrix4 transform = new Matrix4();
+        Matrix4 tmp = new Matrix4();
+
         _diceMesh.getTexture ().bind ();
         gl.glPushMatrix ();
         gl.glTranslatef (0.0f, 0.0f, 7.0f);
+        transform.setToTranslation (0.0f, 0.0f, 7.0f);
         if (_myGame != null) {
             float [] angle = _myGame.getDice ().getFaceAngle (0);
             gl.glRotatef (angle[0], angle[1], angle[2], angle[3]);
+            tmp.setToRotation (angle[1], angle[2], angle[3], angle[0]);
+            transform.mul(tmp);
         }
         
         Color currentColor = Color.WHITE;
@@ -199,6 +211,8 @@ public class GameScreen implements TroubleScreen {
         //gl.glMaterialfv (frontAndOrBack, GL10.GL_SHININESS, matShininess, 0);
         _diceMesh.getMesh ().render (GL10.GL_TRIANGLES);
         gl.glPopMatrix ();
+        
+        _diceMesh.transformBoundingBox (transform);
     }
 
     private void renderField (GL10 gl)
@@ -392,7 +406,29 @@ public class GameScreen implements TroubleScreen {
              */
             @Override
             public boolean touchDown (int x, int y, int pointer, int button) {
-                _currentState = TroubleApplicationState.MAIN_MENU;
+                _touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
+                if (_DEBUG) {
+                    Gdx.app.log (TAG, "Touch position - x: " + x + " - y: " + y);
+                    Gdx.app.log (TAG, "Touch ray - " + _touchRay.toString ());
+                }
+                //while (currentMesh.hasNext ()) {
+                    //MenuEntryMesh currentEntry = (MenuEntryMesh)currentMesh.next ();
+                    if (_touchRay != null) {
+                        if (_DEBUG) {
+                            Gdx.app.log (TAG, "currentEntry BB - " + _diceMesh.getBoundingBox ().toString ());
+                        }
+                        if (Intersector.intersectRayBoundsFast (_touchRay, _diceMesh.getBoundingBox ())) {
+                            int[] result = _myGame.getDice ().roll ();
+                            Gdx.app.log (TAG, "Die touched -> " + result[0]);
+                            //Gdx.app.log (TAG, "Mesh " + j + " touched -> " + _currentState);
+                            //break;
+                        } else {
+                            _currentState = TroubleApplicationState.MAIN_MENU;
+                        }
+                    }
+                    //j++;
+                //}
+                //_currentState = TroubleApplicationState.MAIN_MENU;
                 return false;
             }
 
