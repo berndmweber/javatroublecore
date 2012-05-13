@@ -21,7 +21,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.collision.Ray;
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.TroubleApplicationState;
 import com.innovail.trouble.utils.BackgroundImage;
@@ -34,6 +36,8 @@ import com.innovail.trouble.utils.GameMesh;
 public class MainMenuScreen implements TroubleScreen {
     private static final String TAG = "MainMenuScreen";
     private static final String _AppPartName = TroubleApplicationState.MAIN_MENU;
+    
+    private final boolean _DEBUG = false;
 
     private String _currentState = TroubleApplicationState.MAIN_MENU;
 
@@ -79,11 +83,6 @@ public class MainMenuScreen implements TroubleScreen {
             _yRotationAngle[i] = rand.nextFloat ();
             _yRotationAngle[i] *= rand.nextBoolean () ? 1.0f : -1.0f;
             _yRotationDirection[i] = rand.nextBoolean () ? 1 : -1;
-        }
-        Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
-        int j = 0;
-        while (currentMesh.hasNext ()) {
-            ((MenuEntryMesh)currentMesh.next ()).setTouchRectangle (325, 290 + (112 * j++), 630, 92);
         }
         
         _viewMatrix = new Matrix4 ();
@@ -211,13 +210,32 @@ public class MainMenuScreen implements TroubleScreen {
         float yLocation = 0.0f;
         int i = 0;
         while (currentMesh.hasNext ()) {
+            GameMesh thisMesh = currentMesh.next ();
             gl.glPushMatrix ();
             gl.glTranslatef (0.0f, yLocation, 0.0f);
-            yLocation -= 0.7f;
             gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
             gl.glRotatef (_yRotationAngle[i], 0.0f, 1.0f, 0.0f);
-            currentMesh.next ().getMesh ().render (GL10.GL_TRIANGLES);
+            thisMesh.getMesh ().render (GL10.GL_TRIANGLES);
             gl.glPopMatrix ();
+            
+            Matrix4 transform = new Matrix4();
+            Matrix4 tmp = new Matrix4();
+            transform.setToTranslation (0.0f, yLocation, 0.0f);
+            tmp.setToRotation (1.0f, 0.0f, 0.0f, 90.0f);
+            transform.mul(tmp);
+            tmp.setToRotation (0.0f, 1.0f, 0.0f, _yRotationAngle[i]);
+            transform.mul(tmp);
+            thisMesh.transformBoundingBox (transform);
+            
+            if (_DEBUG) {
+                Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_LINE);
+                gl.glPushMatrix ();
+                thisMesh.getBBMesh ().render (GL10.GL_TRIANGLES);
+                gl.glPopMatrix ();
+                Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
+            }
+            
+            yLocation -= 0.7f;
             
             if (_rotationDelta >= _RotationMaxDelta) {
                 if (_yRotationDirection[i] == 1) {
@@ -307,12 +325,22 @@ public class MainMenuScreen implements TroubleScreen {
             public boolean touchDown (int x, int y, int pointer, int button) {
                 Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
                 int j = 0;
+                Ray touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
+                if (_DEBUG) {
+                    Gdx.app.log (TAG, "Touch position - x: " + x + " - y: " + y);
+                    Gdx.app.log (TAG, "Touch ray - " + touchRay.toString ());
+                }
                 while (currentMesh.hasNext ()) {
                     MenuEntryMesh currentEntry = (MenuEntryMesh)currentMesh.next ();
-                    if (currentEntry.isTouched (x, y)) {
-                        _currentState = currentEntry.getName ();
-                        Gdx.app.log (TAG, "Mesh " + j + " touched -> " + _currentState);
-                        break;
+                    if (touchRay != null) {
+                        if (_DEBUG) {
+                            Gdx.app.log (TAG, "currentEntry BB - " + currentEntry.getBoundingBox ().toString ());
+                        }
+                        if (Intersector.intersectRayBoundsFast (touchRay, currentEntry.getBoundingBox ())) {
+                            _currentState = currentEntry.getName ();
+                            Gdx.app.log (TAG, "Mesh " + j + " touched -> " + _currentState);
+                            break;
+                        }
                     }
                     j++;
                 }
