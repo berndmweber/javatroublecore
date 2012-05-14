@@ -12,7 +12,6 @@ import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
@@ -27,6 +26,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.TroubleApplicationState;
 import com.innovail.trouble.utils.BackgroundImage;
+import com.innovail.trouble.utils.GameInputAdapter;
 import com.innovail.trouble.utils.MenuEntryMesh;
 import com.innovail.trouble.utils.GameMesh;
 
@@ -259,7 +259,8 @@ public class MainMenuScreen implements TroubleScreen {
 
     public void createInputProcessor ()
     {
-        Gdx.input.setInputProcessor (new InputProcessor() {
+        Gdx.input.setInputProcessor (new GameInputAdapter() {
+
             /* (non-Javadoc)
              * @see com.badlogic.gdx.InputProcessor#keyDown(int)
              */
@@ -301,59 +302,34 @@ public class MainMenuScreen implements TroubleScreen {
             }
 
             /* (non-Javadoc)
-             * @see com.badlogic.gdx.InputProcessor#keyUp(int)
-             */
-            @Override
-            public boolean keyUp (int keycode) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            /* (non-Javadoc)
-             * @see com.badlogic.gdx.InputProcessor#keyTyped(char)
-             */
-            @Override
-            public boolean keyTyped (char character) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            /* (non-Javadoc)
-             * @see com.badlogic.gdx.InputProcessor#touchDown(int, int, int, int)
-             */
-            @Override
-            public boolean touchDown (int x, int y, int pointer, int button) {
-                Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
-                int j = 0;
-                Ray touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
-                if (_DEBUG) {
-                    Gdx.app.log (TAG, "Touch position - x: " + x + " - y: " + y);
-                    Gdx.app.log (TAG, "Touch ray - " + touchRay.toString ());
-                }
-                while (currentMesh.hasNext ()) {
-                    MenuEntryMesh currentEntry = (MenuEntryMesh)currentMesh.next ();
-                    if (touchRay != null) {
-                        if (_DEBUG) {
-                            Gdx.app.log (TAG, "currentEntry BB - " + currentEntry.getBoundingBox ().toString ());
-                        }
-                        if (Intersector.intersectRayBoundsFast (touchRay, currentEntry.getBoundingBox ())) {
-                            _currentState = currentEntry.getName ();
-                            Gdx.app.log (TAG, "Mesh " + j + " touched -> " + _currentState);
-                            break;
-                        }
-                    }
-                    j++;
-                }
-                return false;
-            }
-
-            /* (non-Javadoc)
              * @see com.badlogic.gdx.InputProcessor#touchUp(int, int, int, int)
              */
             @Override
             public boolean touchUp (int x, int y, int pointer, int button) {
-                // TODO Auto-generated method stub
-                return false;
+                if (!_isDragged) {
+                    Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
+                    int j = 0;
+                    Ray touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
+                    if (_DEBUG) {
+                        Gdx.app.log (TAG, "Touch position - x: " + x + " - y: " + y);
+                        Gdx.app.log (TAG, "Touch ray - " + touchRay.toString ());
+                    }
+                    while (currentMesh.hasNext ()) {
+                        MenuEntryMesh currentEntry = (MenuEntryMesh)currentMesh.next ();
+                        if (touchRay != null) {
+                            if (_DEBUG) {
+                                Gdx.app.log (TAG, "currentEntry BB - " + currentEntry.getBoundingBox ().toString ());
+                            }
+                            if (Intersector.intersectRayBoundsFast (touchRay, currentEntry.getBoundingBox ())) {
+                                _currentState = currentEntry.getName ();
+                                Gdx.app.log (TAG, "Mesh " + j + " touched -> " + _currentState);
+                                break;
+                            }
+                        }
+                        j++;
+                    }
+                }
+                return super.touchUp (x, y, pointer, button);
             }
 
             /* (non-Javadoc)
@@ -361,26 +337,8 @@ public class MainMenuScreen implements TroubleScreen {
              */
             @Override
             public boolean touchDragged (int x, int y, int pointer) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            /* (non-Javadoc)
-             * @see com.badlogic.gdx.InputProcessor#touchMoved(int, int)
-             */
-            @Override
-            public boolean touchMoved (int x, int y) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            /* (non-Javadoc)
-             * @see com.badlogic.gdx.InputProcessor#scrolled(int)
-             */
-            @Override
-            public boolean scrolled (int amount) {
-                // TODO Auto-generated method stub
-                return false;
+                Gdx.app.log (TAG, "Touch dragged position - x: " + x + " - y: " + y);
+                return super.touchDragged (x, y, pointer);
             }
         });
     }

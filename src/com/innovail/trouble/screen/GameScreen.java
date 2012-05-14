@@ -10,7 +10,6 @@ import java.util.Vector;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
@@ -29,8 +28,8 @@ import com.innovail.trouble.core.gameelement.Player;
 import com.innovail.trouble.core.gameelement.Spot;
 import com.innovail.trouble.core.gameelement.Token;
 import com.innovail.trouble.utils.BackgroundImage;
+import com.innovail.trouble.utils.GameInputAdapter;
 import com.innovail.trouble.utils.GameMesh;
-import com.innovail.trouble.utils.MenuEntryMesh;
 
 /**
  * 
@@ -294,7 +293,7 @@ public class GameScreen implements TroubleScreen {
      */
     @Override
     public void createInputProcessor () {
-        Gdx.input.setInputProcessor (new InputProcessor() {
+        Gdx.input.setInputProcessor (new GameInputAdapter () {
             /* (non-Javadoc)
              * @see com.badlogic.gdx.InputProcessor#keyDown(int)
              */
@@ -384,61 +383,36 @@ public class GameScreen implements TroubleScreen {
             }
 
             /* (non-Javadoc)
-             * @see com.badlogic.gdx.InputProcessor#keyUp(int)
-             */
-            @Override
-            public boolean keyUp (int keycode) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            /* (non-Javadoc)
-             * @see com.badlogic.gdx.InputProcessor#keyTyped(char)
-             */
-            @Override
-            public boolean keyTyped (char character) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            /* (non-Javadoc)
-             * @see com.badlogic.gdx.InputProcessor#touchDown(int, int, int, int)
-             */
-            @Override
-            public boolean touchDown (int x, int y, int pointer, int button) {
-                _touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
-                if (_DEBUG) {
-                    Gdx.app.log (TAG, "Touch position - x: " + x + " - y: " + y);
-                    Gdx.app.log (TAG, "Touch ray - " + _touchRay.toString ());
-                }
-                //while (currentMesh.hasNext ()) {
-                    //MenuEntryMesh currentEntry = (MenuEntryMesh)currentMesh.next ();
-                    if (_touchRay != null) {
-                        if (_DEBUG) {
-                            Gdx.app.log (TAG, "currentEntry BB - " + _diceMesh.getBoundingBox ().toString ());
-                        }
-                        if (Intersector.intersectRayBoundsFast (_touchRay, _diceMesh.getBoundingBox ())) {
-                            int[] result = _myGame.getDice ().roll ();
-                            Gdx.app.log (TAG, "Die touched -> " + result[0]);
-                            //Gdx.app.log (TAG, "Mesh " + j + " touched -> " + _currentState);
-                            //break;
-                        } else {
-                            _currentState = TroubleApplicationState.MAIN_MENU;
-                        }
-                    }
-                    //j++;
-                //}
-                //_currentState = TroubleApplicationState.MAIN_MENU;
-                return false;
-            }
-
-            /* (non-Javadoc)
              * @see com.badlogic.gdx.InputProcessor#touchUp(int, int, int, int)
              */
             @Override
             public boolean touchUp (int x, int y, int pointer, int button) {
-                // TODO Auto-generated method stub
-                return false;
+                if (!_isDragged) {
+                    _touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
+                    if (_DEBUG) {
+                        Gdx.app.log (TAG, "Touch position - x: " + x + " - y: " + y);
+                        Gdx.app.log (TAG, "Touch ray - " + _touchRay.toString ());
+                    }
+                    //while (currentMesh.hasNext ()) {
+                        //MenuEntryMesh currentEntry = (MenuEntryMesh)currentMesh.next ();
+                        if (_touchRay != null) {
+                            if (_DEBUG) {
+                                Gdx.app.log (TAG, "currentEntry BB - " + _diceMesh.getBoundingBox ().toString ());
+                            }
+                            if (Intersector.intersectRayBoundsFast (_touchRay, _diceMesh.getBoundingBox ())) {
+                                int[] result = _myGame.getDice ().roll ();
+                                Gdx.app.log (TAG, "Die touched -> " + result[0]);
+                                //Gdx.app.log (TAG, "Mesh " + j + " touched -> " + _currentState);
+                                //break;
+                            } else {
+                                _currentState = TroubleApplicationState.MAIN_MENU;
+                            }
+                        }
+                        //j++;
+                    //}
+                    //_currentState = TroubleApplicationState.MAIN_MENU;
+                }
+                return super.touchUp (x, y, pointer, button);
             }
 
             /* (non-Javadoc)
@@ -446,26 +420,8 @@ public class GameScreen implements TroubleScreen {
              */
             @Override
             public boolean touchDragged (int x, int y, int pointer) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            /* (non-Javadoc)
-             * @see com.badlogic.gdx.InputProcessor#touchMoved(int, int)
-             */
-            @Override
-            public boolean touchMoved (int x, int y) {
-                // TODO Auto-generated method stub
-                return false;
-            }
-
-            /* (non-Javadoc)
-             * @see com.badlogic.gdx.InputProcessor#scrolled(int)
-             */
-            @Override
-            public boolean scrolled (int amount) {
-                // TODO Auto-generated method stub
-                return false;
+                Gdx.app.log (TAG, "Touch dragged position - x: " + x + " - y: " + y);
+                return super.touchDragged (x, y, pointer);
             }
         });
     }
