@@ -306,7 +306,7 @@ public class MainMenuScreen implements TroubleScreen {
              */
             @Override
             public boolean touchUp (int x, int y, int pointer, int button) {
-                if (!_isDragged) {
+                if (!_isDragged || (_dragEvents < MIN_NUMBER_OF_DRAGS)) {
                     Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
                     int j = 0;
                     Ray touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
@@ -330,15 +330,6 @@ public class MainMenuScreen implements TroubleScreen {
                     }
                 }
                 return super.touchUp (x, y, pointer, button);
-            }
-
-            /* (non-Javadoc)
-             * @see com.badlogic.gdx.InputProcessor#touchDragged(int, int, int)
-             */
-            @Override
-            public boolean touchDragged (int x, int y, int pointer) {
-                Gdx.app.log (TAG, "Touch dragged position - x: " + x + " - y: " + y);
-                return super.touchDragged (x, y, pointer);
             }
         });
     }

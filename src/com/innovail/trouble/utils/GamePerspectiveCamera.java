@@ -5,6 +5,8 @@
  */
 package com.innovail.trouble.utils;
 
+import java.util.Vector;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.MathUtils;
@@ -18,9 +20,17 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
     private static final String TAG = "GamePerspectiveCamera";
     private final boolean DEBUG = false;
     
+    private final int _MIN = 0;
+    private final int _MAX = 1;
+    private final int _X = 0;
+    private final int _Y = 1;
+    
     private float _radius = 0.0f;
     private Vector3 _lookAtPoint;
     private Vector2 _rotationAngle;
+    
+    private Vector<Vector2> _cutOffAngle;
+    private boolean[] _wrapAround;
     
     /**
      * @param fieldOfView
@@ -31,6 +41,14 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
                                    float viewportHeight)
     {
         super (fieldOfView, viewportWidth, viewportHeight);
+
+        _cutOffAngle = new Vector<Vector2> ();
+        _cutOffAngle.add (new Vector2 (0.0f, 10.0f)); // MIN
+        _cutOffAngle.add (new Vector2 (359.99f, 80.0f)); // MAX
+        
+        _wrapAround = new boolean [2];
+        _wrapAround[_X] = true; // X
+        _wrapAround[_Y] = false; // Y
     }
 
     public Vector2 lookAtPosition (Vector3 lookAtPoint, Vector3 from)
@@ -67,7 +85,36 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
     {
         if (_radius != 0.0f) {
             Vector3 newPosition = new Vector3 ();
-            _rotationAngle.add (angleIncrease);
+            Vector2 newAngle = new Vector2 (_rotationAngle);
+            newAngle.add (angleIncrease);
+            if ((newAngle.x > _cutOffAngle.get (_MIN).x) &&
+                (newAngle.x < _cutOffAngle.get (_MAX).x))
+            {
+                _rotationAngle.x = newAngle.x;
+            } else {
+                if (_wrapAround[_X]) {
+                    if (newAngle.x < _cutOffAngle.get (_MIN).x) {
+                        newAngle.x += _cutOffAngle.get (_MAX).x;
+                    } else {
+                        newAngle.x -= _cutOffAngle.get (_MAX).x;
+                    }
+                    _rotationAngle.x = newAngle.x;
+                }
+            }
+            if ((newAngle.y > _cutOffAngle.get (_MIN).y) &&
+                (newAngle.y < _cutOffAngle.get (_MAX).y))
+            {
+                _rotationAngle.y = newAngle.y;
+            } else {
+                if (_wrapAround[_Y]) {
+                    if (newAngle.y < _cutOffAngle.get (_MIN).y) {
+                        newAngle.y += _cutOffAngle.get (_MAX).y;
+                    } else {
+                        newAngle.y -= _cutOffAngle.get (_MAX).y;
+                    }
+                    _rotationAngle.y = newAngle.y;
+                }
+            }
             
             newPosition.x = _radius *
                             MathUtils.sinDeg (_rotationAngle.x) *
@@ -79,6 +126,9 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
             newPosition.add (_lookAtPoint);
             
             if (DEBUG) {
+                Gdx.app.log (TAG, "X angle: " + _rotationAngle.x);
+                Gdx.app.log (TAG, "Y angle: " + _rotationAngle.y);
+
                 Gdx.app.log (TAG, "old position: " + position.toString ());
                 Gdx.app.log (TAG, "old direction: " + direction.toString ());
             }
@@ -91,5 +141,27 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
                 Gdx.app.log (TAG, "new direction: " + direction.toString ());
             }
         }
+    }
+    
+    public void setCutoffAngle (Vector2 minCutOff, Vector2 maxCutOff)
+    {
+        _cutOffAngle.set (_MIN, minCutOff);
+        _cutOffAngle.set (_MAX, maxCutOff);
+    }
+    
+    public Vector<Vector2> getCutoffAngle ()
+    {
+        return _cutOffAngle;
+    }
+    
+    public void setWrapAround (boolean X, boolean Y)
+    {
+        _wrapAround[_X] = X;
+        _wrapAround[_Y] = Y;
+    }
+
+    public boolean[] getWrapAround ()
+    {
+        return _wrapAround;
     }
 }

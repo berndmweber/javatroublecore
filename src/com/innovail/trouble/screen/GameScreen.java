@@ -62,7 +62,7 @@ public class GameScreen implements TroubleScreen {
     private Vector2 _cameraRotationAngleIncrease;
     private Vector3 _cameraPos;
 
-    private final float _RotationAngleIncrease = 1.0f;
+    private final float _RotationAngleIncrease = 0.25f;
     private float _rotationDelta = 0.0f;
 
     private TroubleGame _myGame;
@@ -305,6 +305,9 @@ public class GameScreen implements TroubleScreen {
     @Override
     public void createInputProcessor () {
         Gdx.input.setInputProcessor (new GameInputAdapter () {
+            private final float _MaxAxisIncrease = 10.0f;
+            private Vector2 _axisDiff = new Vector2 ();
+            
             /* (non-Javadoc)
              * @see com.badlogic.gdx.InputProcessor#keyDown(int)
              */
@@ -360,7 +363,7 @@ public class GameScreen implements TroubleScreen {
              */
             @Override
             public boolean touchUp (int x, int y, int pointer, int button) {
-                if (!_isDragged) {
+                if (!_isDragged || (_dragEvents < MIN_NUMBER_OF_DRAGS)) {
                     _touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
                     if (_DEBUG) {
                         Gdx.app.log (TAG, "Touch position - x: " + x + " - y: " + y);
@@ -393,7 +396,17 @@ public class GameScreen implements TroubleScreen {
              */
             @Override
             public boolean touchDragged (int x, int y, int pointer) {
-                Gdx.app.log (TAG, "Touch dragged position - x: " + x + " - y: " + y);
+                if (_dragEvents >= MIN_NUMBER_OF_DRAGS) {
+                    Gdx.app.log (TAG, "Touch dragged position - x: " + x + " - y: " + y);
+                    _axisDiff.set (_lastPosition);
+                    _axisDiff.sub (x, y);
+                    if ((_axisDiff.x < _MaxAxisIncrease) && (_axisDiff.y != _MaxAxisIncrease)) {
+                        _cameraRotationAngleIncrease.x = _axisDiff.x * _RotationAngleIncrease;
+                        _cameraRotationAngleIncrease.y = _axisDiff.y * _RotationAngleIncrease;
+                    }
+                    ((GamePerspectiveCamera)_camera).rotateAroundLookAtPoint (_cameraRotationAngleIncrease);
+                    _cameraRotationAngleIncrease.set (Vector2.Zero);
+                }
                 return super.touchDragged (x, y, pointer);
             }
         });

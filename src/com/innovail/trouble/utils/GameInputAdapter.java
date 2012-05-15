@@ -5,20 +5,25 @@
  */
 package com.innovail.trouble.utils;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * 
  */
 public class GameInputAdapter implements InputProcessor {
+    protected final int MIN_NUMBER_OF_DRAGS = 3;
+    
     protected boolean _isDragged = false;
+    protected int _dragEvents = 0;
+    protected Vector2 _lastPosition = new Vector2 ();
     
     /* (non-Javadoc)
      * @see com.badlogic.gdx.InputProcessor#keyDown(int)
      */
     @Override
-    public boolean keyDown (int keycode) {
+    public boolean keyDown (int keycode)
+    {
         return false;
     }
 
@@ -26,7 +31,8 @@ public class GameInputAdapter implements InputProcessor {
      * @see com.badlogic.gdx.InputProcessor#keyTyped(char)
      */
     @Override
-    public boolean keyTyped (char character) {
+    public boolean keyTyped (char character)
+    {
         return false;
     }
 
@@ -42,7 +48,8 @@ public class GameInputAdapter implements InputProcessor {
      * @see com.badlogic.gdx.InputProcessor#scrolled(int)
      */
     @Override
-    public boolean scrolled (int amount) {
+    public boolean scrolled (int amount)
+    {
         return false;
     }
 
@@ -52,6 +59,7 @@ public class GameInputAdapter implements InputProcessor {
     @Override
     public boolean touchUp (int x, int y, int pointer, int button)
     {
+        _dragEvents = 0;
         _isDragged = false;
         return false;
     }
@@ -60,7 +68,8 @@ public class GameInputAdapter implements InputProcessor {
      * @see com.badlogic.gdx.InputProcessor#touchDown(int, int, int, int)
      */
     @Override
-    public boolean touchDown (int x, int y, int pointer, int button) {
+    public boolean touchDown (int x, int y, int pointer, int button)
+    {
         return false;
     }
 
@@ -68,8 +77,14 @@ public class GameInputAdapter implements InputProcessor {
      * @see com.badlogic.gdx.InputProcessor#touchDragged(int, int, int)
      */
     @Override
-    public boolean touchDragged (int x, int y, int pointer) {
+    public boolean touchDragged (int x, int y, int pointer)
+    {
+        _dragEvents++;
         _isDragged = true;
+        
+        if (_dragEvents >= MIN_NUMBER_OF_DRAGS) {
+            _lastPosition.set (x, y);
+        }
         return false;
     }
 
@@ -77,7 +92,8 @@ public class GameInputAdapter implements InputProcessor {
      * @see com.badlogic.gdx.InputProcessor#touchMoved(int, int)
      */
     @Override
-    public boolean touchMoved (int x, int y) {
+    public boolean touchMoved (int x, int y)
+    {
         return false;
     }
 
