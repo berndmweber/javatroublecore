@@ -13,12 +13,13 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.GameSettings;
@@ -30,6 +31,7 @@ import com.innovail.trouble.core.gameelement.Token;
 import com.innovail.trouble.utils.BackgroundImage;
 import com.innovail.trouble.utils.GameInputAdapter;
 import com.innovail.trouble.utils.GameMesh;
+import com.innovail.trouble.utils.GamePerspectiveCamera;
 
 /**
  * 
@@ -43,8 +45,6 @@ public class GameScreen implements TroubleScreen {
     private String _currentState = TroubleApplicationState.GAME;
     
     private boolean _filling = true;
-    private float[]  _cameraPos = {0, 8, 8};
-    private float[]  _cameraDir = {0, -6, -2};
 
     private final SpriteBatch _spriteBatch;
     private final BackgroundImage _backgroundImage;
@@ -57,6 +57,13 @@ public class GameScreen implements TroubleScreen {
     private Matrix4 _transformMatrix;
     private Camera _camera;
     private Ray _touchRay;
+    
+    private Vector3 _cameraLookAtPoint;
+    private Vector2 _cameraRotationAngleIncrease;
+    private Vector3 _cameraPos;
+
+    private final float _RotationAngleIncrease = 1.0f;
+    private float _rotationDelta = 0.0f;
 
     private TroubleGame _myGame;
     private Vector <Spot> _spots;
@@ -79,7 +86,12 @@ public class GameScreen implements TroubleScreen {
         _transformMatrix = new Matrix4 ();
         
         float aspectRatio = (float) Gdx.graphics.getWidth () / (float) Gdx.graphics.getHeight ();
-        _camera = new PerspectiveCamera (67, 2f * aspectRatio, 2f);
+        _camera = new GamePerspectiveCamera (67, 2f * aspectRatio, 2f);
+        _cameraPos = new Vector3 (0.0f, 7.0f, 11.0f);
+        _cameraLookAtPoint = new Vector3 (0.0f, 0.0f, 2.5f);
+        ((GamePerspectiveCamera)_camera).lookAtPosition (_cameraLookAtPoint, _cameraPos);
+        _cameraRotationAngleIncrease = new Vector2 ();
+        _cameraRotationAngleIncrease.set (Vector2.Zero);
         
         _myGame = new TroubleGame ();
         _myGame.createGame ();
@@ -91,37 +103,11 @@ public class GameScreen implements TroubleScreen {
 }
 
     /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#dispose()
-     */
-    @Override
-    public void dispose () {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#hide()
-     */
-    @Override
-    public void hide () {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#pause()
-     */
-    @Override
-    public void pause () {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
      * @see com.badlogic.gdx.Screen#render(float)
      */
     @Override
     public void render (float delta) {
+        _rotationDelta += delta;
         GL10 gl = Gdx.graphics.getGL10();
         Color currentColor = Color.WHITE;
 
@@ -172,8 +158,6 @@ public class GameScreen implements TroubleScreen {
     }
 
     private void setProjectionAndCamera (GL10 gl) {
-        _camera.position.set (_cameraPos);
-        _camera.direction.set (_cameraDir).sub (_camera.position).nor ();
         _camera.update ();
         _camera.apply (gl);
     }
@@ -271,6 +255,33 @@ public class GameScreen implements TroubleScreen {
     }
 
     /* (non-Javadoc)
+     * @see com.badlogic.gdx.Screen#dispose()
+     */
+    @Override
+    public void dispose () {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see com.badlogic.gdx.Screen#hide()
+     */
+    @Override
+    public void hide () {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see com.badlogic.gdx.Screen#pause()
+     */
+    @Override
+    public void pause () {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
      * @see com.badlogic.gdx.Screen#resume()
      */
     @Override
@@ -318,67 +329,29 @@ public class GameScreen implements TroubleScreen {
                     break;
                 case Input.Keys.UP:
                     Gdx.app.log (TAG, "keyDown() - UP");
-                    _cameraPos[1]++; // Y
-                    Gdx.app.log (TAG, "keyDown() - +Y pos: " + _cameraPos[1]);
+                    _cameraRotationAngleIncrease.y--; // Y
+                    Gdx.app.log (TAG, "keyDown() - -Y angle: " + _cameraRotationAngleIncrease.y);
                     break;
                 case Input.Keys.DOWN:
                     Gdx.app.log (TAG, "keyDown() - DOWN");
-                    _cameraPos[1]--; // Y
-                    Gdx.app.log (TAG, "keyDown() - -Y pos: " + _cameraPos[1]);
+                    _cameraRotationAngleIncrease.y++; // Y
+                    Gdx.app.log (TAG, "keyDown() - +Y angle: " + _cameraRotationAngleIncrease.y);
                     break;
                 case Input.Keys.LEFT:
                     Gdx.app.log (TAG, "keyDown() - LEFT");
-                    _cameraPos[0]--; // X
-                    Gdx.app.log (TAG, "keyDown() - -X pos: " + _cameraPos[0]);
+                    _cameraRotationAngleIncrease.x--; // X
+                    Gdx.app.log (TAG, "keyDown() - -X angle: " + _cameraRotationAngleIncrease.x);
                     break;
                 case Input.Keys.RIGHT:
                     Gdx.app.log (TAG, "keyDown() - RIGHT");
-                    _cameraPos[0]++; // X
-                    Gdx.app.log (TAG, "keyDown() - +X pos: " + _cameraPos[0]);
-                    break;
-                case Input.Keys.PAGE_UP:
-                    Gdx.app.log (TAG, "keyDown() - PAGE_UP");
-                    _cameraPos[2]--; // Z
-                    Gdx.app.log (TAG, "keyDown() - -Z pos: " + _cameraPos[2]);
-                    break;
-                case Input.Keys.PAGE_DOWN:
-                    Gdx.app.log (TAG, "keyDown() - PAGE_DOWN");
-                    _cameraPos[2]++; // Z
-                    Gdx.app.log (TAG, "keyDown() - +Z pos: " + _cameraPos[2]);
-                    break;
-                case Input.Keys.NUM_9:
-                    Gdx.app.log (TAG, "keyDown() - NUM_9");
-                    _cameraDir[2]--; // Z
-                    Gdx.app.log (TAG, "keyDown() - -Z dir: " + _cameraDir[2]);
-                    break;
-                case Input.Keys.NUM_3:
-                    Gdx.app.log (TAG, "keyDown() - NUM_3");
-                    _cameraDir[2]++; // Z
-                    Gdx.app.log (TAG, "keyDown() - +Z dir: " + _cameraDir[2]);
-                    break;
-                case Input.Keys.NUM_8:
-                    Gdx.app.log (TAG, "keyDown() - NUM_8");
-                    _cameraDir[1]++; // Y
-                    Gdx.app.log (TAG, "keyDown() - +Y dir: " + _cameraDir[1]);
-                    break;
-                case Input.Keys.NUM_2:
-                    Gdx.app.log (TAG, "keyDown() - NUM_2");
-                    _cameraDir[1]--; // Y
-                    Gdx.app.log (TAG, "keyDown() - -Y dir: " + _cameraDir[1]);
-                    break;
-                case Input.Keys.NUM_6:
-                    Gdx.app.log (TAG, "keyDown() - NUM_6");
-                    _cameraDir[0]++; // X
-                    Gdx.app.log (TAG, "keyDown() - +X dir: " + _cameraDir[0]);
-                    break;
-                case Input.Keys.NUM_4:
-                    Gdx.app.log (TAG, "keyDown() - NUM_4");
-                    _cameraDir[0]--; // X
-                    Gdx.app.log (TAG, "keyDown() - -X dir: " + _cameraDir[0]);
+                    _cameraRotationAngleIncrease.x++; // X
+                    Gdx.app.log (TAG, "keyDown() - +X angle: " + _cameraRotationAngleIncrease.x);
                     break;
                 default:
                     rv = false;
                 }
+                ((GamePerspectiveCamera)_camera).rotateAroundLookAtPoint (_cameraRotationAngleIncrease);
+                _cameraRotationAngleIncrease.set (Vector2.Zero);
                 return rv;
             }
 
