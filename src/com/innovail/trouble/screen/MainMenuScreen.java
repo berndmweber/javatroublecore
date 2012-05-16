@@ -12,7 +12,6 @@ import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -33,15 +32,9 @@ import com.innovail.trouble.utils.GameMesh;
 /**
  * 
  */
-public class MainMenuScreen implements TroubleScreen {
+public class MainMenuScreen extends TroubleScreen {
     private static final String TAG = "MainMenuScreen";
     private static final String AppPartName = TroubleApplicationState.MAIN_MENU;
-    
-    private static final boolean _DEBUG = false;
-
-    private String _currentState = TroubleApplicationState.MAIN_MENU;
-
-    private boolean _filling = true;
     
     private final BitmapFont _menuFont;
     private final SpriteBatch _spriteBatch;
@@ -60,13 +53,14 @@ public class MainMenuScreen implements TroubleScreen {
 
     private final Matrix4 _viewMatrix;
     private final Matrix4 _transformMatrix;
-    private final Camera _camera;
     
     public MainMenuScreen ()
     {
+        super ();
+        
         Gdx.app.log (TAG, "MainMenuScreen()");
         
-        createInputProcessor ();
+        _currentState = TroubleApplicationState.MAIN_MENU;
         
         _spriteBatch = new SpriteBatch ();
         _menuFont = ApplicationSettings.getInstance ().getGameFont (AppPartName).createBitmapFont ();
@@ -92,38 +86,13 @@ public class MainMenuScreen implements TroubleScreen {
         final float aspectRatio = (float) Gdx.graphics.getWidth () /
                                    (float) Gdx.graphics.getHeight ();
         _camera = new PerspectiveCamera (100, 2f * aspectRatio, 2f);
+        _camera.position.set (0, 0, 2);
+        _camera.direction.set (0, 0, -4).sub (_camera.position).nor ();
     }
     
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.ApplicationListener#resize(int, int)
-     */
-    @Override
-    public void resize (final int width, final int height) {
-        Gdx.app.log (TAG, "resize");
-    }
-
-    @Override
-    public void render (final float delta)
+    protected void render (final GL10 gl, final float delta)
     {
         _rotationDelta += delta;
-        final GL10 gl = Gdx.graphics.getGL10();
-        final Color currentColor = Color.BLACK;
-
-        gl.glClear (GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-        gl.glClearColor (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-        gl.glViewport (0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        
-        renderBackground (Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        
-        gl.glDisable (GL10.GL_DITHER);
-        gl.glEnable (GL10.GL_DEPTH_TEST);
-        gl.glEnable (GL10.GL_CULL_FACE);
-
-        setProjectionAndCamera (gl);
-        setLighting (gl);
-
-        gl.glMatrixMode (GL10.GL_MODELVIEW);
-        gl.glShadeModel (GL10.GL_SMOOTH);
 
         renderLogo (gl);
         renderMenu (gl);
@@ -132,7 +101,7 @@ public class MainMenuScreen implements TroubleScreen {
         gl.glDisable (GL10.GL_DEPTH_TEST);
     }
 
-    private void renderBackground (final float width, final float height)
+    protected void renderBackground (final float width, final float height)
     {
         _viewMatrix.setToOrtho2D (0.0f, 0.0f, width, height);
         _spriteBatch.setProjectionMatrix (_viewMatrix);
@@ -157,14 +126,8 @@ public class MainMenuScreen implements TroubleScreen {
         _spriteBatch.end ();
     }
     
-    private void setProjectionAndCamera (final GL10 gl) {
-        _camera.position.set (0, 0, 2);
-        _camera.direction.set (0, 0, -4).sub (_camera.position).nor ();
-        _camera.update ();
-        _camera.apply (gl);
-    }
-    
-    private void setLighting (final GL10 gl) {
+    protected void setLighting (final GL10 gl)
+    {
         final Color lightColor = _logo.getColor ();
         final float[] specular0 = {lightColor.r, lightColor.g, lightColor.b, lightColor.a};
         final float[] position1 = {-2.0f, -2.0f, 1.0f, 0.0f};
@@ -334,58 +297,5 @@ public class MainMenuScreen implements TroubleScreen {
                 return super.touchUp (x, y, pointer, button);
             }
         });
-    }
-
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#dispose()
-     */
-    @Override
-    public void dispose () {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#hide()
-     */
-    @Override
-    public void hide () {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#pause()
-     */
-    @Override
-    public void pause () {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#resume()
-     */
-    @Override
-    public void resume () {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#show()
-     */
-    @Override
-    public void show () {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see com.innovail.trouble.screen.TroubleScreen#getState()
-     */
-    @Override
-    public String getState () {
-        return _currentState;
     }
 }

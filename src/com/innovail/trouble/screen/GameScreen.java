@@ -10,7 +10,6 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
@@ -36,16 +35,10 @@ import com.innovail.trouble.utils.GamePerspectiveCamera;
 /**
  * 
  */
-public class GameScreen implements TroubleScreen {
+public class GameScreen extends TroubleScreen {
     private static final String TAG = "GameScreen";
     private static final String AppPartName = TroubleApplicationState.GAME;
     
-    private static final boolean _DEBUG = false;
-
-    private String _currentState = TroubleApplicationState.GAME;
-    
-    private boolean _filling = true;
-
     private final SpriteBatch _spriteBatch;
     private final BackgroundImage _backgroundImage;
     
@@ -55,7 +48,6 @@ public class GameScreen implements TroubleScreen {
 
     private final Matrix4 _viewMatrix;
     private final Matrix4 _transformMatrix;
-    private final Camera _camera;
     private Ray _touchRay;
     
     private Vector3 _cameraLookAtPoint;
@@ -73,10 +65,12 @@ public class GameScreen implements TroubleScreen {
 
     public GameScreen ()
     {
+        super ();
+        
         Gdx.app.log (TAG, "GameScreen()");
         
-        createInputProcessor ();
-
+        _currentState = TroubleApplicationState.GAME;
+        
         _spriteBatch = new SpriteBatch ();
         _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (AppPartName);
         _backgroundImage.createTexture ().setFilter (TextureFilter.Linear, TextureFilter.Linear);
@@ -102,30 +96,9 @@ public class GameScreen implements TroubleScreen {
         _players = _myGame.getPlayers ();
 }
 
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#render(float)
-     */
-    @Override
-    public void render (final float delta) {
+    protected void render (final GL10 gl, final float delta)
+    {
         _rotationDelta += delta;
-        final GL10 gl = Gdx.graphics.getGL10();
-        final Color currentColor = Color.WHITE;
-
-        gl.glClear (GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-        gl.glClearColor (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-        gl.glViewport (0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-        renderBackground (Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        
-        gl.glDisable (GL10.GL_DITHER);
-        gl.glEnable (GL10.GL_DEPTH_TEST);
-        gl.glEnable (GL10.GL_CULL_FACE);
-
-        setProjectionAndCamera (gl);
-        setLighting (gl);
-        
-        gl.glMatrixMode (GL10.GL_MODELVIEW);
-        gl.glShadeModel (GL10.GL_SMOOTH);
 
         renderField (gl);
         renderTokens (gl);
@@ -138,7 +111,7 @@ public class GameScreen implements TroubleScreen {
         gl.glDisable (GL10.GL_DEPTH_TEST);
     }
 
-    private void renderBackground (final float width, final float height)
+    protected void renderBackground (final float width, final float height)
     {
         _viewMatrix.setToOrtho2D (0.0f, 0.0f, width, height);
         _spriteBatch.setProjectionMatrix (_viewMatrix);
@@ -157,12 +130,7 @@ public class GameScreen implements TroubleScreen {
         _spriteBatch.end ();
     }
 
-    private void setProjectionAndCamera (final GL10 gl) {
-        _camera.update ();
-        _camera.apply (gl);
-    }
-    
-    private void setLighting (final GL10 gl) {
+    protected void setLighting (final GL10 gl) {
         gl.glEnable (GL10.GL_LIGHTING);
         gl.glLightModelf (GL10.GL_LIGHT_MODEL_TWO_SIDE, 0.0f);
         
@@ -243,60 +211,6 @@ public class GameScreen implements TroubleScreen {
                 }
             }
         }
-    }
-
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#resize(int, int)
-     */
-    @Override
-    public void resize (final int width, final int height) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#dispose()
-     */
-    @Override
-    public void dispose () {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#hide()
-     */
-    @Override
-    public void hide () {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#pause()
-     */
-    @Override
-    public void pause () {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#resume()
-     */
-    @Override
-    public void resume () {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see com.badlogic.gdx.Screen#show()
-     */
-    @Override
-    public void show () {
-        // TODO Auto-generated method stub
-        
     }
 
     /* (non-Javadoc)
@@ -411,13 +325,4 @@ public class GameScreen implements TroubleScreen {
             }
         });
     }
-
-    /* (non-Javadoc)
-     * @see com.innovail.trouble.screen.TroubleScreen#getState()
-     */
-    @Override
-    public String getState () {
-        return _currentState;
-    }
-
 }
