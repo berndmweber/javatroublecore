@@ -75,6 +75,8 @@ public abstract class TroubleScreen implements Screen {
     @Override
     public void render (final float delta)
     {
+        update (delta);
+        
         final GL10 gl = Gdx.graphics.getGL10();
         final Color currentColor = Color.BLACK;
 
@@ -96,6 +98,8 @@ public abstract class TroubleScreen implements Screen {
         
         render (gl, delta);
     }
+    
+    protected abstract void update (final float delta);
     
     protected abstract void render (final GL10 gl, final float delta);
     

@@ -90,6 +90,11 @@ public class MainMenuScreen extends TroubleScreen {
         _camera.direction.set (0, 0, -4).sub (_camera.position).nor ();
     }
     
+    protected void update (final float delta)
+    {
+        /* Nothing to do here. */
+    }
+    
     protected void render (final GL10 gl, final float delta)
     {
         _rotationDelta += delta;

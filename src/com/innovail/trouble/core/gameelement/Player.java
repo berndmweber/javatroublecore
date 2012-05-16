@@ -6,6 +6,7 @@
 package com.innovail.trouble.core.gameelement;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Color;
@@ -75,6 +76,88 @@ public class Player {
         for (int i = 0; i < number; i++) {
             _tokens.add (new Token (this));
         }
+    }
+    
+    public boolean hasTokensAtHome ()
+    {
+        boolean atHome = false;
+        
+        final Iterator<Token> tokens = _tokens.iterator ();
+        while (tokens.hasNext ()) {
+            if (tokens.next ().getPosition ().isHome ()) {
+                atHome = true;
+                break;
+            }
+        }
+        
+        return atHome;
+    }
+    
+    public boolean hasTokenOnStart () {
+        boolean onStart = false;
+        
+        final Iterator<Token> tokens = _tokens.iterator ();
+        while (tokens.hasNext ()) {
+            if (tokens.next ().getPosition ().isStart ())
+            {
+                onStart = true;
+                break;
+            }
+        }
+        
+        return onStart;
+    }
+
+    public boolean hasTokensOnField ()
+    {
+        boolean onField = false;
+        
+        final Iterator<Token> tokens = _tokens.iterator ();
+        while (tokens.hasNext ()) {
+            final Spot tokenPosition = tokens.next ().getPosition ();
+            if (!tokenPosition.isHome () &&
+                !tokenPosition.isFinish () &&
+                !tokenPosition.isTurnout ())
+            {
+                onField = true;
+                break;
+            }
+        }
+        
+        return onField;
+    }
+    
+    public Token getTokenOnStart ()
+    {
+        Token onStart = null;
+        
+        final Iterator<Token> tokens = _tokens.iterator ();
+        while (tokens.hasNext ()) {
+            Token current = tokens.next ();
+            if (current.getPosition ().isStart ())
+            {
+                onStart = current;
+                break;
+            }
+        }
+
+        return onStart;
+    }
+    
+    public Token getTokenAtHome ()
+    {
+        Token atHome = null;
+        
+        final Iterator<Token> tokens = _tokens.iterator ();
+        while (tokens.hasNext ()) {
+            Token current = tokens.next ();
+            if (current.getPosition ().isHome ()) {
+                atHome = current;
+                break;
+            }
+        }
+        
+        return atHome;
     }
 
     public void makeActive ()

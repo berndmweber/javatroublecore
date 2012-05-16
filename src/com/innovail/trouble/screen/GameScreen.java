@@ -55,7 +55,6 @@ public class GameScreen extends TroubleScreen {
     private final Vector3 _cameraPos;
 
     private static final float _RotationAngleIncrease = 0.25f;
-    private float _rotationDelta = 0.0f;
 
     private final TroubleGame _myGame;
     private final List <Spot> _spots;
@@ -94,12 +93,15 @@ public class GameScreen extends TroubleScreen {
         _spots = _myGame.getField ().getSpots ();
         _tokenMesh = GameSettings.getInstance ().getTokenMesh ();
         _players = _myGame.getPlayers ();
-}
-
+    }
+    
+    protected void update (final float delta)
+    {
+        _myGame.updateGame ();
+    }
+    
     protected void render (final GL10 gl, final float delta)
     {
-        _rotationDelta += delta;
-
         renderField (gl);
         renderTokens (gl);
 
@@ -290,10 +292,7 @@ public class GameScreen extends TroubleScreen {
                                 Gdx.app.log (TAG, "currentEntry BB - " + _diceMesh.getBoundingBox ().toString ());
                             }
                             if (Intersector.intersectRayBoundsFast (_touchRay, _diceMesh.getBoundingBox ())) {
-                                final int[] result = _myGame.getDice ().roll ();
-                                Gdx.app.log (TAG, "Die touched -> " + result[0]);
-                                //Gdx.app.log (TAG, "Mesh " + j + " touched -> " + _currentState);
-                                //break;
+                                _myGame.rollDice ();
                             } else {
                                 _currentState = TroubleApplicationState.MAIN_MENU;
                             }

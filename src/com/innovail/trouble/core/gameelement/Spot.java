@@ -151,9 +151,14 @@ public class Spot {
         _nextSpot = spot;
     }
     
+    public Spot getNextSpot ()
+    {
+        return getNextSpot (null);
+    }
+    
     public Spot getNextSpot (final Player owner)
     {
-        if (_owner.equals (owner) && _isTurnOut) {
+        if ((owner != null) && _owner.equals (owner) && _isTurnOut) {
             return _nextSpotWhenTurnOut;
         }
 

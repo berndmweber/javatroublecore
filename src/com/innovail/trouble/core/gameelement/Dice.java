@@ -54,6 +54,11 @@ public class Dice {
         return faceAngles[_currentFace.get (die) - 1];
     }
     
+    public int getCurrentFaceValue (final int die)
+    {
+        return _currentFace.get (die);
+    }
+    
     public int getNumberOfDice ()
     {
         return _numberOfDice;
