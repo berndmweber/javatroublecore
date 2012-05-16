@@ -6,7 +6,7 @@
 package com.innovail.trouble.screen;
 
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -66,9 +66,9 @@ public class GameScreen implements TroubleScreen {
     private float _rotationDelta = 0.0f;
 
     private TroubleGame _myGame;
-    private Vector <Spot> _spots;
+    private List <Spot> _spots;
     private Iterator <Spot> _spot;
-    private Vector <Player> _players;
+    private List <Player> _players;
     private Iterator <Player> _player;
 
     public GameScreen ()
@@ -226,7 +226,7 @@ public class GameScreen implements TroubleScreen {
             _player = _players.iterator ();
             while (_player.hasNext ()) {
                 Player currentPlayer = _player.next ();
-                Vector <Token> tokens = currentPlayer.getTokens ();
+                List <Token> tokens = currentPlayer.getTokens ();
                 Iterator <Token> token = tokens.iterator ();
                 while (token.hasNext ()) {
                     Token currentToken = token.next ();

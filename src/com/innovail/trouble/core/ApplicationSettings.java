@@ -5,7 +5,6 @@
  */
 package com.innovail.trouble.core;
 
-import java.awt.Menu;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,7 +89,7 @@ public class ApplicationSettings {
         if (!_MenuEntries.containsKey (appPart)) {
             _MenuEntries.put (appPart, new HashMap <String, GameMesh> ());
         }
-        HashMap <String, GameMesh> currentMap = (HashMap <String, GameMesh>) _MenuEntries.get (appPart);
+        Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
         currentMap.put (entryName, new MenuEntryMesh (entryName, path, isInternal));
     }
 
@@ -103,7 +102,7 @@ public class ApplicationSettings {
         if (!_MenuEntries.containsKey (appPart)) {
             _MenuEntries.put (appPart, new HashMap <String, GameMesh> ());
         }
-        HashMap <String, GameMesh> currentMap = (HashMap <String, GameMesh>) _MenuEntries.get (appPart);
+        Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
         currentMap.put (entryName, new MenuEntryMesh (entryName, path, color, isInternal));
     }
     
@@ -122,11 +121,11 @@ public class ApplicationSettings {
         return null;
     }
 
-    public HashMap <String, GameMesh> getMenuEntries (String appPart)
+    public Map <String, GameMesh> getMenuEntries (String appPart)
     {
         if ((_MenuEntries != null) && !_MenuEntries.isEmpty ()) {
             if (_MenuEntries.containsKey (appPart)) {
-                return (HashMap <String, GameMesh>) _MenuEntries.get (appPart);
+                return _MenuEntries.get (appPart);
             }
         }
         return null;

@@ -5,7 +5,8 @@
  */
 package com.innovail.trouble.core.gameelement;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.graphics.Color;
 import com.innovail.trouble.core.GameSettings;
@@ -14,7 +15,7 @@ import com.innovail.trouble.core.GameSettings;
  * 
  */
 public class Player {
-    private Vector<Token> _tokens;
+    private List <Token> _tokens;
     private Color _color;
     private String _name;
     private int _number;
@@ -22,7 +23,7 @@ public class Player {
     
     public Player (int playerNumber)
     {
-        _tokens = new Vector<Token> ();
+        _tokens = new ArrayList <Token> ();
         _color = GameSettings.getInstance ().getPlayerColor (playerNumber);
         _name = new String ("Player " + playerNumber);
     }
@@ -56,7 +57,7 @@ public class Player {
         return _number;
     }
     
-    public Vector<Token> getTokens ()
+    public List <Token> getTokens ()
     {
         return _tokens;
     }
@@ -64,7 +65,7 @@ public class Player {
     public Token getToken (int number)
     {
         if (number < _tokens.size ()) {
-            return _tokens.elementAt (number);
+            return _tokens.get (number);
         }
         return null;
     }

@@ -5,7 +5,8 @@
  */
 package com.innovail.trouble.core.gameelement;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
@@ -23,20 +24,20 @@ public class Dice {
                                                    {-90.0f, 0.0f, 0.0f, 1.0f},
                                                    { 90.0f, 1.0f, 0.0f, 0.0f}};
     
-    private Vector <Integer> _currentFace;
+    private List <Integer> _currentFace;
     private int _numberOfDice;
     
     public Dice ()
     {
         _numberOfDice = 1;
-        _currentFace = new Vector<Integer> ();
+        _currentFace = new ArrayList <Integer> ();
         createFaces ();
     }
     
     public Dice (int numberOfDice)
     {
         _numberOfDice = numberOfDice;
-        _currentFace = new Vector<Integer> ();
+        _currentFace = new ArrayList <Integer> ();
         createFaces ();
     }
     

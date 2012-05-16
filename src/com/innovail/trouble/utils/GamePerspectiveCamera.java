@@ -5,7 +5,8 @@
  */
 package com.innovail.trouble.utils;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -29,7 +30,7 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
     private Vector3 _lookAtPoint;
     private Vector2 _rotationAngle;
     
-    private Vector<Vector2> _cutOffAngle;
+    private List<Vector2> _cutOffAngle;
     private boolean[] _wrapAround;
     
     /**
@@ -42,7 +43,7 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
     {
         super (fieldOfView, viewportWidth, viewportHeight);
 
-        _cutOffAngle = new Vector<Vector2> ();
+        _cutOffAngle = new ArrayList <Vector2> ();
         _cutOffAngle.add (new Vector2 (0.0f, 10.0f)); // MIN
         _cutOffAngle.add (new Vector2 (359.99f, 80.0f)); // MAX
         
@@ -149,7 +150,7 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
         _cutOffAngle.set (_MAX, maxCutOff);
     }
     
-    public Vector<Vector2> getCutoffAngle ()
+    public List<Vector2> getCutoffAngle ()
     {
         return _cutOffAngle;
     }

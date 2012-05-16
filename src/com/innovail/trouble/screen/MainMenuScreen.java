@@ -6,8 +6,8 @@
 package com.innovail.trouble.screen;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
@@ -48,7 +48,7 @@ public class MainMenuScreen implements TroubleScreen {
     private final BackgroundImage _backgroundImage;
 
     private final GameMesh _logo;
-    private final HashMap <String, GameMesh> _menuEntriesMap;
+    private final Map <String, GameMesh> _menuEntriesMap;
     private final Collection <GameMesh> _menuEntries;
     
     private float[] _yRotationAngle;

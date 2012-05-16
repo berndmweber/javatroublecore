@@ -16,7 +16,7 @@ import com.innovail.trouble.utils.SettingLoader;
  * 
  */
 public class JavaTroubleApplication extends Game {
-    private static String TAG = "JavaTroubleApplication";
+    private static final String TAG = "JavaTroubleApplication";
 
     public String currentState = TroubleApplicationState.MAIN_MENU;
     

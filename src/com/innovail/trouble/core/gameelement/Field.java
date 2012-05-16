@@ -5,9 +5,9 @@
  */
 package com.innovail.trouble.core.gameelement;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.innovail.trouble.core.GameSettings;
 import com.innovail.trouble.core.gameelement.Spot.Attributes;
@@ -16,7 +16,7 @@ import com.innovail.trouble.core.gameelement.Spot.Attributes;
  * 
  */
 public class Field {
-    private Vector<Spot> _spots;
+    private List <Spot> _spots;
     
     private static Field instance;
     
@@ -102,7 +102,7 @@ public class Field {
     private Field ()
     {}
 
-    public static Field createField (Vector<Player> players)
+    public static Field createField (List <Player> players)
     {
         if (instance == null) {
             instance = new Field ();
@@ -112,7 +112,7 @@ public class Field {
             normalizeVectors (new Vector3 (-5, 0, -5));
         }
         
-        instance._spots = new Vector<Spot> ();
+        instance._spots = new ArrayList <Spot> ();
 
         int positionIndex = 0;
         if ((players != null) && (players.size () > 0)) {
@@ -130,7 +130,7 @@ public class Field {
                     instance._spots.add (homeSpot[j]);
                 }
                 Spot startSpot = Spot.createSpot (Attributes.SPOT_IS_START, players.get (i));
-                instance._spots.lastElement ().setNextSpot (startSpot);
+                instance._spots.get (instance._spots.size () - 1).setNextSpot (startSpot);
                 startSpot.setPosition (_spotPosition[positionIndex++]);
                 instance._spots.add (startSpot);
                 Spot[] normalSpot = new Spot[8];
@@ -176,7 +176,7 @@ public class Field {
         return instance;
     }
     
-    public Vector<Spot> getSpots ()
+    public List <Spot> getSpots ()
     {
         return _spots;
     }

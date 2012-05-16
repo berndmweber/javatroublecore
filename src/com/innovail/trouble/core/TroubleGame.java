@@ -5,6 +5,8 @@
  */
 package com.innovail.trouble.core;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import com.innovail.trouble.core.gameelement.Dice;
@@ -15,7 +17,7 @@ import com.innovail.trouble.core.gameelement.Player;
  * 
  */
 public class TroubleGame {
-    private Vector<Player> _players;
+    private List <Player> _players;
     private Field _gameField;
     private Dice _dice;
     
@@ -24,7 +26,7 @@ public class TroubleGame {
     
     public void createGame ()
     {
-        _players = new Vector<Player> ();
+        _players = new ArrayList <Player> ();
         int numberOfPlayers = GameSettings.getInstance ().getNumberOfPlayers ();
         if (numberOfPlayers < GameSettings.getInstance ().getMinimumNumberOfPlayers ()) {
             numberOfPlayers = GameSettings.getInstance ().getMinimumNumberOfPlayers ();
@@ -43,7 +45,7 @@ public class TroubleGame {
         return _gameField;
     }
     
-    public Vector<Player> getPlayers ()
+    public List <Player> getPlayers ()
     {
         return _players;
     }
