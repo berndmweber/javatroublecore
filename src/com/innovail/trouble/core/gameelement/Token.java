@@ -11,10 +11,10 @@ import com.badlogic.gdx.graphics.Color;
  * 
  */
 public class Token {
-    private Player _owner;
+    private final Player _owner;
     private Spot _position;
 
-    public Token (Player player)
+    public Token (final Player player)
     {
         _owner = player;
     }
@@ -29,7 +29,7 @@ public class Token {
         return _position;
     }
     
-    public void setPosition (Spot spot)
+    public void setPosition (final Spot spot)
     {
         _position = spot;
     }

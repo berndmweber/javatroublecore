@@ -19,7 +19,8 @@ public class BackgroundImage {
     
     private Object _imageObject;
 
-    public BackgroundImage (String path, int width, int height, boolean isInternal)
+    public BackgroundImage (final String path, final int width,
+                             final int height, final boolean isInternal)
     {
         _path = path;
         _width = width;
@@ -27,7 +28,7 @@ public class BackgroundImage {
         _isInternal = isInternal;
     }
     
-    public BackgroundImage (String path, int width, int height)
+    public BackgroundImage (final String path, final int width, final int height)
     {
         _path = path;
         _width = width;
@@ -55,7 +56,7 @@ public class BackgroundImage {
         return _isInternal;
     }
     
-    public void setImageObject (Object image)
+    public void setImageObject (final Object image)
     {
         _imageObject = image;
     }
@@ -69,7 +70,7 @@ public class BackgroundImage {
     {
         Texture newImageTexture = null;
         if ((_path != null) && !_path.isEmpty ()) {
-            if (_isInternal == true) {
+            if (_isInternal) {
                 newImageTexture = new Texture (Gdx.files.internal (_path));
             } else {
                 newImageTexture = new Texture (Gdx.files.external (_path));

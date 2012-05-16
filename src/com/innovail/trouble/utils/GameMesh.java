@@ -38,8 +38,9 @@ public class GameMesh {
     private BoundingBox _bb;
     private Mesh _bbMesh;
 
-    public GameMesh (String path, Color color, boolean isInternal,
-                      String texturePath, String textureColorFormat)
+    public GameMesh (final String path, final Color color,
+                      final boolean isInternal, final String texturePath,
+                      final String textureColorFormat)
     {
         _path = path;
         _color = color;
@@ -48,8 +49,8 @@ public class GameMesh {
         _textureColorFormat = Format.valueOf (textureColorFormat);
     }
     
-    public GameMesh (String path, boolean isInternal,
-                      String texturePath, String textureColorFormat)
+    public GameMesh (final String path, final boolean isInternal,
+                      final String texturePath, final String textureColorFormat)
     {
         _path = path;
         _color = Color.WHITE;
@@ -58,7 +59,8 @@ public class GameMesh {
         _textureColorFormat = Format.valueOf (textureColorFormat);
     }
 
-    public GameMesh (String path, Color color, boolean isInternal, String texturePath)
+    public GameMesh (final String path, final Color color,
+                      final boolean isInternal, final String texturePath)
     {
         _path = path;
         _color = color;
@@ -67,7 +69,8 @@ public class GameMesh {
         _textureColorFormat = Format.RGBA8888;
     }
     
-    public GameMesh (String path, boolean isInternal, String texturePath)
+    public GameMesh (final String path, final boolean isInternal,
+                      final String texturePath)
     {
         _path = path;
         _color = Color.WHITE;
@@ -76,7 +79,7 @@ public class GameMesh {
         _textureColorFormat = Format.RGBA8888;
     }
     
-    public GameMesh (String path, Color color, boolean isInternal)
+    public GameMesh (final String path, final Color color, final boolean isInternal)
     {
         _path = path;
         _color = color;
@@ -85,7 +88,7 @@ public class GameMesh {
         _textureColorFormat = null;
     }
 
-    public GameMesh (String path, Color color)
+    public GameMesh (final String path, final Color color)
     {
         _path = path;
         _color = color;
@@ -94,7 +97,7 @@ public class GameMesh {
         _textureColorFormat = null;
     }
 
-    public GameMesh (String path, boolean isInternal)
+    public GameMesh (final String path, final boolean isInternal)
     {
         _path = path;
         _color = Color.WHITE;
@@ -103,7 +106,7 @@ public class GameMesh {
         _textureColorFormat = null;
     }
 
-    public GameMesh (String path)
+    public GameMesh (final String path)
     {
         _path = path;
         _color = Color.WHITE;
@@ -138,13 +141,13 @@ public class GameMesh {
                     } else {
                         objFile = Gdx.files.external (_path);
                     }
-                    InputStream in = objFile.read ();
+                    final InputStream in = objFile.read ();
                     _mesh = ObjLoader.loadObj (in, true);
                     in.close ();
                     _bb = _mesh.calculateBoundingBox ();
                     //Gdx.app.log (TAG, _path + ": BoundingBox - " + _bb.toString ());
                 } catch (Exception ex) {
-                    ex.printStackTrace ();
+                    Gdx.app.log (TAG, ex.getMessage ());
                 }
             }
         }
@@ -174,7 +177,7 @@ public class GameMesh {
         return _bb;
     }
     
-    public BoundingBox transformBoundingBox (Matrix4 transform)
+    public BoundingBox transformBoundingBox (final Matrix4 transform)
     {
         _bb = _mesh.calculateBoundingBox ();
         _bb.mul (transform);
@@ -186,7 +189,7 @@ public class GameMesh {
         if (_bbMesh != null) {
             _bbMesh.dispose ();
         }
-        Vector3[] bbCorners = _bb.getCorners ();
+        final Vector3[] bbCorners = _bb.getCorners ();
         _bbMesh = new Mesh (true, 8, 36, new VertexAttribute(Usage.Position, 3, "a_position"));
         _bbMesh.setVertices(new float[] {bbCorners[0].x, bbCorners[0].y, bbCorners[0].z,
                                           bbCorners[1].x, bbCorners[1].y, bbCorners[1].z,

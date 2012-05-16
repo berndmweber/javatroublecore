@@ -35,7 +35,7 @@ public class JavaTroubleApplication extends Game {
      */
     @Override
     public void render () {
-        TroubleScreen currentScreen = getScreen ();
+        final TroubleScreen currentScreen = getScreen ();
 
         if (currentState != currentScreen.getState ()) {
             currentState = currentScreen.getState ();

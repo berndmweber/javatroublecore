@@ -17,7 +17,7 @@ import com.innovail.trouble.utils.GameMesh;
 /**
  * 
  */
-public class ApplicationSettings {
+public final class ApplicationSettings {
     /* SETTINGS */
     private Map<String, GameFont> _GameFonts;
     
@@ -42,8 +42,8 @@ public class ApplicationSettings {
         return instance;
     }
     
-    public void setGameFont (String appPart, String fontFilePath,
-                             String fontImagePath, boolean isInternal)
+    public void setGameFont (final String appPart, final String fontFilePath,
+                              final String fontImagePath, final boolean isInternal)
     {
         if (_GameFonts == null) {
             _GameFonts = new HashMap<String, GameFont> ();
@@ -51,7 +51,7 @@ public class ApplicationSettings {
         _GameFonts.put (appPart, new GameFont (fontFilePath, fontImagePath, isInternal));
     }
     
-    public GameFont getGameFont (String appPart)
+    public GameFont getGameFont (final String appPart)
     {
         if ((_GameFonts != null) && !_GameFonts.isEmpty ()) {
             if (_GameFonts.containsKey (appPart)) {
@@ -61,8 +61,9 @@ public class ApplicationSettings {
         return null;
     }
     
-    public void setBackgroundImage (String appPart, String path, int width,
-                                    int height, boolean isInternal)
+    public void setBackgroundImage (final String appPart, final String path,
+                                     final int width, final int height,
+                                     final boolean isInternal)
     {
         if (_BackgroundImages == null) {
             _BackgroundImages = new HashMap<String, BackgroundImage> ();
@@ -70,7 +71,7 @@ public class ApplicationSettings {
         _BackgroundImages.put (appPart, new BackgroundImage (path, width, height, isInternal));
     }
     
-    public BackgroundImage getBackgroundImage (String appPart)
+    public BackgroundImage getBackgroundImage (final String appPart)
     {
         if ((_BackgroundImages != null) && !_BackgroundImages.isEmpty ()) {
             if (_BackgroundImages.containsKey (appPart)) {
@@ -80,8 +81,8 @@ public class ApplicationSettings {
         return null;
     }
     
-    public void setMenuEntry (String appPart, String entryName, String path,
-                               boolean isInternal)
+    public void setMenuEntry (final String appPart, final String entryName,
+                               final String path, final boolean isInternal)
     {
         if (_MenuEntries == null) {
             _MenuEntries = new HashMap <String, Map <String, GameMesh>> ();
@@ -89,12 +90,13 @@ public class ApplicationSettings {
         if (!_MenuEntries.containsKey (appPart)) {
             _MenuEntries.put (appPart, new HashMap <String, GameMesh> ());
         }
-        Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
+        final Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
         currentMap.put (entryName, new MenuEntryMesh (entryName, path, isInternal));
     }
 
-    public void setMenuEntry (String appPart, String entryName, String path,
-                               Color color, boolean isInternal)
+    public void setMenuEntry (final String appPart, final String entryName,
+                               final String path, final Color color,
+                               final boolean isInternal)
     {
         if (_MenuEntries == null) {
             _MenuEntries = new HashMap <String, Map <String, GameMesh>> ();
@@ -102,15 +104,15 @@ public class ApplicationSettings {
         if (!_MenuEntries.containsKey (appPart)) {
             _MenuEntries.put (appPart, new HashMap <String, GameMesh> ());
         }
-        Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
+        final Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
         currentMap.put (entryName, new MenuEntryMesh (entryName, path, color, isInternal));
     }
     
-    public GameMesh getMenuEntry (String appPart, String name)
+    public GameMesh getMenuEntry (final String appPart, final String name)
     {
         if ((_MenuEntries != null) && !_MenuEntries.isEmpty ()) {
             if (_MenuEntries.containsKey (appPart)) {
-                 Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
+                 final Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
                  if ((currentMap != null) && !currentMap.isEmpty ()) {
                      if (currentMap.containsKey (name)) {
                          return currentMap.get (name);
@@ -121,7 +123,7 @@ public class ApplicationSettings {
         return null;
     }
 
-    public Map <String, GameMesh> getMenuEntries (String appPart)
+    public Map <String, GameMesh> getMenuEntries (final String appPart)
     {
         if ((_MenuEntries != null) && !_MenuEntries.isEmpty ()) {
             if (_MenuEntries.containsKey (appPart)) {
@@ -131,12 +133,13 @@ public class ApplicationSettings {
         return null;
     }
 
-    public void setLogo (String path, Color color, boolean isInternal)
+    public void setLogo (final String path, final Color color,
+                          final boolean isInternal)
     {
         _Logo = new GameMesh (path, color, isInternal);
     }
     
-    public void setLogo (String path, boolean isInternal)
+    public void setLogo (final String path, final boolean isInternal)
     {
         _Logo = new GameMesh (path, isInternal);
     }
@@ -151,7 +154,7 @@ public class ApplicationSettings {
         return _CopyRightNotice;
     }
     
-    public void setCopyRightNotice (String notice)
+    public void setCopyRightNotice (final String notice)
     {
         _CopyRightNotice = notice;
     }

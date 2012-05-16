@@ -42,7 +42,7 @@ public class TroubleApplicationState {
         return _currentState;
     }*/
     
-    public static StateEnum getState (String state)
+    public static StateEnum getState (final String state)
     {
         if (state.equals (NEW_GAME)) return StateEnum.E_NEW_GAME;
         if (state.equals (SETTINGS)) return StateEnum.E_SETTINGS;

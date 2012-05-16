@@ -14,7 +14,7 @@ import com.innovail.trouble.utils.GameMesh;
 /**
  * 
  */
-public class GameSettings {
+public final class GameSettings {
     /* SETTINGS */
     private int _NumberOfPlayers = 0;
     
@@ -54,7 +54,7 @@ public class GameSettings {
         return _NumberOfPlayers;
     }
     
-    public void setNumberOfPlayers (int players)
+    public void setNumberOfPlayers (final int players)
     {
         _NumberOfPlayers = players;
     }
@@ -64,65 +64,65 @@ public class GameSettings {
         return _MinimumNumberOfPlayers;
     }
     
-    public void setMinimumNumberOfPlayers (int players)
+    public void setMinimumNumberOfPlayers (final int players)
     {
         _MinimumNumberOfPlayers = players;
     }
     
-    public int getNumberOfTokensPerPlayer (int players)
+    public int getNumberOfTokensPerPlayer (final int players)
     {
         if ((_NumberOfTokensPerPlayer != null) && (!_NumberOfTokensPerPlayer.isEmpty ())) {
-            if (_NumberOfTokensPerPlayer.containsKey (new Integer(players))) {
+            if (_NumberOfTokensPerPlayer.containsKey (Integer.valueOf (players))) {
                 return _NumberOfTokensPerPlayer.get (players).intValue ();
             }
         }
         return 4;
     }
     
-    public void setNumberOfTokensPerPlayer (int players, int tokens)
+    public void setNumberOfTokensPerPlayer (final int players, final int tokens)
     {
         if (_NumberOfTokensPerPlayer == null)
         {
-            _NumberOfTokensPerPlayer = new HashMap<Integer,Integer> ();
+            _NumberOfTokensPerPlayer = new HashMap <Integer,Integer> ();
         }
-        _NumberOfTokensPerPlayer.put (new Integer (players), new Integer (tokens));
+        _NumberOfTokensPerPlayer.put (Integer.valueOf (players), Integer.valueOf (tokens));
     }
     
-    public int getNumberOfNormalSpots (int players)
+    public int getNumberOfNormalSpots (final int players)
     {
         if ((_NumberOfNormalSpots != null) && (!_NumberOfNormalSpots.isEmpty ())) {
-            if (_NumberOfNormalSpots.containsKey (new Integer(players))) {
+            if (_NumberOfNormalSpots.containsKey (Integer.valueOf (players))) {
                 return _NumberOfNormalSpots.get (players).intValue ();
             }
         }
         return 9;
     }
     
-    public void setNumberOfNormalSpots (int players, int spots)
+    public void setNumberOfNormalSpots (final int players, final int spots)
     {
         if (_NumberOfNormalSpots == null)
         {
-            _NumberOfNormalSpots = new HashMap<Integer,Integer> ();
+            _NumberOfNormalSpots = new HashMap <Integer, Integer> ();
         }
-        _NumberOfNormalSpots.put (new Integer (players), new Integer (spots));
+        _NumberOfNormalSpots.put (Integer.valueOf (players), Integer.valueOf (spots));
     }
     
-   public Color getPlayerColor (int player)
+   public Color getPlayerColor (final int player)
     {
         if ((_PlayerColors != null) && (!_PlayerColors.isEmpty ())) {
             if (_PlayerColors.containsKey (player)) {
-                return _PlayerColors.get (new Integer(player));
+                return _PlayerColors.get (Integer.valueOf (player));
             }
         }
         return new Color ();
     }
     
-    public void setPlayerColor (int player, Color color)
+    public void setPlayerColor (final int player, final Color color)
     {
         if (_PlayerColors == null) {
-            _PlayerColors = new HashMap<Integer,Color> ();
+            _PlayerColors = new HashMap <Integer, Color> ();
         }
-        _PlayerColors.put (new Integer(player), color);
+        _PlayerColors.put (Integer.valueOf (player), color);
     }
     
     public GameMesh getSpotMesh ()
@@ -130,7 +130,7 @@ public class GameSettings {
         return _SpotMesh;
     }
     
-    public void setSpotMesh (String path, Color color, boolean isInternal)
+    public void setSpotMesh (final String path, final Color color, final boolean isInternal)
     {
         _SpotMesh = new GameMesh (path, color, isInternal);
     }
@@ -140,7 +140,7 @@ public class GameSettings {
         return _TokenMesh;
     }
     
-    public void setTokenMesh (String path, boolean isInternal)
+    public void setTokenMesh (final String path, final boolean isInternal)
     {
         _TokenMesh = new GameMesh (path, isInternal);
     }
@@ -150,8 +150,8 @@ public class GameSettings {
         return _DiceMesh;
     }
     
-    public void setDiceMesh (String path, boolean isInternal,
-                              String texturePath, String textureColorFormat)
+    public void setDiceMesh (final String path, final boolean isInternal,
+                              final String texturePath, final String textureColorFormat)
     {
         _DiceMesh = new GameMesh (path, isInternal, texturePath, textureColorFormat);
     }
@@ -161,7 +161,7 @@ public class GameSettings {
         return _NumberOfDice;
     }
     
-    public void setNumberOfDice (int dice)
+    public void setNumberOfDice (final int dice)
     {
         _NumberOfDice = dice;
     }

@@ -21,7 +21,7 @@ public class Spot {
     private Player _owner;
     private Spot _nextSpot;
     private Spot _nextSpotWhenTurnOut;
-    private Color _color;
+    private final Color _color;
     private Vector3 _position;
     
     public enum Attributes {
@@ -37,14 +37,14 @@ public class Spot {
         _color = GameSettings.getInstance ().getSpotMesh ().getColor ();
     }
     
-    public static Spot createSpot (Attributes attribute)
+    public static Spot createSpot (final Attributes attribute)
     {
         return createSpot (attribute, null);
     }
     
-    public static Spot createSpot (Attributes attribute, Player player)
+    public static Spot createSpot (final Attributes attribute, final Player player)
     {
-        Spot spot = new Spot ();
+        final Spot spot = new Spot ();
         
         switch (attribute) {
         case SPOT_IS_HOME:
@@ -72,7 +72,7 @@ public class Spot {
         return _isHome;
     }
 
-    public void makeHome (Player player)
+    public void makeHome (final Player player)
     {
         if (player != null) {
             _owner = player;
@@ -85,7 +85,7 @@ public class Spot {
         return _isStart;
     }
     
-    public void makeStart (Player player)
+    public void makeStart (final Player player)
     {
         if (player != null) {
             _owner = player;
@@ -98,7 +98,7 @@ public class Spot {
         return _isFinish;
     }
     
-    public void makeFinish (Player player)
+    public void makeFinish (final Player player)
     {
         if (player != null) {
             _owner = player;
@@ -111,7 +111,7 @@ public class Spot {
         return _isTurnOut;
     }
     
-    public void makeTurnout (Player player)
+    public void makeTurnout (final Player player)
     {
         if (player != null) {
             _owner = player;
@@ -119,7 +119,7 @@ public class Spot {
         }
     }
     
-    public boolean positionToken (Token newToken)
+    public boolean positionToken (final Token newToken)
     {
         if (_currentToken != null) {
             return false;
@@ -146,22 +146,21 @@ public class Spot {
         return _owner;
     }
     
-    public void setNextSpot (Spot spot)
+    public void setNextSpot (final Spot spot)
     {
         _nextSpot = spot;
     }
     
-    public Spot getNextSpot (Player owner)
+    public Spot getNextSpot (final Player owner)
     {
-        if (_owner == owner) {
-            if (_isTurnOut) {
-                return _nextSpotWhenTurnOut;
-            }
+        if (_owner.equals (owner) && _isTurnOut) {
+            return _nextSpotWhenTurnOut;
         }
+
         return _nextSpot;
     }
     
-    public void setNextTurnOutSpot (Spot spot)
+    public void setNextTurnOutSpot (final Spot spot)
     {
         if (_isTurnOut) {
             _nextSpotWhenTurnOut = spot;
@@ -176,7 +175,7 @@ public class Spot {
         return _owner.getColor ();
     }
     
-    public void setPosition (float x, float y, float z)
+    public void setPosition (final float x, final float y, final float z)
     {
         if (_position == null) {
             _position = new Vector3 ();
@@ -186,7 +185,7 @@ public class Spot {
         _position.z = z;
     }
     
-    public void setPosition (Vector3 position)
+    public void setPosition (final Vector3 position)
     {
         _position = position;
     }

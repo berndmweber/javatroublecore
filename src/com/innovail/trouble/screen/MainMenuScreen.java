@@ -98,12 +98,12 @@ public class MainMenuScreen implements TroubleScreen {
      * @see com.badlogic.gdx.ApplicationListener#resize(int, int)
      */
     @Override
-    public void resize (int width, int height) {
+    public void resize (final int width, final int height) {
         Gdx.app.log (TAG, "resize");
     }
 
     @Override
-    public void render (float delta)
+    public void render (final float delta)
     {
         _rotationDelta += delta;
         final GL10 gl = Gdx.graphics.getGL10();
@@ -132,7 +132,7 @@ public class MainMenuScreen implements TroubleScreen {
         gl.glDisable (GL10.GL_DEPTH_TEST);
     }
 
-    private void renderBackground (float width, float height)
+    private void renderBackground (final float width, final float height)
     {
         _viewMatrix.setToOrtho2D (0.0f, 0.0f, width, height);
         _spriteBatch.setProjectionMatrix (_viewMatrix);
@@ -149,28 +149,28 @@ public class MainMenuScreen implements TroubleScreen {
         _spriteBatch.enableBlending ();
         _spriteBatch.setBlendFunction (GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
         final String text = ApplicationSettings.getInstance ().getCopyRightNotice ();
-        float textWidth = _menuFont.getBounds (text).width;
-        float textHeight = _menuFont.getBounds (text).height;
+        final float textWidth = _menuFont.getBounds (text).width;
+        final float textHeight = _menuFont.getBounds (text).height;
         _menuFont.draw (_spriteBatch, text,
                         Gdx.graphics.getWidth () / 2 - textWidth / 2,
                         textHeight + 5);
         _spriteBatch.end ();
     }
     
-    private void setProjectionAndCamera (GL10 gl) {
+    private void setProjectionAndCamera (final GL10 gl) {
         _camera.position.set (0, 0, 2);
         _camera.direction.set (0, 0, -4).sub (_camera.position).nor ();
         _camera.update ();
         _camera.apply (gl);
     }
     
-    private void setLighting (GL10 gl) {
-        Color lightColor = _logo.getColor ();
-        float[] specular0 = {lightColor.r, lightColor.g, lightColor.b, lightColor.a};
-        float[] position1 = {-2.0f, -2.0f, 1.0f, 0.0f};
-        float[] ambient1 = {1.0f, 1.0f, 1.0f, 1.0f};
-        float[] diffuse1 = {1.0f, 1.0f, 1.0f, 1.0f};
-        float[] specular1 = {1.0f, 1.0f, 1.0f, 1.0f};
+    private void setLighting (final GL10 gl) {
+        final Color lightColor = _logo.getColor ();
+        final float[] specular0 = {lightColor.r, lightColor.g, lightColor.b, lightColor.a};
+        final float[] position1 = {-2.0f, -2.0f, 1.0f, 0.0f};
+        final float[] ambient1 = {1.0f, 1.0f, 1.0f, 1.0f};
+        final float[] diffuse1 = {1.0f, 1.0f, 1.0f, 1.0f};
+        final float[] specular1 = {1.0f, 1.0f, 1.0f, 1.0f};
         
         gl.glEnable (GL10.GL_LIGHTING);
         gl.glLightModelf (GL10.GL_LIGHT_MODEL_TWO_SIDE, 0.0f);
@@ -188,12 +188,12 @@ public class MainMenuScreen implements TroubleScreen {
         gl.glEnable (GL10.GL_BLEND);
     }
 
-    private void renderLogo (GL10 gl)
+    private void renderLogo (final GL10 gl)
     {
-        Color currentColor = _logo.getColor ();
-        int frontAndOrBack = GL10.GL_FRONT;
-        float[] matSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
-        float[] matShininess = {7.0f};
+        final Color currentColor = _logo.getColor ();
+        final int frontAndOrBack = GL10.GL_FRONT;
+        final float[] matSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
+        final float[] matShininess = {7.0f};
         
         gl.glPushMatrix ();
         gl.glTranslatef (0.0f, 1.0f, 0.3f);
@@ -206,13 +206,13 @@ public class MainMenuScreen implements TroubleScreen {
         //gl.glDisable (GL10.GL_COLOR_MATERIAL);
      }
     
-    private void renderMenu (GL10 gl)
+    private void renderMenu (final GL10 gl)
     {
-        Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
+        final Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
         float yLocation = 0.0f;
         int i = 0;
         while (currentMesh.hasNext ()) {
-            GameMesh thisMesh = currentMesh.next ();
+            final GameMesh thisMesh = currentMesh.next ();
             gl.glPushMatrix ();
             gl.glTranslatef (0.0f, yLocation, 0.0f);
             gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
@@ -220,8 +220,8 @@ public class MainMenuScreen implements TroubleScreen {
             thisMesh.getMesh ().render (GL10.GL_TRIANGLES);
             gl.glPopMatrix ();
             
-            Matrix4 transform = new Matrix4();
-            Matrix4 tmp = new Matrix4();
+            final Matrix4 transform = new Matrix4();
+            final Matrix4 tmp = new Matrix4();
             transform.setToTranslation (0.0f, yLocation, 0.0f);
             tmp.setToRotation (1.0f, 0.0f, 0.0f, 90.0f);
             transform.mul(tmp);
@@ -267,7 +267,7 @@ public class MainMenuScreen implements TroubleScreen {
              * @see com.badlogic.gdx.InputProcessor#keyDown(int)
              */
             @Override
-            public boolean keyDown (int keycode) {
+            public boolean keyDown (final int keycode) {
                 boolean rv = true;
                 
                 switch (keycode) {
@@ -275,14 +275,14 @@ public class MainMenuScreen implements TroubleScreen {
                     Gdx.app.log (TAG, "keyDown() - SPACE");
                     break;
                 case Input.Keys.R:
-                    if (!_filling) {
-                        Gdx.app.log (TAG, "keyDown() - Filling");
-                        Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
-                        _filling = true;
-                    } else {
+                    if (_filling) {
                         Gdx.app.log (TAG, "keyDown() - wireframing");
                         Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_LINE);
                         _filling = false;
+                    } else {
+                        Gdx.app.log (TAG, "keyDown() - Filling");
+                        Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
+                        _filling = true;
                     }
                     break;
                 case Input.Keys.UP:
@@ -307,17 +307,17 @@ public class MainMenuScreen implements TroubleScreen {
              * @see com.badlogic.gdx.InputProcessor#touchUp(int, int, int, int)
              */
             @Override
-            public boolean touchUp (int x, int y, int pointer, int button) {
+            public boolean touchUp (final int x, final int y, final int pointer, final int button) {
                 if (!_isDragged || (_dragEvents < MIN_NUMBER_OF_DRAGS)) {
-                    Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
+                    final Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
                     int j = 0;
-                    Ray touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
+                    final Ray touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
                     if (_DEBUG) {
                         Gdx.app.log (TAG, "Touch position - x: " + x + " - y: " + y);
                         Gdx.app.log (TAG, "Touch ray - " + touchRay.toString ());
                     }
                     while (currentMesh.hasNext ()) {
-                        MenuEntryMesh currentEntry = (MenuEntryMesh)currentMesh.next ();
+                        final MenuEntryMesh currentEntry = (MenuEntryMesh)currentMesh.next ();
                         if (touchRay != null) {
                             if (_DEBUG) {
                                 Gdx.app.log (TAG, "currentEntry BB - " + currentEntry.getBoundingBox ().toString ());

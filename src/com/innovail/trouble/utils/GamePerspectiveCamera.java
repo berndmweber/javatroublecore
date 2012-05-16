@@ -19,18 +19,18 @@ import com.badlogic.gdx.math.Vector3;
  */
 public class GamePerspectiveCamera extends PerspectiveCamera {
     private static final String TAG = "GamePerspectiveCamera";
-    private final boolean DEBUG = false;
+    private static final boolean DEBUG = false;
     
-    private final int _MIN = 0;
-    private final int _MAX = 1;
-    private final int _X = 0;
-    private final int _Y = 1;
+    private static final int _MIN = 0;
+    private static final int _MAX = 1;
+    private static final int _X = 0;
+    private static final int _Y = 1;
     
     private float _radius = 0.0f;
     private Vector3 _lookAtPoint;
     private Vector2 _rotationAngle;
     
-    private List<Vector2> _cutOffAngle;
+    private final List<Vector2> _cutOffAngle;
     private boolean[] _wrapAround;
     
     /**
@@ -38,8 +38,9 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
      * @param viewportWidth
      * @param viewportHeight
      */
-    public GamePerspectiveCamera (float fieldOfView, float viewportWidth,
-                                   float viewportHeight)
+    public GamePerspectiveCamera (final float fieldOfView,
+                                   final float viewportWidth,
+                                   final float viewportHeight)
     {
         super (fieldOfView, viewportWidth, viewportHeight);
 
@@ -52,13 +53,13 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
         _wrapAround[_Y] = false; // Y
     }
 
-    public Vector2 lookAtPosition (Vector3 lookAtPoint, Vector3 from)
+    public Vector2 lookAtPosition (final Vector3 lookAtPoint, final Vector3 from)
     {
-        Vector3 normFrom = new Vector3 (from);
+        final Vector3 normFrom = new Vector3 (from);
         normFrom.sub (lookAtPoint);
-        float sqr = normFrom.x * normFrom.x +
-                     normFrom.y * normFrom.y +
-                     normFrom.z * normFrom.z;
+        final float sqr = normFrom.x * normFrom.x +
+                           normFrom.y * normFrom.y +
+                           normFrom.z * normFrom.z;
         _radius = (float)Math.sqrt (sqr);
 
         if (_rotationAngle == null) {
@@ -82,11 +83,11 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
         return _rotationAngle;
     }
     
-    public void rotateAroundLookAtPoint (Vector2 angleIncrease)
+    public void rotateAroundLookAtPoint (final Vector2 angleIncrease)
     {
         if (_radius != 0.0f) {
-            Vector3 newPosition = new Vector3 ();
-            Vector2 newAngle = new Vector2 (_rotationAngle);
+            final Vector3 newPosition = new Vector3 ();
+            final Vector2 newAngle = new Vector2 (_rotationAngle);
             newAngle.add (angleIncrease);
             if ((newAngle.x > _cutOffAngle.get (_MIN).x) &&
                 (newAngle.x < _cutOffAngle.get (_MAX).x))
@@ -144,7 +145,7 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
         }
     }
     
-    public void setCutoffAngle (Vector2 minCutOff, Vector2 maxCutOff)
+    public void setCutoffAngle (final Vector2 minCutOff, final Vector2 maxCutOff)
     {
         _cutOffAngle.set (_MIN, minCutOff);
         _cutOffAngle.set (_MAX, maxCutOff);
@@ -155,7 +156,7 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
         return _cutOffAngle;
     }
     
-    public void setWrapAround (boolean X, boolean Y)
+    public void setWrapAround (final boolean X, final boolean Y)
     {
         _wrapAround[_X] = X;
         _wrapAround[_Y] = Y;

@@ -12,14 +12,16 @@ import com.badlogic.gdx.graphics.Color;
  */
 public class MenuEntryMesh extends GameMesh {
 
-    private final String _name;
+    private final String _name; // NOPMD by bweber on 5/16/12 10:21 AM
     
     /**
      * @param path
      * @param color
      * @param isInternal
      */
-    public MenuEntryMesh (String name, String path, Color color, boolean isInternal) {
+    public MenuEntryMesh (final String name, final String path,
+                           final Color color, final boolean isInternal)
+    {
         super (path, color, isInternal);
         _name = name;
     }
@@ -28,7 +30,8 @@ public class MenuEntryMesh extends GameMesh {
      * @param path
      * @param color
      */
-    public MenuEntryMesh (String name, String path, Color color) {
+    public MenuEntryMesh (final String name, final String path, final Color color)
+    {
         super (path, color);
         _name = name;
     }
@@ -37,7 +40,8 @@ public class MenuEntryMesh extends GameMesh {
      * @param path
      * @param isInternal
      */
-    public MenuEntryMesh (String name, String path, boolean isInternal) {
+    public MenuEntryMesh (final String name, final String path, final boolean isInternal)
+    {
         super (path, isInternal);
         _name = name;
     }
@@ -45,7 +49,7 @@ public class MenuEntryMesh extends GameMesh {
     /**
      * @param path
      */
-    public MenuEntryMesh (String name, String path) {
+    public MenuEntryMesh (final String name, final String path) {
         super (path);
         _name = name;
     }

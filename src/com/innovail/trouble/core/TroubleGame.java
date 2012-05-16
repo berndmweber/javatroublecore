@@ -7,7 +7,6 @@ package com.innovail.trouble.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import com.innovail.trouble.core.gameelement.Dice;
 import com.innovail.trouble.core.gameelement.Field;
@@ -20,9 +19,6 @@ public class TroubleGame {
     private List <Player> _players;
     private Field _gameField;
     private Dice _dice;
-    
-    public TroubleGame ()
-    {}
     
     public void createGame ()
     {

@@ -15,7 +15,7 @@ import com.innovail.trouble.core.gameelement.Spot.Attributes;
 /**
  * 
  */
-public class Field {
+public final class Field {
     private List <Spot> _spots;
     
     private static Field instance;
@@ -102,7 +102,7 @@ public class Field {
     private Field ()
     {}
 
-    public static Field createField (List <Player> players)
+    public static Field createField (final List <Player> players)
     {
         if (instance == null) {
             instance = new Field ();
@@ -115,7 +115,7 @@ public class Field {
         instance._spots = new ArrayList <Spot> ();
 
         int positionIndex = 0;
-        if ((players != null) && (players.size () > 0)) {
+        if ((players != null) && (!players.isEmpty ())) {
             Spot lastNormalSpot = null;
             Spot firstTurnOutSpot = null;
             for (int i = 0; i < players.size (); i++) {
@@ -129,7 +129,7 @@ public class Field {
                     players.get (i).getToken (j).setPosition (homeSpot[j]);
                     instance._spots.add (homeSpot[j]);
                 }
-                Spot startSpot = Spot.createSpot (Attributes.SPOT_IS_START, players.get (i));
+                final Spot startSpot = Spot.createSpot (Attributes.SPOT_IS_START, players.get (i));
                 instance._spots.get (instance._spots.size () - 1).setNextSpot (startSpot);
                 startSpot.setPosition (_spotPosition[positionIndex++]);
                 instance._spots.add (startSpot);
@@ -145,7 +145,7 @@ public class Field {
                     normalSpot[j].setPosition (_spotPosition[positionIndex++]);
                     instance._spots.add (normalSpot[j]);
                 }
-                Spot turnOutSpot = Spot.createSpot (Attributes.SPOT_IS_TURN_OUT, players.get (i));
+                final Spot turnOutSpot = Spot.createSpot (Attributes.SPOT_IS_TURN_OUT, players.get (i));
                 turnOutSpot.setNextSpot (startSpot);
                 turnOutSpot.setPosition (_spotPosition[positionIndex++]);
                 instance._spots.add (turnOutSpot);
@@ -162,7 +162,7 @@ public class Field {
                     }
                     finishSpot[j].setPosition (_spotPosition[positionIndex++]);
                     instance._spots.add (finishSpot[j]);
-                 }
+                }
                 if (i > 0) {
                     lastNormalSpot.setNextSpot (turnOutSpot);
                 }
@@ -181,7 +181,7 @@ public class Field {
         return _spots;
     }
     
-    public static void normalizeVectors (Vector3 normal)
+    public static void normalizeVectors (final Vector3 normal)
     {
         for (int i = 0; i < _spotPosition.length; i++) {
             _spotPosition[i].add (normal);

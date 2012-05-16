@@ -12,7 +12,7 @@ import com.badlogic.gdx.Screen;
  */
 public abstract interface TroubleScreen extends Screen {
 
-    public void createInputProcessor ();
+    void createInputProcessor ();
     
-    public String getState ();
+    String getState ();
 }

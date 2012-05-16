@@ -24,8 +24,8 @@ public class Dice {
                                                    {-90.0f, 0.0f, 0.0f, 1.0f},
                                                    { 90.0f, 1.0f, 0.0f, 0.0f}};
     
-    private List <Integer> _currentFace;
-    private int _numberOfDice;
+    private final List <Integer> _currentFace;
+    private final int _numberOfDice;
     
     public Dice ()
     {
@@ -34,7 +34,7 @@ public class Dice {
         createFaces ();
     }
     
-    public Dice (int numberOfDice)
+    public Dice (final int numberOfDice)
     {
         _numberOfDice = numberOfDice;
         _currentFace = new ArrayList <Integer> ();
@@ -48,7 +48,7 @@ public class Dice {
         }
     }
     
-    public float[] getFaceAngle (int die)
+    public float[] getFaceAngle (final int die)
     {
         /* We need to subtract one since the die faces start at 1 but the array starts at 0. */
         return faceAngles[_currentFace.get (die) - 1];
@@ -61,23 +61,24 @@ public class Dice {
     
     public int[] roll ()
     {
-        int [] results = roll (_numberOfDice);
+       final int [] results = roll (_numberOfDice);
         for (int i = 0; i < results.length; i++) {
             _currentFace.set (i, results[i]);
         }
         return results;
     }
 
-    public static int[] roll (int numberOfDice)
+    public static int[] roll (final int numberOfDice)
     {
+        int[] results = null;
+        
         if (numberOfDice > 0) {
-            int[] results = new int [numberOfDice];
+            results  = new int [numberOfDice];
             for (int roll = 0; roll < numberOfDice; roll++) {
                 results[roll] = MathUtils.random (1, 6);
                 Gdx.app.log (TAG, "Die " + roll + " rolled: " + results[roll]);
             }
-            return results;
         }
-        return null;
+        return results;
     }
 }

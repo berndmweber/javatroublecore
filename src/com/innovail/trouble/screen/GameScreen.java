@@ -65,10 +65,10 @@ public class GameScreen implements TroubleScreen {
     private static final float _RotationAngleIncrease = 0.25f;
     private float _rotationDelta = 0.0f;
 
-    private TroubleGame _myGame;
-    private List <Spot> _spots;
+    private final TroubleGame _myGame;
+    private final List <Spot> _spots;
     private Iterator <Spot> _spot;
-    private List <Player> _players;
+    private final List <Player> _players;
     private Iterator <Player> _player;
 
     public GameScreen ()
@@ -106,7 +106,7 @@ public class GameScreen implements TroubleScreen {
      * @see com.badlogic.gdx.Screen#render(float)
      */
     @Override
-    public void render (float delta) {
+    public void render (final float delta) {
         _rotationDelta += delta;
         final GL10 gl = Gdx.graphics.getGL10();
         final Color currentColor = Color.WHITE;
@@ -138,7 +138,7 @@ public class GameScreen implements TroubleScreen {
         gl.glDisable (GL10.GL_DEPTH_TEST);
     }
 
-    private void renderBackground (float width, float height)
+    private void renderBackground (final float width, final float height)
     {
         _viewMatrix.setToOrtho2D (0.0f, 0.0f, width, height);
         _spriteBatch.setProjectionMatrix (_viewMatrix);
@@ -157,12 +157,12 @@ public class GameScreen implements TroubleScreen {
         _spriteBatch.end ();
     }
 
-    private void setProjectionAndCamera (GL10 gl) {
+    private void setProjectionAndCamera (final GL10 gl) {
         _camera.update ();
         _camera.apply (gl);
     }
     
-    private void setLighting (GL10 gl) {
+    private void setLighting (final GL10 gl) {
         gl.glEnable (GL10.GL_LIGHTING);
         gl.glLightModelf (GL10.GL_LIGHT_MODEL_TWO_SIDE, 0.0f);
         
@@ -172,7 +172,7 @@ public class GameScreen implements TroubleScreen {
         gl.glEnable (GL10.GL_BLEND);
     }
 
-    private void renderDice (GL10 gl)
+    private void renderDice (final GL10 gl)
     {
         final Matrix4 transform = new Matrix4();
         final Matrix4 tmp = new Matrix4();
@@ -182,13 +182,13 @@ public class GameScreen implements TroubleScreen {
         gl.glTranslatef (0.0f, 0.0f, 7.0f);
         transform.setToTranslation (0.0f, 0.0f, 7.0f);
         if (_myGame != null) {
-            float [] angle = _myGame.getDice ().getFaceAngle (0);
+            final float [] angle = _myGame.getDice ().getFaceAngle (0);
             gl.glRotatef (angle[0], angle[1], angle[2], angle[3]);
             tmp.setToRotation (angle[1], angle[2], angle[3], angle[0]);
             transform.mul(tmp);
         }
         
-        Color currentColor = Color.WHITE;
+        final Color currentColor = Color.WHITE;
         gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
         //gl.glMaterialfv (frontAndOrBack, GL10.GL_SPECULAR, matSpecular, 0);
         //gl.glMaterialfv (frontAndOrBack, GL10.GL_SHININESS, matShininess, 0);
@@ -198,19 +198,19 @@ public class GameScreen implements TroubleScreen {
         _diceMesh.transformBoundingBox (transform);
     }
 
-    private void renderField (GL10 gl)
+    private void renderField (final GL10 gl)
     {
         if (_myGame != null) {
             //int frontAndOrBack = GL10.GL_FRONT;
             _spot = _spots.iterator ();
             while (_spot.hasNext ()) {
-                Spot currentSpot = _spot.next ();
+                final Spot currentSpot = _spot.next ();
                 gl.glPushMatrix ();
                 gl.glTranslatef (currentSpot.getPosition ().x,
                                  currentSpot.getPosition ().y,
                                  currentSpot.getPosition ().z);
                 
-                Color currentColor = currentSpot.getColor ();
+                final Color currentColor = currentSpot.getColor ();
                 gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
                 //gl.glMaterialfv (frontAndOrBack, GL10.GL_SPECULAR, matSpecular, 0);
                 //gl.glMaterialfv (frontAndOrBack, GL10.GL_SHININESS, matShininess, 0);
@@ -220,23 +220,23 @@ public class GameScreen implements TroubleScreen {
         }
     }
 
-    private void renderTokens (GL10 gl)
+    private void renderTokens (final GL10 gl)
     {
         if (_myGame != null) {
             _player = _players.iterator ();
             while (_player.hasNext ()) {
-                Player currentPlayer = _player.next ();
-                List <Token> tokens = currentPlayer.getTokens ();
-                Iterator <Token> token = tokens.iterator ();
+                final Player currentPlayer = _player.next ();
+                final List <Token> tokens = currentPlayer.getTokens ();
+                final Iterator <Token> token = tokens.iterator ();
                 while (token.hasNext ()) {
-                    Token currentToken = token.next ();
-                    Spot currentSpot = currentToken.getPosition ();
+                    final Token currentToken = token.next ();
+                    final Spot currentSpot = currentToken.getPosition ();
                     gl.glPushMatrix ();
                     gl.glTranslatef (currentSpot.getPosition ().x,
                                      currentSpot.getPosition ().y,
                                      currentSpot.getPosition ().z);
                     gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
-                    Color currentColor = currentPlayer.getColor ();
+                    final Color currentColor = currentPlayer.getColor ();
                     gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
                     _tokenMesh.getMesh ().render (GL10.GL_TRIANGLES);
                     gl.glPopMatrix ();
@@ -249,7 +249,7 @@ public class GameScreen implements TroubleScreen {
      * @see com.badlogic.gdx.Screen#resize(int, int)
      */
     @Override
-    public void resize (int width, int height) {
+    public void resize (final int width, final int height) {
         // TODO Auto-generated method stub
         
     }
@@ -312,7 +312,7 @@ public class GameScreen implements TroubleScreen {
              * @see com.badlogic.gdx.InputProcessor#keyDown(int)
              */
             @Override
-            public boolean keyDown (int keycode) {
+            public boolean keyDown (final int keycode) {
                 boolean rv = true;
                 
                 switch (keycode) {
@@ -320,14 +320,14 @@ public class GameScreen implements TroubleScreen {
                     Gdx.app.log (TAG, "keyDown() - SPACE");
                     break;
                 case Input.Keys.R:
-                    if (!_filling) {
-                        Gdx.app.log (TAG, "keyDown() - Filling");
-                        Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
-                        _filling = true;
-                    } else {
+                    if (_filling) {
                         Gdx.app.log (TAG, "keyDown() - wireframing");
                         Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_LINE);
                         _filling = false;
+                    } else {
+                        Gdx.app.log (TAG, "keyDown() - Filling");
+                        Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
+                        _filling = true;
                     }
                     break;
                 case Input.Keys.UP:
@@ -362,7 +362,7 @@ public class GameScreen implements TroubleScreen {
              * @see com.badlogic.gdx.InputProcessor#touchUp(int, int, int, int)
              */
             @Override
-            public boolean touchUp (int x, int y, int pointer, int button) {
+            public boolean touchUp (final int x, final int y, final int pointer, final int button) {
                 if (!_isDragged || (_dragEvents < MIN_NUMBER_OF_DRAGS)) {
                     _touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
                     if (_DEBUG) {
@@ -376,7 +376,7 @@ public class GameScreen implements TroubleScreen {
                                 Gdx.app.log (TAG, "currentEntry BB - " + _diceMesh.getBoundingBox ().toString ());
                             }
                             if (Intersector.intersectRayBoundsFast (_touchRay, _diceMesh.getBoundingBox ())) {
-                                int[] result = _myGame.getDice ().roll ();
+                                final int[] result = _myGame.getDice ().roll ();
                                 Gdx.app.log (TAG, "Die touched -> " + result[0]);
                                 //Gdx.app.log (TAG, "Mesh " + j + " touched -> " + _currentState);
                                 //break;
@@ -395,7 +395,7 @@ public class GameScreen implements TroubleScreen {
              * @see com.badlogic.gdx.InputProcessor#touchDragged(int, int, int)
              */
             @Override
-            public boolean touchDragged (int x, int y, int pointer) {
+            public boolean touchDragged (final int x, final int y, final int pointer) {
                 if (_dragEvents >= MIN_NUMBER_OF_DRAGS) {
                     Gdx.app.log (TAG, "Touch dragged position - x: " + x + " - y: " + y);
                     _axisDiff.set (_lastPosition);

@@ -18,14 +18,15 @@ public class GameFont {
     private boolean _flipFont = false;
     private BitmapFont _relatedFont = null;
     
-    public GameFont (String fontFilePath, String fontImagePath, boolean isInternal)
+    public GameFont (final String fontFilePath, final String fontImagePath,
+                      final boolean isInternal)
     {
         _fontFilePath = fontFilePath;
         _fontImagePath = fontImagePath;
         _isInternal = isInternal;
     }
     
-    public GameFont (String fontFilePath, String fontImagePath)
+    public GameFont (final String fontFilePath, final String fontImagePath)
     {
         _fontFilePath = fontFilePath;
         _fontImagePath = fontImagePath;

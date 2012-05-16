@@ -15,20 +15,20 @@ import com.innovail.trouble.core.GameSettings;
  * 
  */
 public class Player {
-    private List <Token> _tokens;
+    private final List <Token> _tokens;
     private Color _color;
     private String _name;
     private int _number;
     private boolean _isActive = false;
     
-    public Player (int playerNumber)
+    public Player (final int playerNumber)
     {
         _tokens = new ArrayList <Token> ();
         _color = GameSettings.getInstance ().getPlayerColor (playerNumber);
         _name = new String ("Player " + playerNumber);
     }
     
-    public void setColor (Color color)
+    public void setColor (final Color color)
     {
         if (color != null) {
             _color = color;
@@ -40,7 +40,7 @@ public class Player {
         return _color;
     }
     
-    public void setName (String name)
+    public void setName (final String name)
     {
         if (name != null) {
             _name = name;
@@ -62,7 +62,7 @@ public class Player {
         return _tokens;
     }
     
-    public Token getToken (int number)
+    public Token getToken (final int number)
     {
         if (number < _tokens.size ()) {
             return _tokens.get (number);
@@ -70,7 +70,7 @@ public class Player {
         return null;
     }
     
-    public void createTokens (int number)
+    public void createTokens (final int number)
     {
         for (int i = 0; i < number; i++) {
             _tokens.add (new Token (this));
