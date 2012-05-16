@@ -38,9 +38,9 @@ import com.innovail.trouble.utils.GamePerspectiveCamera;
  */
 public class GameScreen implements TroubleScreen {
     private static final String TAG = "GameScreen";
-    private static final String _AppPartName = TroubleApplicationState.GAME;
+    private static final String AppPartName = TroubleApplicationState.GAME;
     
-    private final boolean _DEBUG = false;
+    private static final boolean _DEBUG = false;
 
     private String _currentState = TroubleApplicationState.GAME;
     
@@ -53,16 +53,16 @@ public class GameScreen implements TroubleScreen {
     private final GameMesh _diceMesh;
     private final GameMesh _tokenMesh;
 
-    private Matrix4 _viewMatrix;
-    private Matrix4 _transformMatrix;
-    private Camera _camera;
+    private final Matrix4 _viewMatrix;
+    private final Matrix4 _transformMatrix;
+    private final Camera _camera;
     private Ray _touchRay;
     
     private Vector3 _cameraLookAtPoint;
     private Vector2 _cameraRotationAngleIncrease;
-    private Vector3 _cameraPos;
+    private final Vector3 _cameraPos;
 
-    private final float _RotationAngleIncrease = 0.25f;
+    private static final float _RotationAngleIncrease = 0.25f;
     private float _rotationDelta = 0.0f;
 
     private TroubleGame _myGame;
@@ -78,14 +78,14 @@ public class GameScreen implements TroubleScreen {
         createInputProcessor ();
 
         _spriteBatch = new SpriteBatch ();
-        _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (_AppPartName);
+        _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (AppPartName);
         _backgroundImage.createTexture ().setFilter (TextureFilter.Linear, TextureFilter.Linear);
         _diceMesh = GameSettings.getInstance ().getDiceMesh ();
 
         _viewMatrix = new Matrix4 ();
         _transformMatrix = new Matrix4 ();
         
-        float aspectRatio = (float) Gdx.graphics.getWidth () / (float) Gdx.graphics.getHeight ();
+        final float aspectRatio = (float) Gdx.graphics.getWidth () / (float) Gdx.graphics.getHeight ();
         _camera = new GamePerspectiveCamera (67, 2f * aspectRatio, 2f);
         _cameraPos = new Vector3 (0.0f, 7.0f, 11.0f);
         _cameraLookAtPoint = new Vector3 (0.0f, 0.0f, 2.5f);
@@ -108,8 +108,8 @@ public class GameScreen implements TroubleScreen {
     @Override
     public void render (float delta) {
         _rotationDelta += delta;
-        GL10 gl = Gdx.graphics.getGL10();
-        Color currentColor = Color.WHITE;
+        final GL10 gl = Gdx.graphics.getGL10();
+        final Color currentColor = Color.WHITE;
 
         gl.glClear (GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         gl.glClearColor (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
@@ -174,8 +174,8 @@ public class GameScreen implements TroubleScreen {
 
     private void renderDice (GL10 gl)
     {
-        Matrix4 transform = new Matrix4();
-        Matrix4 tmp = new Matrix4();
+        final Matrix4 transform = new Matrix4();
+        final Matrix4 tmp = new Matrix4();
 
         _diceMesh.getTexture ().bind ();
         gl.glPushMatrix ();
@@ -305,7 +305,7 @@ public class GameScreen implements TroubleScreen {
     @Override
     public void createInputProcessor () {
         Gdx.input.setInputProcessor (new GameInputAdapter () {
-            private final float _MaxAxisIncrease = 10.0f;
+            private static final float _MaxAxisIncrease = 10.0f;
             private Vector2 _axisDiff = new Vector2 ();
             
             /* (non-Javadoc)

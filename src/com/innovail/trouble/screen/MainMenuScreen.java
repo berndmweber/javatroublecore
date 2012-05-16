@@ -35,9 +35,9 @@ import com.innovail.trouble.utils.GameMesh;
  */
 public class MainMenuScreen implements TroubleScreen {
     private static final String TAG = "MainMenuScreen";
-    private static final String _AppPartName = TroubleApplicationState.MAIN_MENU;
+    private static final String AppPartName = TroubleApplicationState.MAIN_MENU;
     
-    private final boolean _DEBUG = false;
+    private static final boolean _DEBUG = false;
 
     private String _currentState = TroubleApplicationState.MAIN_MENU;
 
@@ -47,19 +47,20 @@ public class MainMenuScreen implements TroubleScreen {
     private final SpriteBatch _spriteBatch;
     private final BackgroundImage _backgroundImage;
 
-    private GameMesh _logo;
-    private HashMap <String, GameMesh> _menuEntriesMap;
-    private Collection <GameMesh> _menuEntries;
+    private final GameMesh _logo;
+    private final HashMap <String, GameMesh> _menuEntriesMap;
+    private final Collection <GameMesh> _menuEntries;
+    
     private float[] _yRotationAngle;
     private int[] _yRotationDirection;
-    private final float _RotationMaxAngle = 2.0f;
-    private final float _RotationAngleIncrease = 0.2f;
-    private float _rotationDelta = 0.0f;
-    private final float _RotationMaxDelta = 0.05f;
+    private static final float _RotationMaxAngle = 2.0f;
+    private static final float _RotationAngleIncrease = 0.2f;
+    private static float _rotationDelta = 0.0f;
+    private static final float _RotationMaxDelta = 0.05f;
 
-    private Matrix4 _viewMatrix;
-    private Matrix4 _transformMatrix;
-    private Camera _camera;
+    private final Matrix4 _viewMatrix;
+    private final Matrix4 _transformMatrix;
+    private final Camera _camera;
     
     public MainMenuScreen ()
     {
@@ -68,17 +69,17 @@ public class MainMenuScreen implements TroubleScreen {
         createInputProcessor ();
         
         _spriteBatch = new SpriteBatch ();
-        _menuFont = ApplicationSettings.getInstance ().getGameFont (_AppPartName).createBitmapFont ();
-        _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (_AppPartName);
+        _menuFont = ApplicationSettings.getInstance ().getGameFont (AppPartName).createBitmapFont ();
+        _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (AppPartName);
         _backgroundImage.createTexture ().setFilter (TextureFilter.Linear, TextureFilter.Linear);
         
         _logo = ApplicationSettings.getInstance ().getLogo ();
         
-        _menuEntriesMap = ApplicationSettings.getInstance ().getMenuEntries (_AppPartName);
+        _menuEntriesMap = ApplicationSettings.getInstance ().getMenuEntries (AppPartName);
         _menuEntries = _menuEntriesMap.values ();
         _yRotationAngle = new float[_menuEntriesMap.size ()];
         _yRotationDirection = new int[_menuEntriesMap.size ()];
-        Random rand = new Random ();
+        final Random rand = new Random ();
         for (int i = 0; i < _menuEntriesMap.size (); i++) {
             _yRotationAngle[i] = rand.nextFloat ();
             _yRotationAngle[i] *= rand.nextBoolean () ? 1.0f : -1.0f;
@@ -88,7 +89,8 @@ public class MainMenuScreen implements TroubleScreen {
         _viewMatrix = new Matrix4 ();
         _transformMatrix = new Matrix4 ();
         
-        float aspectRatio = (float) Gdx.graphics.getWidth () / (float) Gdx.graphics.getHeight ();
+        final float aspectRatio = (float) Gdx.graphics.getWidth () /
+                                   (float) Gdx.graphics.getHeight ();
         _camera = new PerspectiveCamera (100, 2f * aspectRatio, 2f);
     }
     
@@ -104,8 +106,8 @@ public class MainMenuScreen implements TroubleScreen {
     public void render (float delta)
     {
         _rotationDelta += delta;
-        GL10 gl = Gdx.graphics.getGL10();
-        Color currentColor = Color.BLACK;
+        final GL10 gl = Gdx.graphics.getGL10();
+        final Color currentColor = Color.BLACK;
 
         gl.glClear (GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         gl.glClearColor (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
@@ -146,7 +148,7 @@ public class MainMenuScreen implements TroubleScreen {
                           false, false);
         _spriteBatch.enableBlending ();
         _spriteBatch.setBlendFunction (GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
-        String text = ApplicationSettings.getInstance ().getCopyRightNotice ();
+        final String text = ApplicationSettings.getInstance ().getCopyRightNotice ();
         float textWidth = _menuFont.getBounds (text).width;
         float textHeight = _menuFont.getBounds (text).height;
         _menuFont.draw (_spriteBatch, text,
