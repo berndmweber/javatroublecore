@@ -108,7 +108,7 @@ public class Player {
         return onStart;
     }
     
-    public boolean hasTokenOnSpot (Spot targetPosition)
+    public boolean hasTokenOnSpot (final Spot targetPosition)
     {
         boolean onSpot = false;
         
@@ -147,7 +147,7 @@ public class Player {
         
         final Iterator<Token> tokens = _tokens.iterator ();
         while (tokens.hasNext ()) {
-            Token current = tokens.next ();
+            final Token current = tokens.next ();
             if (current.getPosition ().isStart ())
             {
                 onStart = current;
@@ -164,7 +164,7 @@ public class Player {
         
         final Iterator<Token> tokens = _tokens.iterator ();
         while (tokens.hasNext ()) {
-            Token current = tokens.next ();
+            final Token current = tokens.next ();
             if (current.getPosition ().isHome ()) {
                 atHome = current;
                 break;
@@ -172,6 +172,33 @@ public class Player {
         }
         
         return atHome;
+    }
+    
+    public List <Token> getMovableTokens (final int moves)
+    {
+        final ArrayList <Token> availableTokens = new ArrayList<Token> ();
+        
+        final Iterator<Token> tokens = _tokens.iterator ();
+        while (tokens.hasNext ()) {
+            final Token token = tokens.next ();
+            final Token potentialToken = token.getTargetPosition (moves).getCurrentToken ();
+            if ((potentialToken == null) ||
+                 !potentialToken.getOwner ().equals (this))
+            {
+                availableTokens.add (token);
+                token.setSelected (true);
+            }
+        }
+        
+        return availableTokens;
+    }
+    
+    public void deselectAllTokens ()
+    {
+        final Iterator<Token> tokens = _tokens.iterator ();
+        while (tokens.hasNext ()) {
+            tokens.next ().setSelected (false);
+        }
     }
 
     public void makeActive ()

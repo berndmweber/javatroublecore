@@ -6,6 +6,7 @@
 package com.innovail.trouble.core;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
@@ -39,9 +40,11 @@ public class TroubleGame {
     private GameState _lastState = GameState.UNDEFINED;
     
     private boolean _hasRolled = false;
+    private boolean _hasSelected = false;
 
     private Player _activePlayer;
     private Token _movingToken;
+    private List <Token> _availableTokens;
 
     
     public void createGame ()
@@ -102,34 +105,40 @@ public class TroubleGame {
     
     private void selectTokenHandler ()
     {
-        int diceValue = _dice.getCurrentFaceValue (0);
+        final int diceValue = _dice.getCurrentFaceValue (0);
         
-        if (diceValue == 6) {
-            if (_activePlayer.hasTokensAtHome ()) {
-                if (_activePlayer.hasTokenOnStart ()) {
-                    _movingToken = _activePlayer.getTokenOnStart ();
-                    do {
-                        Token potentialToken = _movingToken.getTargetPosition (diceValue).getCurrentToken ();
-                        if ((potentialToken != null) &&
-                             potentialToken.getOwner ().equals (_activePlayer))
-                        {
-                            _movingToken = potentialToken;
-                        } else {
-                            break;
-                        }
-                    /* TODO: This needs to be revisited. There is a chance that this could lead to
-                     * an infinite loop depending on the play field.
-                     */
-                    } while (true);
+        if ((_availableTokens == null) || _availableTokens.isEmpty ()) {
+            if (diceValue == 6) {
+                if (_activePlayer.hasTokensAtHome ()) {
+                    if (_activePlayer.hasTokenOnStart ()) {
+                        _movingToken = _activePlayer.getTokenOnStart ();
+                        do {
+                            final Token potentialToken = _movingToken.getTargetPosition (diceValue).getCurrentToken ();
+                            if ((potentialToken != null) &&
+                                 potentialToken.getOwner ().equals (_activePlayer))
+                            {
+                                _movingToken = potentialToken;
+                            } else {
+                                break;
+                            }
+                        /* TODO: This needs to be revisited. There is a chance that this could lead to
+                         * an infinite loop depending on the play field.
+                         */
+                        } while (true);
+                    } else {
+                        _movingToken = _activePlayer.getTokenAtHome ();
+                    }
+                    _currentState = GameState.MOVE_TOKEN;
                 } else {
-                    _movingToken = _activePlayer.getTokenAtHome ();
+                    _availableTokens = _activePlayer.getMovableTokens (diceValue);
                 }
-                _currentState = GameState.MOVE_TOKEN;
             } else {
-                
+                _availableTokens = _activePlayer.getMovableTokens (diceValue);
             }
         } else {
-            _currentState = GameState.ROLL_DIE;
+            if (_hasSelected) {
+                _currentState = GameState.MOVE_TOKEN;
+            }
         }
     }
     
@@ -183,4 +192,22 @@ public class TroubleGame {
         }
     }
 
+    public void selectToken (Token selected)
+    {
+        if ((_currentState == GameState.SELECT_TOKEN) &&
+            ((_availableTokens != null) && !_availableTokens.isEmpty ()))
+        {
+            final Iterator <Token> tokens = _availableTokens.iterator ();
+            while (tokens.hasNext ()) {
+                final Token token = tokens.next ();
+                if (token.equals (selected)) {
+                    _movingToken = token;
+                    _availableTokens.clear ();
+                    _activePlayer.deselectAllTokens ();
+                    _hasSelected = true;
+                    break;
+                }
+            }
+        }
+    }
 }

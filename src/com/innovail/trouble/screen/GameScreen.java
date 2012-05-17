@@ -183,7 +183,8 @@ public class GameScreen extends TroubleScreen {
                                  currentSpot.getPosition ().z);
                 final Color currentColor = currentSpot.getColor ();
                 if ((currentSpot.getCurrentToken () != null) &&
-                    (currentSpot.getCurrentToken ().isMoving ())) {
+                    (currentSpot.getCurrentToken ().isSelected () &&
+                     currentSpot.getCurrentToken ().isMoving ())) {
                     final float[] matEmission = {currentColor.r == 1.0f ? currentColor.r : 0.3f,
                             currentColor.g == 1.0f ? currentColor.g : 0.3f,
                             currentColor.b == 1.0f ? currentColor.b : 0.3f,
@@ -208,35 +209,35 @@ public class GameScreen extends TroubleScreen {
                 final Iterator <Token> token = tokens.iterator ();
                 while (token.hasNext ()) {
                     final Token currentToken = token.next ();
+                    gl.glPushMatrix ();
+                    
                     if (!currentToken.isMoving ()) {
                         final Spot currentSpot = currentToken.getPosition ();
-                        gl.glPushMatrix ();
                         gl.glTranslatef (currentSpot.getPosition ().x,
                                          currentSpot.getPosition ().y,
                                          currentSpot.getPosition ().z);
-                        gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
-                        final Color currentColor = currentPlayer.getColor ();
-                        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-                        _tokenMesh.getMesh ().render (GL10.GL_TRIANGLES);
-                        gl.glPopMatrix ();
                     } else {
                         final Vector3 currentPosition = currentToken.getCurrentMovePosition ();
-                        gl.glPushMatrix ();
                         gl.glTranslatef (currentPosition.x,
                                          currentPosition.y,
                                          currentPosition.z);
-                        gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
-                        final Color currentColor = currentPlayer.getColor ();
+                    }
+                    /* TODO: Modify blender object so we don't have to rotate every time. */
+                    gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
+                    final Color currentColor = currentPlayer.getColor ();
+                    gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+                    
+                    if (currentToken.isSelected ()) {
                         final float[] matEmission = {currentColor.r == 1.0f ? currentColor.r : 0.3f,
                                                       currentColor.g == 1.0f ? currentColor.g : 0.3f,
                                                       currentColor.b == 1.0f ? currentColor.b : 0.3f,
                                                       1.0f};
-                        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
                         gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, matEmission, 0);
-                        _tokenMesh.getMesh ().render (GL10.GL_TRIANGLES);
-                        gl.glPopMatrix ();
-                        gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, NoMat, 0);
                     }
+                    
+                    _tokenMesh.getMesh ().render (GL10.GL_TRIANGLES);
+                    gl.glPopMatrix ();
+                    gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, NoMat, 0);
                 }
             }
         }

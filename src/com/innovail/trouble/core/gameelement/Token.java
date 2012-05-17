@@ -20,6 +20,7 @@ public class Token {
     private Spot _oldPosition;
     private Spot _nextPosition;
     
+    private boolean _isSelected = false;
     private boolean _isMoving = false;
     private boolean _doneMoving = false;
     
@@ -104,6 +105,7 @@ public class Token {
         } while (!current.isStart ());
         _nextPosition = current;
         setPosition(current);
+        setSelected (true);
         _isMoving = true;
         _moveStepsLeft = NUMBER_OF_STEPS;
     }
@@ -119,6 +121,7 @@ public class Token {
             }
         }
         setPosition(current);
+        setSelected (true);
         _isMoving = true;
         _moveStepsLeft = NUMBER_OF_STEPS;
     }
@@ -131,6 +134,7 @@ public class Token {
                 _nextPosition = _nextPosition.getNextSpot ();
                 _moveStepsLeft = NUMBER_OF_STEPS;
             } else {
+                setSelected (false);
                 _isMoving = false;
                 _doneMoving = true;
             }
@@ -145,5 +149,15 @@ public class Token {
     public Color getColor ()
     {
         return _owner.getColor ();
+    }
+    
+    public void setSelected (boolean selected)
+    {
+        _isSelected = selected;
+    }
+    
+    public boolean isSelected ()
+    {
+        return _isSelected;
     }
 }
