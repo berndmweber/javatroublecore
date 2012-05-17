@@ -107,6 +107,20 @@ public class Player {
         
         return onStart;
     }
+    
+    public boolean hasTokenOnSpot (Spot targetPosition)
+    {
+        boolean onSpot = false;
+        
+        final Iterator<Token> tokens = _tokens.iterator ();
+        while (tokens.hasNext ()) {
+            if (tokens.next ().getPosition ().equals (targetPosition)) {
+                onSpot = true;
+                break;
+            }
+        }
+        return onSpot;
+    }
 
     public boolean hasTokensOnField ()
     {

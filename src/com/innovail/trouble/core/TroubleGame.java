@@ -27,7 +27,8 @@ public class TroubleGame {
         SELECT_TOKEN,
         MOVE_TOKEN,
         REMOVE_FOE_TOKEN,
-        WIN_GAME
+        WIN_GAME,
+        UNDEFINED
     };
     
     private List <Player> _players;
@@ -35,9 +36,10 @@ public class TroubleGame {
     private Dice _dice;
     
     private GameState _currentState = GameState.ROLL_DIE;
+    private GameState _lastState = GameState.UNDEFINED;
     
     private boolean _hasRolled = false;
-    private boolean _doneMoving = false;
+
     private Player _activePlayer;
     private Token _movingToken;
 
@@ -62,6 +64,13 @@ public class TroubleGame {
     
     public void updateGame ()
     {
+        if (_currentState != _lastState) {
+            if (DEBUG) {
+                Gdx.app.log (TAG, "Current State: " + _currentState.toString ());
+            }
+        }
+        _lastState = _currentState;
+        
         switch (_currentState) {
         case ROLL_DIE:
             rollDiceHandler ();
@@ -78,9 +87,8 @@ public class TroubleGame {
         case WIN_GAME:
             winGameHandler ();
             break;
-        }
-        if (DEBUG) {
-            Gdx.app.log (TAG, "Current State: " + _currentState.toString ());
+        default:
+            break;
         }
     }
     
@@ -100,10 +108,25 @@ public class TroubleGame {
             if (_activePlayer.hasTokensAtHome ()) {
                 if (_activePlayer.hasTokenOnStart ()) {
                     _movingToken = _activePlayer.getTokenOnStart ();
+                    do {
+                        Token potentialToken = _movingToken.getTargetPosition (diceValue).getCurrentToken ();
+                        if ((potentialToken != null) &&
+                             potentialToken.getOwner ().equals (_activePlayer))
+                        {
+                            _movingToken = potentialToken;
+                        } else {
+                            break;
+                        }
+                    /* TODO: This needs to be revisited. There is a chance that this could lead to
+                     * an infinite loop depending on the play field.
+                     */
+                    } while (true);
                 } else {
                     _movingToken = _activePlayer.getTokenAtHome ();
                 }
                 _currentState = GameState.MOVE_TOKEN;
+            } else {
+                
             }
         } else {
             _currentState = GameState.ROLL_DIE;

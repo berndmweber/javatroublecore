@@ -128,6 +128,11 @@ public class Spot {
         return true;
     }
     
+    public void releaseToken ()
+    {
+        _currentToken = null;
+    }
+    
     public Token getCurrentToken ()
     {
         return _currentToken;

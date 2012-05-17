@@ -41,7 +41,21 @@ public class Token {
     
     public void setPosition (final Spot spot)
     {
+        /* When tokens get assigned the first time. */
+        if (_position != null) {
+            _position.releaseToken ();
+        }
         _position = spot;
+        _position.positionToken (this);
+    }
+    
+    public Spot getTargetPosition (final int moves)
+    {
+        Spot current = _position;
+        for (int i = 0; i < moves; i++) {
+            current = current.getNextSpot ();
+        }
+        return current;
     }
     
     public boolean isMoving ()
@@ -66,7 +80,7 @@ public class Token {
             current = current.getNextSpot ();
         } while (!current.isStart ());
         _nextPosition = current;
-        _position = current;
+        setPosition(current);
         _isMoving = true;
         _moveStepsLeft = NUMBER_OF_STEPS;
     }
@@ -81,7 +95,7 @@ public class Token {
                 _nextPosition = current;
             }
         }
-        _position = current;
+        setPosition(current);
         _isMoving = true;
         _moveStepsLeft = NUMBER_OF_STEPS;
     }

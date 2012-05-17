@@ -16,6 +16,9 @@ import com.badlogic.gdx.math.MathUtils;
  */
 public class Dice {
     private static final String TAG = "Dice";
+    
+    private static final boolean DEBUG = true;
+    
     public static final int[] faceValues = {1, 2, 3, 4, 5, 6};
     public static final float[][] faceAngles = {{-90.0f, 1.0f, 0.0f, 0.0f},
                                                    { 90.0f, 0.0f, 0.0f, 1.0f},
@@ -80,7 +83,11 @@ public class Dice {
         if (numberOfDice > 0) {
             results  = new int [numberOfDice];
             for (int roll = 0; roll < numberOfDice; roll++) {
-                results[roll] = MathUtils.random (1, 6);
+                if (DEBUG) {
+                    results[roll] = 6;
+                } else {
+                    results[roll] = MathUtils.random (1, 6);
+                }
                 Gdx.app.log (TAG, "Die " + roll + " rolled: " + results[roll]);
             }
         }
