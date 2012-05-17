@@ -6,12 +6,13 @@
 package com.innovail.trouble.core.gameelement;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector3;
 
 /**
  * 
  */
 public class Token {
-    private static final int NUMBER_OF_STEPS = 2;
+    private static final int NUMBER_OF_STEPS = 10;
     
     private final Player _owner;
     private Spot _position;
@@ -58,9 +59,31 @@ public class Token {
         return current;
     }
     
+    public Spot getMoveNextPosition ()
+    {
+        return _nextPosition;
+    }
+    
+    public Spot getMoveOldPosition ()
+    {
+        return _oldPosition;
+    }
+    
     public boolean isMoving ()
     {
         return _isMoving;
+    }
+    
+    public Vector3 getCurrentMovePosition ()
+    {
+        Vector3 currentPosition = new Vector3 (_oldPosition.getPosition ());
+        
+        currentPosition.sub (_nextPosition.getPosition ());
+        currentPosition.div ((float)NUMBER_OF_STEPS);
+        currentPosition.mul (_moveStepsLeft);
+        currentPosition.add (_nextPosition.getPosition ());
+        
+        return currentPosition;
     }
     
     public boolean doneMoving ()
@@ -102,7 +125,7 @@ public class Token {
     
     public void move ()
     {
-        if (_moveStepsLeft-- == 0) {
+        if (--_moveStepsLeft == 1) {
             if (!_nextPosition.equals (_position)) {
                 _oldPosition = _nextPosition;
                 _nextPosition = _nextPosition.getNextSpot ();

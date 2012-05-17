@@ -39,6 +39,9 @@ public class GameScreen extends TroubleScreen {
     private static final String TAG = "GameScreen";
     private static final String AppPartName = TroubleApplicationState.GAME;
     
+    private static final float[] NoMat = {0.0f, 0.0f, 0.0f, 1.0f};
+    private static final int FrontAndOrBack = GL10.GL_FRONT;
+
     private final SpriteBatch _spriteBatch;
     private final BackgroundImage _backgroundImage;
     
@@ -171,7 +174,6 @@ public class GameScreen extends TroubleScreen {
     private void renderField (final GL10 gl)
     {
         if (_myGame != null) {
-            //int frontAndOrBack = GL10.GL_FRONT;
             _spot = _spots.iterator ();
             while (_spot.hasNext ()) {
                 final Spot currentSpot = _spot.next ();
@@ -179,13 +181,19 @@ public class GameScreen extends TroubleScreen {
                 gl.glTranslatef (currentSpot.getPosition ().x,
                                  currentSpot.getPosition ().y,
                                  currentSpot.getPosition ().z);
-                
                 final Color currentColor = currentSpot.getColor ();
+                if ((currentSpot.getCurrentToken () != null) &&
+                    (currentSpot.getCurrentToken ().isMoving ())) {
+                    final float[] matEmission = {currentColor.r == 1.0f ? currentColor.r : 0.3f,
+                            currentColor.g == 1.0f ? currentColor.g : 0.3f,
+                            currentColor.b == 1.0f ? currentColor.b : 0.3f,
+                            1.0f};
+                    gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, matEmission, 0);
+                }
                 gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-                //gl.glMaterialfv (frontAndOrBack, GL10.GL_SPECULAR, matSpecular, 0);
-                //gl.glMaterialfv (frontAndOrBack, GL10.GL_SHININESS, matShininess, 0);
                 _spotMesh.getMesh ().render (GL10.GL_TRIANGLES);
                 gl.glPopMatrix ();
+                gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, NoMat, 0);
             }
         }
     }
@@ -200,16 +208,35 @@ public class GameScreen extends TroubleScreen {
                 final Iterator <Token> token = tokens.iterator ();
                 while (token.hasNext ()) {
                     final Token currentToken = token.next ();
-                    final Spot currentSpot = currentToken.getPosition ();
-                    gl.glPushMatrix ();
-                    gl.glTranslatef (currentSpot.getPosition ().x,
-                                     currentSpot.getPosition ().y,
-                                     currentSpot.getPosition ().z);
-                    gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
-                    final Color currentColor = currentPlayer.getColor ();
-                    gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-                    _tokenMesh.getMesh ().render (GL10.GL_TRIANGLES);
-                    gl.glPopMatrix ();
+                    if (!currentToken.isMoving ()) {
+                        final Spot currentSpot = currentToken.getPosition ();
+                        gl.glPushMatrix ();
+                        gl.glTranslatef (currentSpot.getPosition ().x,
+                                         currentSpot.getPosition ().y,
+                                         currentSpot.getPosition ().z);
+                        gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
+                        final Color currentColor = currentPlayer.getColor ();
+                        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+                        _tokenMesh.getMesh ().render (GL10.GL_TRIANGLES);
+                        gl.glPopMatrix ();
+                    } else {
+                        final Vector3 currentPosition = currentToken.getCurrentMovePosition ();
+                        gl.glPushMatrix ();
+                        gl.glTranslatef (currentPosition.x,
+                                         currentPosition.y,
+                                         currentPosition.z);
+                        gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
+                        final Color currentColor = currentPlayer.getColor ();
+                        final float[] matEmission = {currentColor.r == 1.0f ? currentColor.r : 0.3f,
+                                                      currentColor.g == 1.0f ? currentColor.g : 0.3f,
+                                                      currentColor.b == 1.0f ? currentColor.b : 0.3f,
+                                                      1.0f};
+                        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+                        gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, matEmission, 0);
+                        _tokenMesh.getMesh ().render (GL10.GL_TRIANGLES);
+                        gl.glPopMatrix ();
+                        gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, NoMat, 0);
+                    }
                 }
             }
         }

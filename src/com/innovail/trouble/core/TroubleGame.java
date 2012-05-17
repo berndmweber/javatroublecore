@@ -177,8 +177,10 @@ public class TroubleGame {
     
     public void rollDice ()
     {
-        _dice.roll ();
-        _hasRolled = true;
+        if (_currentState == GameState.ROLL_DIE) {
+            _dice.roll ();
+            _hasRolled = true;
+        }
     }
 
 }
