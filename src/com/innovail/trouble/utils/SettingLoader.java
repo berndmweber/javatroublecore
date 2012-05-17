@@ -168,6 +168,10 @@ public class SettingLoader {
                                                      current.getAttribute ("texture_color_format"));
             GameSettings.getInstance ().setNumberOfDice (current.getInt ("number"));
         }
+        current = gameSettings.getChildByName ("turnout");
+        if (current != null) {
+            GameSettings.getInstance ().setTurnOutValue (current.getInt ("value"));
+        }
     }
     
 }

@@ -22,6 +22,8 @@ public final class GameSettings {
     
     private int _NumberOfDice = 0;
     
+    private int _TurnOutValue = 0;
+    
     private Map<Integer, Integer> _NumberOfTokensPerPlayer;
     
     private Map<Integer, Integer> _NumberOfNormalSpots;
@@ -164,5 +166,15 @@ public final class GameSettings {
     public void setNumberOfDice (final int dice)
     {
         _NumberOfDice = dice;
+    }
+    
+    public int getTurnOutValue ()
+    {
+        return _TurnOutValue;
+    }
+    
+    public void setTurnOutValue (int turnOut)
+    {
+        _TurnOutValue = turnOut;
     }
 }

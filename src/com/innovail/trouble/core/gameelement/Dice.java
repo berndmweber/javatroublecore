@@ -17,7 +17,7 @@ import com.badlogic.gdx.math.MathUtils;
 public class Dice {
     private static final String TAG = "Dice";
     
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     
     public static final int[] faceValues = {1, 2, 3, 4, 5, 6};
     public static final float[][] faceAngles = {{-90.0f, 1.0f, 0.0f, 0.0f},

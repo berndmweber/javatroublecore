@@ -108,7 +108,7 @@ public class TroubleGame {
         final int diceValue = _dice.getCurrentFaceValue (0);
         
         if (_availableTokens.isEmpty ()) {
-            if (diceValue == 6) {
+            if (diceValue == GameSettings.getInstance ().getTurnOutValue ()) {
                 if (_activePlayer.hasTokensAtHome ()) {
                     if (_activePlayer.hasTokenOnStart ()) {
                         _movingToken = _activePlayer.getTokenOnStart ();
@@ -131,9 +131,15 @@ public class TroubleGame {
                     _currentState = GameState.MOVE_TOKEN;
                 } else {
                     _availableTokens = _activePlayer.getMovableTokens (diceValue);
+                    if (_availableTokens.isEmpty ()) {
+                        _currentState = GameState.ROLL_DIE;
+                    }
                 }
             } else {
                 _availableTokens = _activePlayer.getMovableTokens (diceValue);
+                if (_availableTokens.isEmpty ()) {
+                    _currentState = GameState.ROLL_DIE;
+                }
             }
         } else {
             if (_hasSelected) {
