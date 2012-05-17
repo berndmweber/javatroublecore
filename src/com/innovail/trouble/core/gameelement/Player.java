@@ -181,12 +181,17 @@ public class Player {
         final Iterator<Token> tokens = _tokens.iterator ();
         while (tokens.hasNext ()) {
             final Token token = tokens.next ();
-            final Token potentialToken = token.getTargetPosition (moves).getCurrentToken ();
-            if ((potentialToken == null) ||
-                 !potentialToken.getOwner ().equals (this))
-            {
-                availableTokens.add (token);
-                token.setSelected (true);
+            final Spot targetPosition = token.getTargetPosition (moves);
+            if (targetPosition != null) {
+                final Token potentialToken = targetPosition.getCurrentToken ();
+                if ((potentialToken == null) ||
+                     !potentialToken.getOwner ().equals (this))
+                {
+                    availableTokens.add (token);
+                    targetPosition.setPotentialToken (token);
+                    token.setPotentialPosition (targetPosition);
+                    token.setSelected (true);
+                }
             }
         }
         
@@ -195,9 +200,11 @@ public class Player {
     
     public void deselectAllTokens ()
     {
-        final Iterator<Token> tokens = _tokens.iterator ();
+        final Iterator <Token> tokens = _tokens.iterator ();
         while (tokens.hasNext ()) {
-            tokens.next ().setSelected (false);
+            Token token = tokens.next ();
+            token.setSelected (false);
+            token.resetPotentialPosition ();
         }
     }
 

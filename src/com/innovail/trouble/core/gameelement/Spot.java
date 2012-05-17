@@ -17,10 +17,13 @@ public class Spot {
     private boolean _isStart = false;
     private boolean _isFinish = false;
     private boolean _isTurnOut = false;
+    
     private Token _currentToken;
+    private Token _potentialToken;
     private Player _owner;
     private Spot _nextSpot;
     private Spot _nextSpotWhenTurnOut;
+    
     private final Color _color;
     private Vector3 _position;
     
@@ -138,6 +141,16 @@ public class Spot {
         return _currentToken;
     }
     
+    public void setPotentialToken (final Token potential)
+    {
+        _potentialToken = potential;
+    }
+    
+    public Token getPotentialToken ()
+    {
+        return _potentialToken;
+    }
+    
     public boolean hasOwner ()
     {
         if (_owner != null) {
@@ -163,7 +176,9 @@ public class Spot {
     
     public Spot getNextSpot (final Player owner)
     {
-        if ((owner != null) && _owner.equals (owner) && _isTurnOut) {
+        if ((owner != null) && (_owner != null) &&
+            _owner.equals (owner) && _isTurnOut)
+        {
             return _nextSpotWhenTurnOut;
         }
 

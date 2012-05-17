@@ -12,10 +12,11 @@ import com.badlogic.gdx.math.Vector3;
  * 
  */
 public class Token {
-    private static final int NUMBER_OF_STEPS = 10;
+    private static final int NUMBER_OF_STEPS = 2;
     
     private final Player _owner;
     private Spot _position;
+    private Spot _potentialPosition;
     
     private Spot _oldPosition;
     private Spot _nextPosition;
@@ -55,9 +56,26 @@ public class Token {
     {
         Spot current = _position;
         for (int i = 0; i < moves; i++) {
-            current = current.getNextSpot ();
+            if (current != null) {
+                current = current.getNextSpot (_owner);
+            } else {
+                break;
+            }
         }
         return current;
+    }
+    
+    public void setPotentialPosition (final Spot potential)
+    {
+        _potentialPosition = potential;
+    }
+    
+    public void resetPotentialPosition ()
+    {
+        if (_potentialPosition != null) {
+            _potentialPosition.setPotentialToken (null);
+        }
+        _potentialPosition = null;
     }
     
     public Spot getMoveNextPosition ()
@@ -104,7 +122,7 @@ public class Token {
             current = current.getNextSpot ();
         } while (!current.isStart ());
         _nextPosition = current;
-        setPosition(current);
+        setPosition (current);
         setSelected (true);
         _isMoving = true;
         _moveStepsLeft = NUMBER_OF_STEPS;
@@ -115,12 +133,12 @@ public class Token {
         Spot current = _position;
         _oldPosition = _position;
         for (int i = 0; i < spots; i++) {
-            current = current.getNextSpot ();
+            current = current.getNextSpot (_owner);
             if (i == 0) {
                 _nextPosition = current;
             }
         }
-        setPosition(current);
+        setPosition (current);
         setSelected (true);
         _isMoving = true;
         _moveStepsLeft = NUMBER_OF_STEPS;
@@ -131,7 +149,7 @@ public class Token {
         if (--_moveStepsLeft == 1) {
             if (!_nextPosition.equals (_position)) {
                 _oldPosition = _nextPosition;
-                _nextPosition = _nextPosition.getNextSpot ();
+                _nextPosition = _nextPosition.getNextSpot (_owner);
                 _moveStepsLeft = NUMBER_OF_STEPS;
             } else {
                 setSelected (false);

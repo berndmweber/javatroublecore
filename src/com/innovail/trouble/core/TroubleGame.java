@@ -6,7 +6,6 @@
 package com.innovail.trouble.core;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
@@ -63,6 +62,7 @@ public class TroubleGame {
         
         _gameField = Field.createField (_players);
         _dice = new Dice (GameSettings.getInstance ().getNumberOfDice ());
+        _availableTokens = new ArrayList <Token> ();
     }
     
     public void updateGame ()
@@ -107,7 +107,7 @@ public class TroubleGame {
     {
         final int diceValue = _dice.getCurrentFaceValue (0);
         
-        if ((_availableTokens == null) || _availableTokens.isEmpty ()) {
+        if (_availableTokens.isEmpty ()) {
             if (diceValue == 6) {
                 if (_activePlayer.hasTokensAtHome ()) {
                     if (_activePlayer.hasTokenOnStart ()) {
@@ -137,6 +137,8 @@ public class TroubleGame {
             }
         } else {
             if (_hasSelected) {
+                _availableTokens.clear ();
+                _hasSelected = false;
                 _currentState = GameState.MOVE_TOKEN;
             }
         }
@@ -155,6 +157,7 @@ public class TroubleGame {
                 _movingToken.move (); 
             }
         } else {
+            _movingToken = null;
             _currentState = GameState.ROLL_DIE;
         }
     }
@@ -194,20 +197,17 @@ public class TroubleGame {
 
     public void selectToken (Token selected)
     {
-        if ((_currentState == GameState.SELECT_TOKEN) &&
-            ((_availableTokens != null) && !_availableTokens.isEmpty ()))
-        {
-            final Iterator <Token> tokens = _availableTokens.iterator ();
-            while (tokens.hasNext ()) {
-                final Token token = tokens.next ();
-                if (token.equals (selected)) {
-                    _movingToken = token;
-                    _availableTokens.clear ();
-                    _activePlayer.deselectAllTokens ();
-                    _hasSelected = true;
-                    break;
-                }
+        if ((_currentState == GameState.SELECT_TOKEN) && !_availableTokens.isEmpty ()) {
+            if (_availableTokens.contains (selected)) {
+                _movingToken = selected;
+                _activePlayer.deselectAllTokens ();
+                _hasSelected = true;
             }
         }
+    }
+    
+    public List <Token> getAvailableTokens ()
+    {
+        return _availableTokens;
     }
 }

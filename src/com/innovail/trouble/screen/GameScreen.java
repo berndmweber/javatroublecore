@@ -182,9 +182,10 @@ public class GameScreen extends TroubleScreen {
                                  currentSpot.getPosition ().y,
                                  currentSpot.getPosition ().z);
                 final Color currentColor = currentSpot.getColor ();
-                if ((currentSpot.getCurrentToken () != null) &&
-                    (currentSpot.getCurrentToken ().isSelected () &&
-                     currentSpot.getCurrentToken ().isMoving ())) {
+                if ((currentSpot.getPotentialToken () != null) ||
+                    ((currentSpot.getCurrentToken () != null) &&
+                     (currentSpot.getCurrentToken ().isSelected () &&
+                      currentSpot.getCurrentToken ().isMoving ()))) {
                     final float[] matEmission = {currentColor.r == 1.0f ? currentColor.r : 0.3f,
                             currentColor.g == 1.0f ? currentColor.g : 0.3f,
                             currentColor.b == 1.0f ? currentColor.b : 0.3f,
@@ -313,21 +314,34 @@ public class GameScreen extends TroubleScreen {
                         Gdx.app.log (TAG, "Touch position - x: " + x + " - y: " + y);
                         Gdx.app.log (TAG, "Touch ray - " + _touchRay.toString ());
                     }
-                    //while (currentMesh.hasNext ()) {
-                        //MenuEntryMesh currentEntry = (MenuEntryMesh)currentMesh.next ();
-                        if (_touchRay != null) {
-                            if (_DEBUG) {
-                                Gdx.app.log (TAG, "currentEntry BB - " + _diceMesh.getBoundingBox ().toString ());
-                            }
-                            if (Intersector.intersectRayBoundsFast (_touchRay, _diceMesh.getBoundingBox ())) {
-                                _myGame.rollDice ();
-                            } else {
-                                _currentState = TroubleApplicationState.MAIN_MENU;
+                    if (_touchRay != null) {
+                        if (_DEBUG) {
+                            Gdx.app.log (TAG, "currentEntry BB - " + _diceMesh.getBoundingBox ().toString ());
+                        }
+                        if (Intersector.intersectRayBoundsFast (_touchRay, _diceMesh.getBoundingBox ())) {
+                            _myGame.rollDice ();
+                        }
+                        if (!_myGame.getAvailableTokens ().isEmpty ()) {
+                            final Iterator <Token> tokens = _myGame.getAvailableTokens ().iterator ();
+                            while (tokens.hasNext ()) {
+                                final Token token = tokens.next ();
+                                final Spot currentSpot = token.getPosition ();
+                                final Matrix4 transform = new Matrix4();
+                                final Matrix4 tmp = new Matrix4();
+                                transform.setToTranslation (currentSpot.getPosition ().x,
+                                                            currentSpot.getPosition ().y,
+                                                            currentSpot.getPosition ().z);
+                                /* TODO: Once the blender object is fixed this will go away as well. */
+                                tmp.setToRotation (1.0f, 0.0f, 0.0f, 90.0f);
+                                transform.mul(tmp);
+                                _tokenMesh.transformBoundingBox (transform);
+                                if (Intersector.intersectRayBoundsFast (_touchRay, _tokenMesh.getBoundingBox ())) {
+                                    _myGame.selectToken (token);
+                                    break;
+                                }
                             }
                         }
-                        //j++;
-                    //}
-                    //_currentState = TroubleApplicationState.MAIN_MENU;
+                    }
                 }
                 return super.touchUp (x, y, pointer, button);
             }
