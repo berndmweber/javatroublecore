@@ -23,6 +23,7 @@ public class TroubleGame {
     private static final boolean DEBUG = true;
     
     private enum GameState {
+        EVALUATE_PLAYERS,
         ROLL_DIE,
         SELECT_TOKEN,
         MOVE_TOKEN,
@@ -40,6 +41,7 @@ public class TroubleGame {
     
     private boolean _hasRolled = false;
     private boolean _hasSelected = false;
+    private int _rollTrysLeft = 3;
 
     private Player _activePlayer;
     private Token _movingToken;
@@ -75,6 +77,9 @@ public class TroubleGame {
         _lastState = _currentState;
         
         switch (_currentState) {
+        case EVALUATE_PLAYERS:
+            evaluatePlayersHandler ();
+            break;
         case ROLL_DIE:
             rollDiceHandler ();
             break;
@@ -92,6 +97,31 @@ public class TroubleGame {
             break;
         default:
             break;
+        }
+    }
+    
+    private void evaluatePlayersHandler ()
+    {
+        final int maxRetries = GameSettings.getInstance ().getTurnOutRetries ();
+        
+        if (_dice.getCurrentFaceValue (0) != GameSettings.getInstance ().getTurnOutValue ()) {
+            if (_activePlayer.hasTokensOnField ()) {
+                getNextPlayer ();
+                _rollTrysLeft = maxRetries;
+            } else {
+                if (--_rollTrysLeft == 0) {
+                    getNextPlayer ();
+                    _rollTrysLeft = maxRetries;
+                }
+            }
+        } else {
+            _rollTrysLeft = maxRetries;
+        }
+        _currentState = GameState.ROLL_DIE;
+        
+        if (DEBUG) {
+            Gdx.app.log (TAG, "tries left: " + _rollTrysLeft);
+            Gdx.app.log (TAG, "Player: " + _activePlayer.getName ());
         }
     }
     
@@ -132,13 +162,13 @@ public class TroubleGame {
                 } else {
                     _availableTokens = _activePlayer.getMovableTokens (diceValue);
                     if (_availableTokens.isEmpty ()) {
-                        _currentState = GameState.ROLL_DIE;
+                        _currentState = GameState.EVALUATE_PLAYERS;
                     }
                 }
             } else {
                 _availableTokens = _activePlayer.getMovableTokens (diceValue);
                 if (_availableTokens.isEmpty ()) {
-                    _currentState = GameState.ROLL_DIE;
+                    _currentState = GameState.EVALUATE_PLAYERS;
                 }
             }
         } else {
@@ -164,7 +194,7 @@ public class TroubleGame {
             }
         } else {
             _movingToken = null;
-            _currentState = GameState.ROLL_DIE;
+            _currentState = GameState.EVALUATE_PLAYERS;
         }
     }
     
@@ -215,5 +245,14 @@ public class TroubleGame {
     public List <Token> getAvailableTokens ()
     {
         return _availableTokens;
+    }
+    
+    private void getNextPlayer ()
+    {
+        if (_players.indexOf (_activePlayer) == _players.size () - 1) {
+            _activePlayer = _players.get (0);
+        } else {
+            _activePlayer = _players.get (_players.indexOf (_activePlayer) + 1);
+        }
     }
 }

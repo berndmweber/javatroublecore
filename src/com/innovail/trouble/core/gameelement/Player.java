@@ -129,12 +129,25 @@ public class Player {
         final Iterator<Token> tokens = _tokens.iterator ();
         while (tokens.hasNext ()) {
             final Spot tokenPosition = tokens.next ().getPosition ();
-            if (!tokenPosition.isHome () &&
-                !tokenPosition.isFinish () &&
-                !tokenPosition.isTurnout ())
-            {
-                onField = true;
-                break;
+            if (!tokenPosition.isHome ()) {
+                if (tokenPosition.isFinish ()) {
+                    boolean spotOccupied = true;
+                    do {
+                        Spot current = tokenPosition.getNextSpot ();
+                        if ((current != null) &&
+                            (current.getCurrentToken () == null))
+                        {
+                            spotOccupied = false;
+                        }
+                    } while (spotOccupied);
+                    if (!spotOccupied) {
+                        onField = true;
+                        break;
+                    }
+                } else {
+                    onField = true;
+                    break;
+                }
             }
         }
         

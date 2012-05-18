@@ -24,6 +24,8 @@ public final class GameSettings {
     
     private int _TurnOutValue = 0;
     
+    private int _TurnOutRetries = 0;
+    
     private Map<Integer, Integer> _NumberOfTokensPerPlayer;
     
     private Map<Integer, Integer> _NumberOfNormalSpots;
@@ -176,5 +178,15 @@ public final class GameSettings {
     public void setTurnOutValue (int turnOut)
     {
         _TurnOutValue = turnOut;
+    }
+    
+    public int getTurnOutRetries ()
+    {
+        return _TurnOutRetries;
+    }
+    
+    public void setTurnOutRetries (int retries)
+    {
+        _TurnOutRetries = retries;
     }
 }

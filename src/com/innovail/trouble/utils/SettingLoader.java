@@ -171,6 +171,7 @@ public class SettingLoader {
         current = gameSettings.getChildByName ("turnout");
         if (current != null) {
             GameSettings.getInstance ().setTurnOutValue (current.getInt ("value"));
+            GameSettings.getInstance ().setTurnOutRetries (current.getInt ("retries"));
         }
     }
     
