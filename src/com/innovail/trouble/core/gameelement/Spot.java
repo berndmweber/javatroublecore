@@ -7,6 +7,7 @@ package com.innovail.trouble.core.gameelement;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+
 import com.innovail.trouble.core.GameSettings;
 
 /**

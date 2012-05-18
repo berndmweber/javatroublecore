@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
+
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.GameSettings;
 

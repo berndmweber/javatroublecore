@@ -20,6 +20,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
+
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.GameSettings;
 import com.innovail.trouble.core.TroubleApplicationState;

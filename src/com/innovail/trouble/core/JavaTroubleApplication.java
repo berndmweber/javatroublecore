@@ -7,6 +7,7 @@ package com.innovail.trouble.core;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+
 import com.innovail.trouble.screen.GameScreen;
 import com.innovail.trouble.screen.MainMenuScreen;
 import com.innovail.trouble.screen.TroubleScreen;
