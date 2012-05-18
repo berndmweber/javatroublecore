@@ -32,6 +32,7 @@ import com.innovail.trouble.utils.BackgroundImage;
 import com.innovail.trouble.utils.GameInputAdapter;
 import com.innovail.trouble.utils.GameMesh;
 import com.innovail.trouble.utils.GamePerspectiveCamera;
+import com.innovail.trouble.utils.MathUtils;
 
 /**
  * 
@@ -46,6 +47,7 @@ public class GameScreen extends TroubleScreen {
     private final SpriteBatch _spriteBatch;
     private final BackgroundImage _backgroundImage;
     
+    private final GameMesh _backArrowMesh;
     private final GameMesh _spotMesh;
     private final GameMesh _diceMesh;
     private final GameMesh _tokenMesh;
@@ -54,9 +56,12 @@ public class GameScreen extends TroubleScreen {
     private final Matrix4 _transformMatrix;
     private Ray _touchRay;
     
-    private Vector3 _cameraLookAtPoint;
+    private static final Vector3 _cameraLookAtPoint = new Vector3 (0.0f, 0.0f, 2.5f);;
+    private static final Vector3 _cameraPos = new Vector3 (0.0f, 7.0f, 11.0f);
     private Vector2 _cameraRotationAngleIncrease;
-    private final Vector3 _cameraPos;
+    private final float _cameraRadius;
+    
+    private Vector3 _overlayPosition; 
 
     private static final float _RotationAngleIncrease = 0.25f;
 
@@ -77,6 +82,7 @@ public class GameScreen extends TroubleScreen {
         _spriteBatch = new SpriteBatch ();
         _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (AppPartName);
         _backgroundImage.createTexture ().setFilter (TextureFilter.Linear, TextureFilter.Linear);
+        _backArrowMesh = ApplicationSettings.getInstance ().getBackArrow ();
         _diceMesh = GameSettings.getInstance ().getDiceMesh ();
 
         _viewMatrix = new Matrix4 ();
@@ -84,11 +90,17 @@ public class GameScreen extends TroubleScreen {
         
         final float aspectRatio = (float) Gdx.graphics.getWidth () / (float) Gdx.graphics.getHeight ();
         _camera = new GamePerspectiveCamera (67, 2f * aspectRatio, 2f);
-        _cameraPos = new Vector3 (0.0f, 7.0f, 11.0f);
-        _cameraLookAtPoint = new Vector3 (0.0f, 0.0f, 2.5f);
         ((GamePerspectiveCamera)_camera).lookAtPosition (_cameraLookAtPoint, _cameraPos);
+        _cameraRadius = ((GamePerspectiveCamera)_camera).getRadius ();
         _cameraRotationAngleIncrease = new Vector2 ();
         _cameraRotationAngleIncrease.set (Vector2.Zero);
+        _overlayPosition = new Vector3 (_cameraPos);
+        _overlayPosition.x -= 3.0f;
+        _overlayPosition.z -= 3.0f;
+        _overlayPosition.y -= 4.0f;
+        if (!_DEBUG) {
+            Gdx.app.log (TAG, "OverlayPosition: " + _overlayPosition.toString ());
+        }
         
         _myGame = new TroubleGame ();
         _myGame.createGame ();
@@ -109,6 +121,8 @@ public class GameScreen extends TroubleScreen {
     
     protected void render (final GL10 gl, final float delta)
     {
+        renderOverlay (gl);
+        
         renderField (gl);
         renderTokens (gl);
 
@@ -134,9 +148,17 @@ public class GameScreen extends TroubleScreen {
                           _backgroundImage.getWidth (),
                           _backgroundImage.getHeight (),
                           false, false);
-        /*_spriteBatch.enableBlending ();
-        _spriteBatch.setBlendFunction (GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);*/
         _spriteBatch.end ();
+    }
+    
+    private void renderOverlay (final GL10 gl)
+    {
+        gl.glPushMatrix ();
+        gl.glTranslatef (_overlayPosition.x, _overlayPosition.y, _overlayPosition.z);
+        final Color currentColor = _backArrowMesh.getColor ();
+        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+        _backArrowMesh.getMesh ().render (GL10.GL_TRIANGLES);
+        gl.glPopMatrix ();
     }
 
     protected void setLighting (final GL10 gl) {
@@ -167,8 +189,6 @@ public class GameScreen extends TroubleScreen {
         
         final Color currentColor = Color.WHITE;
         gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-        //gl.glMaterialfv (frontAndOrBack, GL10.GL_SPECULAR, matSpecular, 0);
-        //gl.glMaterialfv (frontAndOrBack, GL10.GL_SHININESS, matShininess, 0);
         _diceMesh.getMesh ().render (GL10.GL_TRIANGLES);
         gl.glPopMatrix ();
         
@@ -227,8 +247,6 @@ public class GameScreen extends TroubleScreen {
                                          currentPosition.y,
                                          currentPosition.z);
                     }
-                    /* TODO: Modify blender object so we don't have to rotate every time. */
-                    gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
                     final Color currentColor = currentPlayer.getColor ();
                     gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
                     
@@ -331,13 +349,9 @@ public class GameScreen extends TroubleScreen {
                                 final Token token = tokens.next ();
                                 final Spot currentSpot = token.getPosition ();
                                 final Matrix4 transform = new Matrix4();
-                                final Matrix4 tmp = new Matrix4();
                                 transform.setToTranslation (currentSpot.getPosition ().x,
                                                             currentSpot.getPosition ().y,
                                                             currentSpot.getPosition ().z);
-                                /* TODO: Once the blender object is fixed this will go away as well. */
-                                tmp.setToRotation (1.0f, 0.0f, 0.0f, 90.0f);
-                                transform.mul(tmp);
                                 _tokenMesh.transformBoundingBox (transform);
                                 if (Intersector.intersectRayBoundsFast (_touchRay, _tokenMesh.getBoundingBox ())) {
                                     _myGame.selectToken (token);
@@ -365,6 +379,11 @@ public class GameScreen extends TroubleScreen {
                     }
                     ((GamePerspectiveCamera)_camera).rotateAroundLookAtPoint (_cameraRotationAngleIncrease);
                     _cameraRotationAngleIncrease.set (Vector2.Zero);
+                    final Vector2 angle = new Vector2 (((GamePerspectiveCamera)_camera).getCurrentAngle ());
+                    angle.x -= 10.0f;
+                    _overlayPosition = MathUtils.getSpherePosition (_cameraLookAtPoint,
+                                                                    angle,
+                                                                    _cameraRadius - 2.0f);
                 }
                 return super.touchDragged (x, y, pointer);
             }

@@ -10,7 +10,6 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
@@ -86,7 +85,7 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
     public void rotateAroundLookAtPoint (final Vector2 angleIncrease)
     {
         if (_radius != 0.0f) {
-            final Vector3 newPosition = new Vector3 ();
+            final Vector3 newPosition;// = new Vector3 ();
             final Vector2 newAngle = new Vector2 (_rotationAngle);
             newAngle.add (angleIncrease);
             if ((newAngle.x > _cutOffAngle.get (_MIN).x) &&
@@ -118,14 +117,7 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
                 }
             }
             
-            newPosition.x = _radius *
-                            MathUtils.sinDeg (_rotationAngle.x) *
-                            MathUtils.sinDeg (_rotationAngle.y);
-            newPosition.y = _radius * MathUtils.cosDeg (_rotationAngle.y);
-            newPosition.z = _radius *
-                            MathUtils.cosDeg (_rotationAngle.x) *
-                            MathUtils.sinDeg (_rotationAngle.y);
-            newPosition.add (_lookAtPoint);
+            newPosition = MathUtils.getSpherePosition (_lookAtPoint, _rotationAngle, _radius);
             
             if (DEBUG) {
                 Gdx.app.log (TAG, "X angle: " + _rotationAngle.x);
@@ -165,5 +157,20 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
     public boolean[] getWrapAround ()
     {
         return _wrapAround;
+    }
+    
+    public Vector3 getCurrentPosition ()
+    {
+        return position;
+    }
+    
+    public Vector2 getCurrentAngle ()
+    {
+        return _rotationAngle;
+    }
+    
+    public float getRadius ()
+    {
+        return _radius;
     }
 }

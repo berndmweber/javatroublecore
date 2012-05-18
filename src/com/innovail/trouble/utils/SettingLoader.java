@@ -103,13 +103,24 @@ public class SettingLoader {
         }
         final Element game = applicationSettings.getChildByName ("game");
         if (game != null) {
-            final Element background = game.getChildByName ("background");
-            if (background != null) {
+            Element current = game.getChildByName ("background");
+            if (current != null) {
                 ApplicationSettings.getInstance ().setBackgroundImage ("game",
-                                                                       background.getAttribute ("file"),
-                                                                       background.getInt ("width"),
-                                                                       background.getInt ("height"),
-                                                                       background.getBoolean ("is_internal"));
+                                                                       current.getAttribute ("file"),
+                                                                       current.getInt ("width"),
+                                                                       current.getInt ("height"),
+                                                                       current.getBoolean ("is_internal"));
+            }
+            current = game.getChildByName ("backarrow");
+            if (current != null) {
+                final Element colorE = current.getChildByName ("color");
+                if (colorE != null) {
+                    final Color color = new Color ();
+                    color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
+                    ApplicationSettings.getInstance ().setBackArrow (current.getAttribute ("file"), color, current.getBoolean ("is_internal"));
+                } else {
+                    ApplicationSettings.getInstance ().setBackArrow (current.getAttribute ("file"), current.getBoolean ("is_internal"));
+                }
             }
         }
     }

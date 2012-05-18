@@ -29,6 +29,8 @@ public final class ApplicationSettings {
     private GameMesh _Logo;
     
     private Map<String, Map<String, GameMesh>> _MenuEntries;
+    
+    private GameMesh _BackArrow;
     /* END SETTINGS */
     
     private static ApplicationSettings instance;
@@ -159,4 +161,20 @@ public final class ApplicationSettings {
     {
         _CopyRightNotice = notice;
     }
- }
+ 
+    public void setBackArrow (final String path, final Color color,
+                               final boolean isInternal)
+    {
+        _BackArrow = new GameMesh (path, color, isInternal);
+    }
+
+    public void setBackArrow (final String path, final boolean isInternal)
+    {
+        _BackArrow = new GameMesh (path, isInternal);
+    }
+
+    public GameMesh getBackArrow ()
+    {
+        return _BackArrow;
+    }
+}
