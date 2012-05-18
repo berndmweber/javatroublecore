@@ -99,6 +99,8 @@ public class MainMenuScreen extends TroubleScreen {
     protected void render (final GL10 gl, final float delta)
     {
         _rotationDelta += delta;
+        
+        Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
 
         renderLogo (gl);
         renderMenu (gl);
@@ -184,17 +186,14 @@ public class MainMenuScreen extends TroubleScreen {
             final GameMesh thisMesh = currentMesh.next ();
             gl.glPushMatrix ();
             gl.glTranslatef (0.0f, yLocation, 0.0f);
-            gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
-            gl.glRotatef (_yRotationAngle[i], 0.0f, 1.0f, 0.0f);
+            gl.glRotatef (_yRotationAngle[i], 0.0f, 0.0f, 1.0f);
             thisMesh.getMesh ().render (GL10.GL_TRIANGLES);
             gl.glPopMatrix ();
             
             final Matrix4 transform = new Matrix4();
             final Matrix4 tmp = new Matrix4();
             transform.setToTranslation (0.0f, yLocation, 0.0f);
-            tmp.setToRotation (1.0f, 0.0f, 0.0f, 90.0f);
-            transform.mul(tmp);
-            tmp.setToRotation (0.0f, 1.0f, 0.0f, _yRotationAngle[i]);
+            tmp.setToRotation (0.0f, 0.0f, 1.0f, _yRotationAngle[i]);
             transform.mul(tmp);
             thisMesh.transformBoundingBox (transform);
             
