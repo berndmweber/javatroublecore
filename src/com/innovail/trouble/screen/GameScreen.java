@@ -102,6 +102,9 @@ public class GameScreen extends TroubleScreen {
     protected void update (final float delta)
     {
         _myGame.updateGame ();
+        if (_myGame.isFinished ()) {
+            _currentState = TroubleApplicationState.MAIN_MENU;
+        }
     }
     
     protected void render (final GL10 gl, final float delta)

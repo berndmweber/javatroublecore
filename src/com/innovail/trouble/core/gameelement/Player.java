@@ -23,6 +23,7 @@ public class Player {
     private String _name;
     private int _number;
     private boolean _isActive = false;
+    private boolean _hasFinished = false;
     
     public Player (final int playerNumber)
     {
@@ -167,6 +168,19 @@ public class Player {
         return onField;
     }
     
+    public boolean hasAllTokensFinished ()
+    {
+        boolean allFinished = true;
+        final Iterator <Token> tokens = _tokens.iterator ();
+        while (tokens.hasNext ()) {
+            if (!tokens.next ().getPosition ().isFinish ()) {
+                allFinished = false;
+                break;
+            }
+        }
+        return allFinished;
+    }
+    
     public Token getTokenOnStart ()
     {
         Token onStart = null;
@@ -244,5 +258,15 @@ public class Player {
     public boolean isActive ()
     {
         return _isActive;
+    }
+    
+    public void finished ()
+    {
+        _hasFinished = true;
+    }
+    
+    public boolean hasFinished ()
+    {
+        return _hasFinished;
     }
 }

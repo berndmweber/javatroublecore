@@ -6,6 +6,7 @@
 package com.innovail.trouble.core;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
@@ -30,6 +31,7 @@ public class TroubleGame {
         MOVE_TOKEN,
         REMOVE_FOE_TOKEN,
         WIN_GAME,
+        END_GAME,
         UNDEFINED
     };
     
@@ -97,6 +99,7 @@ public class TroubleGame {
         case WIN_GAME:
             winGameHandler ();
             break;
+        case END_GAME:
         default:
             break;
         }
@@ -164,13 +167,13 @@ public class TroubleGame {
                 } else {
                     _availableTokens = _activePlayer.getMovableTokens (diceValue);
                     if (_availableTokens.isEmpty ()) {
-                        _currentState = GameState.EVALUATE_PLAYERS;
+                        _currentState = GameState.WIN_GAME;
                     }
                 }
             } else {
                 _availableTokens = _activePlayer.getMovableTokens (diceValue);
                 if (_availableTokens.isEmpty ()) {
-                    _currentState = GameState.EVALUATE_PLAYERS;
+                    _currentState = GameState.WIN_GAME;
                 }
             }
         } else {
@@ -205,7 +208,7 @@ public class TroubleGame {
             }
         } else {
             _movingToken = null;
-            _currentState = GameState.EVALUATE_PLAYERS;
+            _currentState = GameState.WIN_GAME;
         }
     }
     
@@ -225,13 +228,28 @@ public class TroubleGame {
             _movingToken.doneMoving ();
             _foeToken = null;
             _movingToken = null;
-            _currentState = GameState.EVALUATE_PLAYERS;
+            _currentState = GameState.WIN_GAME;
         }
     }
     
     private void winGameHandler ()
     {
-        
+        if (_activePlayer.hasAllTokensFinished ()) {
+            _activePlayer.finished ();
+            int notFinished = 0;
+            final Iterator <Player> players = _players.iterator ();
+            while (players.hasNext ()) {
+                if (!players.next ().hasFinished ()) {
+                    notFinished++;
+                }
+            }
+            if (notFinished > 1) {
+                _currentState = GameState.EVALUATE_PLAYERS;
+            }
+            _currentState = GameState.END_GAME;
+        } else {
+            _currentState = GameState.EVALUATE_PLAYERS;
+        }
     }
     
     public Field getField ()
@@ -280,5 +298,16 @@ public class TroubleGame {
         } else {
             _activePlayer = _players.get (_players.indexOf (_activePlayer) + 1);
         }
+        if (_activePlayer.hasFinished ()) {
+            getNextPlayer ();
+        }
+    }
+    
+    public boolean isFinished ()
+    {
+        if (_currentState == GameState.END_GAME) {
+            return true;
+        }
+        return false;
     }
 }
