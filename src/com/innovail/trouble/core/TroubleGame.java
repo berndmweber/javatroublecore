@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
+
 import com.innovail.trouble.core.gameelement.Dice;
 import com.innovail.trouble.core.gameelement.Field;
 import com.innovail.trouble.core.gameelement.Player;
@@ -45,6 +46,7 @@ public class TroubleGame {
 
     private Player _activePlayer;
     private Token _movingToken;
+    private Token _foeToken;
     private List <Token> _availableTokens;
 
     
@@ -190,7 +192,16 @@ public class TroubleGame {
                     _movingToken.moveTo (_dice.getCurrentFaceValue (0));
                 }
             } else {
-                _movingToken.move (); 
+                if (_movingToken.isLastMove ()) {
+                    final Token potentialFoe = _movingToken.getMoveNextPosition ().getCurrentToken ();
+                    if ((potentialFoe != null) &&
+                         !_movingToken.getOwner ().equals (potentialFoe.getOwner ()))
+                    {
+                        _foeToken = potentialFoe;
+                        _currentState = GameState.REMOVE_FOE_TOKEN;
+                    }
+                }
+                _movingToken.move ();
             }
         } else {
             _movingToken = null;
@@ -200,7 +211,22 @@ public class TroubleGame {
     
     private void removeFoeTokenHandler ()
     {
-        
+        if (!_foeToken.doneMoving ()) {
+            if (_movingToken.isMoving ()) {
+                _movingToken.move ();
+            }
+            if (!_foeToken.isMoving ()) {
+                _foeToken.moveToHome ();
+            } else {
+                _foeToken.move ();
+            }
+        } else {
+            /* Need to do this to reset doneMoving boolean */
+            _movingToken.doneMoving ();
+            _foeToken = null;
+            _movingToken = null;
+            _currentState = GameState.EVALUATE_PLAYERS;
+        }
     }
     
     private void winGameHandler ()

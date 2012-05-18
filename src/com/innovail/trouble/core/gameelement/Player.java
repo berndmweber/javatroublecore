@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Color;
+
 import com.innovail.trouble.core.GameSettings;
 
 /**
@@ -17,6 +18,7 @@ import com.innovail.trouble.core.GameSettings;
  */
 public class Player {
     private final List <Token> _tokens;
+    private final List <Spot> _spots;
     private Color _color;
     private String _name;
     private int _number;
@@ -25,6 +27,7 @@ public class Player {
     public Player (final int playerNumber)
     {
         _tokens = new ArrayList <Token> ();
+        _spots = new ArrayList <Spot> ();
         _color = GameSettings.getInstance ().getPlayerColor (playerNumber);
         _name = new String ("Player " + playerNumber);
     }
@@ -56,6 +59,16 @@ public class Player {
     public int getNumber ()
     {
         return _number;
+    }
+    
+    public void addOwnerSpot (Spot spot)
+    {
+        _spots.add (spot);
+    }
+    
+    public List <Spot> getOwnerSpots ()
+    {
+        return _spots;
     }
     
     public List <Token> getTokens ()

@@ -5,6 +5,8 @@
  */
 package com.innovail.trouble.core.gameelement;
 
+import java.util.Iterator;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 
@@ -128,6 +130,25 @@ public class Token {
         _moveStepsLeft = NUMBER_OF_STEPS;
     }
     
+    public void moveToHome ()
+    {
+        Spot current = _position;
+        _oldPosition = _position;
+        final Iterator <Spot> spots = _owner.getOwnerSpots ().iterator ();
+        while (spots.hasNext ()) {
+            final Spot spot = spots.next ();
+            if (spot.isHome () && (spot.getCurrentToken () == null)) {
+                current = spot;
+                break;
+            }
+        }
+        _nextPosition = current;
+        setPosition (current);
+        setSelected (true);
+        _isMoving = true;
+        _moveStepsLeft = NUMBER_OF_STEPS;
+    }
+    
     public void moveTo (final int spots)
     {
         Spot current = _position;
@@ -157,6 +178,14 @@ public class Token {
                 _doneMoving = true;
             }
         }
+    }
+    
+    public boolean isLastMove ()
+    {
+        if (_nextPosition.equals (_position) && (_moveStepsLeft == NUMBER_OF_STEPS)) {
+            return true;
+        }
+        return false;
     }
     
     public int getMoveStep ()

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.math.Vector3;
+
 import com.innovail.trouble.core.GameSettings;
 import com.innovail.trouble.core.gameelement.Spot.Attributes;
 
@@ -127,11 +128,13 @@ public final class Field {
                     }
                     homeSpot[j].setPosition (_spotPosition[positionIndex++]);
                     players.get (i).getToken (j).setPosition (homeSpot[j]);
+                    players.get (i).addOwnerSpot (homeSpot[j]);
                     instance._spots.add (homeSpot[j]);
                 }
                 final Spot startSpot = Spot.createSpot (Attributes.SPOT_IS_START, players.get (i));
                 instance._spots.get (instance._spots.size () - 1).setNextSpot (startSpot);
                 startSpot.setPosition (_spotPosition[positionIndex++]);
+                players.get (i).addOwnerSpot (startSpot);
                 instance._spots.add (startSpot);
                 Spot[] normalSpot = new Spot[8];
                 /* TODO: Need to get the number of normal spots from settings. */
@@ -148,6 +151,7 @@ public final class Field {
                 final Spot turnOutSpot = Spot.createSpot (Attributes.SPOT_IS_TURN_OUT, players.get (i));
                 turnOutSpot.setNextSpot (startSpot);
                 turnOutSpot.setPosition (_spotPosition[positionIndex++]);
+                players.get (i).addOwnerSpot (turnOutSpot);
                 instance._spots.add (turnOutSpot);
                 if (i == 0) {
                     firstTurnOutSpot = turnOutSpot;
@@ -161,6 +165,7 @@ public final class Field {
                         turnOutSpot.setNextTurnOutSpot (finishSpot[j]);
                     }
                     finishSpot[j].setPosition (_spotPosition[positionIndex++]);
+                    players.get (i).addOwnerSpot (finishSpot[j]);
                     instance._spots.add (finishSpot[j]);
                 }
                 if (i > 0) {
