@@ -28,6 +28,8 @@ public class GameMesh {
     private static final String TAG = "GameMesh";
 
     private final boolean _isInternal;
+    private boolean _isVFlipped = false;
+    private boolean _useIndices = true;
     private final Color _color;
     private final String _path;
     private final String _texturePath;
@@ -142,7 +144,7 @@ public class GameMesh {
                         objFile = Gdx.files.external (_path);
                     }
                     final InputStream in = objFile.read ();
-                    _mesh = ObjLoader.loadObj (in, true);
+                    _mesh = ObjLoader.loadObj (in, _isVFlipped, _useIndices);
                     in.close ();
                     _bb = _mesh.calculateBoundingBox ();
                     //Gdx.app.log (TAG, _path + ": BoundingBox - " + _bb.toString ());
@@ -167,6 +169,8 @@ public class GameMesh {
                 }
                 _texture = new Texture(objFile, _textureColorFormat, true);
                 _texture.setFilter(TextureFilter.MipMap, TextureFilter.Linear);
+                _isVFlipped = true;
+                _useIndices = false;
             }
         }
         return _texture;
