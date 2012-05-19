@@ -59,9 +59,10 @@ public class GameScreen extends TroubleScreen {
     private static final Vector3 _cameraLookAtPoint = new Vector3 (0.0f, 0.0f, 2.5f);;
     private static final Vector3 _cameraPos = new Vector3 (0.0f, 7.0f, 11.0f);
     private Vector2 _cameraRotationAngleIncrease;
-    private final float _cameraRadius;
     
+    private final float _overlayRadius;
     private Vector3 _overlayPosition; 
+    private Vector2 _overlayAngle;
 
     private static final float _RotationAngleIncrease = 0.25f;
 
@@ -91,13 +92,13 @@ public class GameScreen extends TroubleScreen {
         final float aspectRatio = (float) Gdx.graphics.getWidth () / (float) Gdx.graphics.getHeight ();
         _camera = new GamePerspectiveCamera (67, 2f * aspectRatio, 2f);
         ((GamePerspectiveCamera)_camera).lookAtPosition (_cameraLookAtPoint, _cameraPos);
-        _cameraRadius = ((GamePerspectiveCamera)_camera).getRadius ();
         _cameraRotationAngleIncrease = new Vector2 ();
         _cameraRotationAngleIncrease.set (Vector2.Zero);
-        _overlayPosition = new Vector3 (_cameraPos);
-        _overlayPosition.x -= 3.0f;
-        _overlayPosition.z -= 3.0f;
-        _overlayPosition.y -= 4.0f;
+        _overlayRadius = ((GamePerspectiveCamera)_camera).getOverlayRadius ();
+        _overlayAngle = ((GamePerspectiveCamera)_camera).getOverlayAngle ();
+        _overlayPosition = MathUtils.getSpherePosition (_cameraLookAtPoint,
+                                                        _overlayAngle,
+                                                        _overlayRadius);
         if (!_DEBUG) {
             Gdx.app.log (TAG, "OverlayPosition: " + _overlayPosition.toString ());
         }
@@ -155,6 +156,8 @@ public class GameScreen extends TroubleScreen {
     {
         gl.glPushMatrix ();
         gl.glTranslatef (_overlayPosition.x, _overlayPosition.y, _overlayPosition.z);
+        gl.glRotatef (_overlayAngle.x, 0.0f, 1.0f, 0.0f);
+        gl.glRotatef (_overlayAngle.y+90.0f, 1.0f, 0.0f, 0.0f);
         final Color currentColor = _backArrowMesh.getColor ();
         gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
         _backArrowMesh.getMesh ().render (GL10.GL_TRIANGLES);
@@ -370,7 +373,9 @@ public class GameScreen extends TroubleScreen {
             @Override
             public boolean touchDragged (final int x, final int y, final int pointer) {
                 if (_dragEvents >= MIN_NUMBER_OF_DRAGS) {
-                    Gdx.app.log (TAG, "Touch dragged position - x: " + x + " - y: " + y);
+                    if (_DEBUG) {
+                        Gdx.app.log (TAG, "Touch dragged position - x: " + x + " - y: " + y);
+                    }
                     _axisDiff.set (_lastPosition);
                     _axisDiff.sub (x, y);
                     if ((_axisDiff.x < _MaxAxisIncrease) && (_axisDiff.y != _MaxAxisIncrease)) {
@@ -379,11 +384,14 @@ public class GameScreen extends TroubleScreen {
                     }
                     ((GamePerspectiveCamera)_camera).rotateAroundLookAtPoint (_cameraRotationAngleIncrease);
                     _cameraRotationAngleIncrease.set (Vector2.Zero);
-                    final Vector2 angle = new Vector2 (((GamePerspectiveCamera)_camera).getCurrentAngle ());
-                    angle.x -= 10.0f;
+                    _overlayAngle = ((GamePerspectiveCamera)_camera).getOverlayAngle ();
                     _overlayPosition = MathUtils.getSpherePosition (_cameraLookAtPoint,
-                                                                    angle,
-                                                                    _cameraRadius - 2.0f);
+                                                                    _overlayAngle,
+                                                                    _overlayRadius);
+                    if (_DEBUG) {
+                        Gdx.app.log (TAG, "Retrieved angles: " + _overlayAngle.toString ());
+                        Gdx.app.log (TAG, "New Overlay position: " + _overlayPosition.toString ());
+                    }
                 }
                 return super.touchDragged (x, y, pointer);
             }

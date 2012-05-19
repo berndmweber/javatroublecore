@@ -169,8 +169,19 @@ public class GamePerspectiveCamera extends PerspectiveCamera {
         return _rotationAngle;
     }
     
+    public Vector2 getOverlayAngle ()
+    {
+        Vector2 overlayAngle = new Vector2 (_rotationAngle.x, _rotationAngle.y);
+        return overlayAngle;
+    }
+    
     public float getRadius ()
     {
         return _radius;
+    }
+    
+    public float getOverlayRadius ()
+    {
+        return _radius - 2.0f;
     }
 }
