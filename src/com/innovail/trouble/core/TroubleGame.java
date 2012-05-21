@@ -44,6 +44,7 @@ public class TroubleGame {
     
     private boolean _hasRolled = false;
     private boolean _hasSelected = false;
+    private boolean _playerChanged = false;
     private int _rollTrysLeft = 3;
 
     private Player _activePlayer;
@@ -301,11 +302,21 @@ public class TroubleGame {
         if (_activePlayer.hasFinished ()) {
             getNextPlayer ();
         }
+        _playerChanged = true;
     }
     
     public boolean isFinished ()
     {
         if (_currentState == GameState.END_GAME) {
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean playerChanged ()
+    {
+        if (_playerChanged) {
+            _playerChanged = false;
             return true;
         }
         return false;

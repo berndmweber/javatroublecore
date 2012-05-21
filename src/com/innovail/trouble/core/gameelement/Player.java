@@ -21,7 +21,7 @@ public class Player {
     private final List <Spot> _spots;
     private Color _color;
     private String _name;
-    private int _number;
+    private final int _number;
     private boolean _isActive = false;
     private boolean _hasFinished = false;
     
@@ -31,6 +31,7 @@ public class Player {
         _spots = new ArrayList <Spot> ();
         _color = GameSettings.getInstance ().getPlayerColor (playerNumber);
         _name = new String ("Player " + playerNumber);
+        _number = playerNumber;
     }
     
     public void setColor (final Color color)

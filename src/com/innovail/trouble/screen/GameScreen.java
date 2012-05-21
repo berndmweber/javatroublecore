@@ -65,18 +65,21 @@ public class GameScreen extends TroubleScreen {
     private final Matrix4 _transformMatrix;
     private Ray _touchRay;
     
+    private static final float _RotationAngleIncrease = 0.25f;
+
     private static final Vector3 _CameraLookAtPoint = new Vector3 (0.0f, 0.0f, 2.5f);
     private static final Vector3 _CameraPos = new Vector3 (0.0f, 7.0f, 11.0f);
     private Vector2 _cameraRotationAngleIncrease;
     
+    private static final float[] _OverlayMaxAngles = {66.0f, 90.0f};
+    private static final float[] _OverlayMaxAlphas = {0.0f, 1.0f};
+    private static final float _AlphaValueIncrease = 0.5f;
     private final float _overlayRadius;
     private Vector3 _overlayPosition; 
     private Vector2 _overlayAngle;
     private boolean _showOverlay = false;
-    private static final float[] _OverlayMaxAngles = {66.0f, 90.0f};
     private float _overlayAdditionalAngle = _OverlayMaxAngles[_MIN];
-
-    private static final float _RotationAngleIncrease = 0.25f;
+    private float _overlayAlpha = _OverlayMaxAlphas[_MAX];
     
     private static final float _SelectedYOffset = 0.05f;
     private static final float[] _WobbleMaxAngles = {-0.5f, 0.5f};
@@ -140,6 +143,9 @@ public class GameScreen extends TroubleScreen {
         if (_myGame.isFinished ()) {
             _currentState = TroubleApplicationState.MAIN_MENU;
         }
+        if (_myGame.playerChanged()) {
+            _overlayAlpha = _OverlayMaxAlphas[_MAX];
+        }
     }
     
     protected void render (final GL10 gl, final float delta)
@@ -151,7 +157,7 @@ public class GameScreen extends TroubleScreen {
         renderField (gl);
         renderTokens (gl);
         
-        renderAnnouncement (gl);
+        renderAnnouncement (gl, delta);
 
         gl.glEnable (GL10.GL_TEXTURE_2D);
         renderDice (gl);
@@ -211,22 +217,32 @@ public class GameScreen extends TroubleScreen {
         }
     }
     
-    private void renderAnnouncement (GL10 gl)
+    private void renderAnnouncement (final GL10 gl, final float delta)
     {
         final Color currentColor = _myGame.getActivePlayer().getColor ();
+        
+        subRenderOverlay (gl, _playerMesh, currentColor);
+        subRenderOverlay (gl, _playerNumberMesh.get (_myGame.getActivePlayer().getNumber ()), currentColor);
+        
+        if (_overlayAlpha > _OverlayMaxAlphas[_MIN]) {
+            Gdx.app.log (TAG, "Fading: " + _overlayAlpha);
+            _overlayAlpha -= _AlphaValueIncrease * delta;
+        }
+    }
+    
+    private void subRenderOverlay (GL10 gl, GameMesh mesh, Color color)
+    {
         gl.glPushMatrix ();
         gl.glTranslatef (_overlayPosition.x, _overlayPosition.y, _overlayPosition.z);
         gl.glRotatef (_overlayAngle.x, 0.0f, 1.0f, 0.0f);
         gl.glRotatef (_overlayAngle.y - _OverlayMaxAngles[_MAX], 1.0f, 0.0f, 0.0f);
-        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-        _playerMesh.getMesh ().render (GL10.GL_TRIANGLES);
-        gl.glPopMatrix ();
-        gl.glPushMatrix ();
-        gl.glTranslatef (_overlayPosition.x, _overlayPosition.y, _overlayPosition.z);
-        gl.glRotatef (_overlayAngle.x, 0.0f, 1.0f, 0.0f);
-        gl.glRotatef (_overlayAngle.y - _OverlayMaxAngles[_MAX], 1.0f, 0.0f, 0.0f);
-        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-        _playerNumberMesh.get (_myGame.getActivePlayer().getNumber ()).getMesh ().render (GL10.GL_TRIANGLES);
+        gl.glColor4f (color.r, color.g, color.b, _overlayAlpha);
+        gl.glEnable (GL10.GL_BLEND);
+        gl.glDepthMask (false);
+        gl.glBlendFunc (GL10.GL_SRC_ALPHA, GL10.GL_ONE);
+        mesh.getMesh ().render (GL10.GL_TRIANGLES);
+        gl.glDepthMask (true);
+        gl.glDisable (GL10.GL_BLEND);
         gl.glPopMatrix ();
     }
 
@@ -238,6 +254,7 @@ public class GameScreen extends TroubleScreen {
         
         gl.glEnable (GL10.GL_COLOR_MATERIAL);
         gl.glEnable (GL10.GL_BLEND);
+        gl.glBlendFunc (GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     private void renderDice (final GL10 gl)
