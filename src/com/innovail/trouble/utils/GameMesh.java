@@ -184,6 +184,7 @@ public class GameMesh {
     public BoundingBox transformBoundingBox (final Matrix4 transform)
     {
         _bb = _mesh.calculateBoundingBox ();
+        //Gdx.app.log (TAG, _path + ": BoundingBox - " + _bb.toString ());
         _bb.mul (transform);
         return _bb;
     }

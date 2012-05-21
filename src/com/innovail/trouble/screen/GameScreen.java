@@ -99,6 +99,18 @@ public class GameScreen extends TroubleScreen {
         _overlayPosition = MathUtils.getSpherePosition (_cameraLookAtPoint,
                                                         _overlayAngle,
                                                         _overlayRadius);
+        final Matrix4 transform = new Matrix4();
+        final Matrix4 tmp = new Matrix4();
+        transform.setToTranslation (_overlayPosition.x,
+                                    _overlayPosition.y,
+                                    _overlayPosition.z);
+        tmp.setToRotation (0.0f, 1.0f, 0.0f, _overlayAngle.x);
+        transform.mul(tmp);
+        tmp.setToRotation (1.0f, 0.0f, 0.0f, _overlayAngle.y+90.0f);
+        transform.mul(tmp);
+        /* Need to do this early to be able to calculate the right bounding box. */
+        _backArrowMesh.getMesh ();
+        _backArrowMesh.transformBoundingBox (transform);
         if (!_DEBUG) {
             Gdx.app.log (TAG, "OverlayPosition: " + _overlayPosition.toString ());
         }
@@ -156,12 +168,19 @@ public class GameScreen extends TroubleScreen {
     {
         gl.glPushMatrix ();
         gl.glTranslatef (_overlayPosition.x, _overlayPosition.y, _overlayPosition.z);
-        gl.glRotatef (_overlayAngle.x, 0.0f, 1.0f, 0.0f);
+        gl.glRotatef (_overlayAngle.x,       0.0f, 1.0f, 0.0f);
         gl.glRotatef (_overlayAngle.y+90.0f, 1.0f, 0.0f, 0.0f);
         final Color currentColor = _backArrowMesh.getColor ();
         gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
         _backArrowMesh.getMesh ().render (GL10.GL_TRIANGLES);
         gl.glPopMatrix ();
+        if (_DEBUG) {
+            Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_LINE);
+            gl.glPushMatrix ();
+            _backArrowMesh.getBBMesh ().render (GL10.GL_TRIANGLES);
+            gl.glPopMatrix ();
+            Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
+        }
     }
 
     protected void setLighting (final GL10 gl) {
@@ -343,10 +362,11 @@ public class GameScreen extends TroubleScreen {
                         if (_DEBUG) {
                             Gdx.app.log (TAG, "currentEntry BB - " + _diceMesh.getBoundingBox ().toString ());
                         }
-                        if (Intersector.intersectRayBoundsFast (_touchRay, _diceMesh.getBoundingBox ())) {
+                        if (Intersector.intersectRayBoundsFast (_touchRay, _backArrowMesh.getBoundingBox ())) {
+                            _currentState = TroubleApplicationState.MAIN_MENU;
+                        } else if (Intersector.intersectRayBoundsFast (_touchRay, _diceMesh.getBoundingBox ())) {
                             _myGame.rollDice ();
-                        }
-                        if (!_myGame.getAvailableTokens ().isEmpty ()) {
+                        } else if (!_myGame.getAvailableTokens ().isEmpty ()) {
                             final Iterator <Token> tokens = _myGame.getAvailableTokens ().iterator ();
                             while (tokens.hasNext ()) {
                                 final Token token = tokens.next ();
@@ -388,6 +408,16 @@ public class GameScreen extends TroubleScreen {
                     _overlayPosition = MathUtils.getSpherePosition (_cameraLookAtPoint,
                                                                     _overlayAngle,
                                                                     _overlayRadius);
+                    final Matrix4 transform = new Matrix4();
+                    final Matrix4 tmp = new Matrix4();
+                    transform.setToTranslation (_overlayPosition.x,
+                                                _overlayPosition.y,
+                                                _overlayPosition.z);
+                    tmp.setToRotation (0.0f, 1.0f, 0.0f, _overlayAngle.x);
+                    transform.mul(tmp);
+                    tmp.setToRotation (1.0f, 0.0f, 0.0f, _overlayAngle.y+90.0f);
+                    transform.mul(tmp);
+                    _backArrowMesh.transformBoundingBox (transform);
                     if (_DEBUG) {
                         Gdx.app.log (TAG, "Retrieved angles: " + _overlayAngle.toString ());
                         Gdx.app.log (TAG, "New Overlay position: " + _overlayPosition.toString ());
