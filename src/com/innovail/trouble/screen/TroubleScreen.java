@@ -18,6 +18,8 @@ public abstract class TroubleScreen implements Screen {
     private static final String TAG = "TroubleScreen";
 
     protected static final boolean _DEBUG = false;
+    protected static final int _MIN = 0;
+    protected static final int _MAX = 1;
 
     protected String _currentState; 
 

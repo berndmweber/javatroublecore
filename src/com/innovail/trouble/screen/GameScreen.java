@@ -56,13 +56,16 @@ public class GameScreen extends TroubleScreen {
     private final Matrix4 _transformMatrix;
     private Ray _touchRay;
     
-    private static final Vector3 _cameraLookAtPoint = new Vector3 (0.0f, 0.0f, 2.5f);;
-    private static final Vector3 _cameraPos = new Vector3 (0.0f, 7.0f, 11.0f);
+    private static final Vector3 _CameraLookAtPoint = new Vector3 (0.0f, 0.0f, 2.5f);
+    private static final Vector3 _CameraPos = new Vector3 (0.0f, 7.0f, 11.0f);
     private Vector2 _cameraRotationAngleIncrease;
     
     private final float _overlayRadius;
     private Vector3 _overlayPosition; 
     private Vector2 _overlayAngle;
+    private boolean _showOverlay = false;
+    private final float[] _OverlayMaxAngles = {66.0f, 90.0f};
+    private float _overlayAdditionalAngle = _OverlayMaxAngles[_MIN];
 
     private static final float _RotationAngleIncrease = 0.25f;
 
@@ -91,29 +94,17 @@ public class GameScreen extends TroubleScreen {
         
         final float aspectRatio = (float) Gdx.graphics.getWidth () / (float) Gdx.graphics.getHeight ();
         _camera = new GamePerspectiveCamera (67, 2f * aspectRatio, 2f);
-        ((GamePerspectiveCamera)_camera).lookAtPosition (_cameraLookAtPoint, _cameraPos);
+        ((GamePerspectiveCamera)_camera).lookAtPosition (_CameraLookAtPoint, _CameraPos);
         _cameraRotationAngleIncrease = new Vector2 ();
         _cameraRotationAngleIncrease.set (Vector2.Zero);
         _overlayRadius = ((GamePerspectiveCamera)_camera).getOverlayRadius ();
         _overlayAngle = ((GamePerspectiveCamera)_camera).getOverlayAngle ();
-        _overlayPosition = MathUtils.getSpherePosition (_cameraLookAtPoint,
+        _overlayPosition = MathUtils.getSpherePosition (_CameraLookAtPoint,
                                                         _overlayAngle,
                                                         _overlayRadius);
-        final Matrix4 transform = new Matrix4();
-        final Matrix4 tmp = new Matrix4();
-        transform.setToTranslation (_overlayPosition.x,
-                                    _overlayPosition.y,
-                                    _overlayPosition.z);
-        tmp.setToRotation (0.0f, 1.0f, 0.0f, _overlayAngle.x);
-        transform.mul(tmp);
-        tmp.setToRotation (1.0f, 0.0f, 0.0f, _overlayAngle.y+90.0f);
-        transform.mul(tmp);
         /* Need to do this early to be able to calculate the right bounding box. */
         _backArrowMesh.getMesh ();
-        _backArrowMesh.transformBoundingBox (transform);
-        if (!_DEBUG) {
-            Gdx.app.log (TAG, "OverlayPosition: " + _overlayPosition.toString ());
-        }
+        calculateOverlayBoundingBox ();
         
         _myGame = new TroubleGame ();
         _myGame.createGame ();
@@ -168,8 +159,8 @@ public class GameScreen extends TroubleScreen {
     {
         gl.glPushMatrix ();
         gl.glTranslatef (_overlayPosition.x, _overlayPosition.y, _overlayPosition.z);
-        gl.glRotatef (_overlayAngle.x,       0.0f, 1.0f, 0.0f);
-        gl.glRotatef (_overlayAngle.y+90.0f, 1.0f, 0.0f, 0.0f);
+        gl.glRotatef (_overlayAngle.x, 0.0f, 1.0f, 0.0f);
+        gl.glRotatef (_overlayAngle.y + _overlayAdditionalAngle, 1.0f, 0.0f, 0.0f);
         final Color currentColor = _backArrowMesh.getColor ();
         gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
         _backArrowMesh.getMesh ().render (GL10.GL_TRIANGLES);
@@ -180,6 +171,20 @@ public class GameScreen extends TroubleScreen {
             _backArrowMesh.getBBMesh ().render (GL10.GL_TRIANGLES);
             gl.glPopMatrix ();
             Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
+        }
+        
+        if (_showOverlay && (_overlayAdditionalAngle < _OverlayMaxAngles[_MAX])) {
+            _overlayAdditionalAngle += 2 * _RotationAngleIncrease;
+            if (_overlayAdditionalAngle > _OverlayMaxAngles[_MAX]) {
+                _overlayAdditionalAngle = _OverlayMaxAngles[_MAX];
+            }
+            calculateOverlayBoundingBox ();
+        } else if (!_showOverlay && (_overlayAdditionalAngle > _OverlayMaxAngles[_MIN])) {
+            _overlayAdditionalAngle -= 2 * _RotationAngleIncrease;
+            if (_overlayAdditionalAngle < _OverlayMaxAngles[_MIN]) {
+                _overlayAdditionalAngle = _OverlayMaxAngles[_MIN];
+            }
+            calculateOverlayBoundingBox ();
         }
     }
 
@@ -287,6 +292,29 @@ public class GameScreen extends TroubleScreen {
             }
         }
     }
+    
+    private void calculateOverlayBoundingBox ()
+    {
+        _overlayAngle = ((GamePerspectiveCamera)_camera).getOverlayAngle ();
+        _overlayPosition = MathUtils.getSpherePosition (_CameraLookAtPoint,
+                                                        _overlayAngle,
+                                                        _overlayRadius);
+        final Matrix4 transform = new Matrix4();
+        final Matrix4 tmp = new Matrix4();
+        transform.setToTranslation (_overlayPosition.x,
+                                    _overlayPosition.y,
+                                    _overlayPosition.z);
+        tmp.setToRotation (0.0f, 1.0f, 0.0f, _overlayAngle.x);
+        transform.mul(tmp);
+        tmp.setToRotation (1.0f, 0.0f, 0.0f, _overlayAngle.y + _overlayAdditionalAngle);
+        transform.mul(tmp);
+        _backArrowMesh.transformBoundingBox (transform);
+
+        if (_DEBUG) {
+            Gdx.app.log (TAG, "Retrieved angles: " + _overlayAngle.toString ());
+            Gdx.app.log (TAG, "New Overlay position: " + _overlayPosition.toString ());
+        }
+    }
 
     /* (non-Javadoc)
      * @see com.innovail.trouble.screen.TroubleScreen#createInputProcessor()
@@ -381,6 +409,12 @@ public class GameScreen extends TroubleScreen {
                                     break;
                                 }
                             }
+                        } else {
+                            if (_showOverlay) {
+                                _showOverlay = false;
+                            } else {
+                                _showOverlay = true;
+                            }
                         }
                     }
                 }
@@ -404,24 +438,7 @@ public class GameScreen extends TroubleScreen {
                     }
                     ((GamePerspectiveCamera)_camera).rotateAroundLookAtPoint (_cameraRotationAngleIncrease);
                     _cameraRotationAngleIncrease.set (Vector2.Zero);
-                    _overlayAngle = ((GamePerspectiveCamera)_camera).getOverlayAngle ();
-                    _overlayPosition = MathUtils.getSpherePosition (_cameraLookAtPoint,
-                                                                    _overlayAngle,
-                                                                    _overlayRadius);
-                    final Matrix4 transform = new Matrix4();
-                    final Matrix4 tmp = new Matrix4();
-                    transform.setToTranslation (_overlayPosition.x,
-                                                _overlayPosition.y,
-                                                _overlayPosition.z);
-                    tmp.setToRotation (0.0f, 1.0f, 0.0f, _overlayAngle.x);
-                    transform.mul(tmp);
-                    tmp.setToRotation (1.0f, 0.0f, 0.0f, _overlayAngle.y+90.0f);
-                    transform.mul(tmp);
-                    _backArrowMesh.transformBoundingBox (transform);
-                    if (_DEBUG) {
-                        Gdx.app.log (TAG, "Retrieved angles: " + _overlayAngle.toString ());
-                        Gdx.app.log (TAG, "New Overlay position: " + _overlayPosition.toString ());
-                    }
+                    calculateOverlayBoundingBox ();
                 }
                 return super.touchDragged (x, y, pointer);
             }
