@@ -7,6 +7,7 @@ package com.innovail.trouble.screen;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -43,6 +44,11 @@ public class GameScreen extends TroubleScreen {
     
     private static final float[] NoMat = {0.0f, 0.0f, 0.0f, 1.0f};
     private static final int FrontAndOrBack = GL10.GL_FRONT;
+    
+    private static final float _UP = 1.0f;
+    private static final float _DOWN = -1.0f;
+    
+    private final Random rand = new Random ();
 
     private final SpriteBatch _spriteBatch;
     private final BackgroundImage _backgroundImage;
@@ -64,10 +70,15 @@ public class GameScreen extends TroubleScreen {
     private Vector3 _overlayPosition; 
     private Vector2 _overlayAngle;
     private boolean _showOverlay = false;
-    private final float[] _OverlayMaxAngles = {66.0f, 90.0f};
+    private static final float[] _OverlayMaxAngles = {66.0f, 90.0f};
     private float _overlayAdditionalAngle = _OverlayMaxAngles[_MIN];
 
     private static final float _RotationAngleIncrease = 0.25f;
+    
+    private static final float _SelectedYOffset = 0.05f;
+    private static final float[] _WobbleMaxAngles = {-0.5f, 0.5f};
+    private Vector2 _wobbleAngle;
+    private Vector2 _wobbleDirection;
 
     private final TroubleGame _myGame;
     private final List <Spot> _spots;
@@ -106,6 +117,9 @@ public class GameScreen extends TroubleScreen {
         _backArrowMesh.getMesh ();
         calculateOverlayBoundingBox ();
         
+        _wobbleAngle = new Vector2 (Vector2.Zero);
+        _wobbleDirection = new Vector2 (_UP, _DOWN);
+        
         _myGame = new TroubleGame ();
         _myGame.createGame ();
 
@@ -125,6 +139,8 @@ public class GameScreen extends TroubleScreen {
     
     protected void render (final GL10 gl, final float delta)
     {
+        calculateWobbleAngles (delta);
+        
         renderOverlay (gl);
         
         renderField (gl);
@@ -174,13 +190,13 @@ public class GameScreen extends TroubleScreen {
         }
         
         if (_showOverlay && (_overlayAdditionalAngle < _OverlayMaxAngles[_MAX])) {
-            _overlayAdditionalAngle += 2 * _RotationAngleIncrease;
+            _overlayAdditionalAngle += 3 * _RotationAngleIncrease;
             if (_overlayAdditionalAngle > _OverlayMaxAngles[_MAX]) {
                 _overlayAdditionalAngle = _OverlayMaxAngles[_MAX];
             }
             calculateOverlayBoundingBox ();
         } else if (!_showOverlay && (_overlayAdditionalAngle > _OverlayMaxAngles[_MIN])) {
-            _overlayAdditionalAngle -= 2 * _RotationAngleIncrease;
+            _overlayAdditionalAngle -= 3 * _RotationAngleIncrease;
             if (_overlayAdditionalAngle < _OverlayMaxAngles[_MIN]) {
                 _overlayAdditionalAngle = _OverlayMaxAngles[_MIN];
             }
@@ -228,21 +244,25 @@ public class GameScreen extends TroubleScreen {
             _spot = _spots.iterator ();
             while (_spot.hasNext ()) {
                 final Spot currentSpot = _spot.next ();
+                final Vector3 currentPosition = new Vector3 (currentSpot.getPosition ());
                 gl.glPushMatrix ();
-                gl.glTranslatef (currentSpot.getPosition ().x,
-                                 currentSpot.getPosition ().y,
-                                 currentSpot.getPosition ().z);
                 final Color currentColor = currentSpot.getColor ();
                 if ((currentSpot.getPotentialToken () != null) ||
                     ((currentSpot.getCurrentToken () != null) &&
                      (currentSpot.getCurrentToken ().isSelected () &&
                       currentSpot.getCurrentToken ().isMoving ()))) {
+                    currentPosition.y += _SelectedYOffset;
                     final float[] matEmission = {currentColor.r == 1.0f ? currentColor.r : 0.3f,
                             currentColor.g == 1.0f ? currentColor.g : 0.3f,
                             currentColor.b == 1.0f ? currentColor.b : 0.3f,
                             1.0f};
                     gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, matEmission, 0);
+                    gl.glRotatef (_wobbleAngle.x, 1.0f, 0.0f, 0.0f);
+                    gl.glRotatef (_wobbleAngle.y, 0.0f, 0.0f, 1.0f);
                 }
+                gl.glTranslatef (currentPosition.x,
+                                 currentPosition.y,
+                                 currentPosition.z);
                 gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
                 _spotMesh.getMesh ().render (GL10.GL_TRIANGLES);
                 gl.glPopMatrix ();
@@ -265,11 +285,16 @@ public class GameScreen extends TroubleScreen {
                     
                     if (!currentToken.isMoving ()) {
                         final Spot currentSpot = currentToken.getPosition ();
-                        gl.glTranslatef (currentSpot.getPosition ().x,
-                                         currentSpot.getPosition ().y,
-                                         currentSpot.getPosition ().z);
+                        final Vector3 currentPosition = new Vector3 (currentSpot.getPosition ());
+                        if (currentToken.isSelected ()) {
+                            currentPosition.y += _SelectedYOffset;
+                        }
+                        gl.glTranslatef (currentPosition.x,
+                                         currentPosition.y,
+                                         currentPosition.z);
                     } else {
                         final Vector3 currentPosition = currentToken.getCurrentMovePosition ();
+                        currentPosition.y += _SelectedYOffset;
                         gl.glTranslatef (currentPosition.x,
                                          currentPosition.y,
                                          currentPosition.z);
@@ -278,6 +303,8 @@ public class GameScreen extends TroubleScreen {
                     gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
                     
                     if (currentToken.isSelected ()) {
+                        gl.glRotatef (_wobbleAngle.x, 1.0f, 0.0f, 0.0f);
+                        gl.glRotatef (_wobbleAngle.y, 0.0f, 0.0f, 1.0f);
                         final float[] matEmission = {currentColor.r == 1.0f ? currentColor.r : 0.3f,
                                                       currentColor.g == 1.0f ? currentColor.g : 0.3f,
                                                       currentColor.b == 1.0f ? currentColor.b : 0.3f,
@@ -316,6 +343,36 @@ public class GameScreen extends TroubleScreen {
         }
     }
 
+    private void calculateWobbleAngles (final float delta)
+    {
+        if (_wobbleDirection.x == _UP) {
+            if (_wobbleAngle.x < _WobbleMaxAngles[_MAX]) {
+                _wobbleAngle.x += 2 * delta;
+            } else {
+                _wobbleDirection.x = _DOWN;
+            }
+        } else {
+            if (_wobbleAngle.x > _WobbleMaxAngles[_MIN]) {
+                _wobbleAngle.x -= 2 * delta;
+            } else {
+                _wobbleDirection.x = _UP;
+            }
+        }
+        if (_wobbleDirection.y == _UP) {
+            if (_wobbleAngle.y < _WobbleMaxAngles[_MAX]) {
+                _wobbleAngle.y += 2 * delta;
+            } else {
+                _wobbleDirection.y = _DOWN;
+            }
+        } else {
+            if (_wobbleAngle.y > _WobbleMaxAngles[_MIN]) {
+                _wobbleAngle.y -= 2 * delta;
+            } else {
+                _wobbleDirection.y = _UP;
+            }
+        }
+    }
+    
     /* (non-Javadoc)
      * @see com.innovail.trouble.screen.TroubleScreen#createInputProcessor()
      */
