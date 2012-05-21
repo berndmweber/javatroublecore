@@ -8,6 +8,7 @@ package com.innovail.trouble.utils;
 import java.io.InputStream;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Mesh;
@@ -34,9 +35,12 @@ public class GameMesh {
     private final String _path;
     private final String _texturePath;
     private final Format _textureColorFormat;
+    private String _soundPath;
+    private boolean _soundIsInternal;
     
     private Mesh _mesh;
     private Texture _texture;
+    private Sound _sound;
     private BoundingBox _bb;
     private Mesh _bbMesh;
 
@@ -218,5 +222,28 @@ public class GameMesh {
                                          3, 2, 0,
                                          2, 1, 0});
         return _bbMesh;
+    }
+    
+    public void setSound (final String path)
+    {
+        setSound (path, true);
+    }
+    
+    public void setSound (final String path, final boolean isInternal)
+    {
+        _soundPath = path;
+        _soundIsInternal = isInternal;
+    }
+    
+    public Sound getSound ()
+    {
+        if (_sound == null) {
+            if (_soundIsInternal) {
+                _sound = Gdx.audio.newSound (Gdx.files.internal (_soundPath));
+            } else {
+                _sound = Gdx.audio.newSound (Gdx.files.external (_soundPath));
+            }
+        }
+        return _sound;
     }
 }

@@ -45,6 +45,7 @@ public class TroubleGame {
     private boolean _hasRolled = false;
     private boolean _hasSelected = false;
     private boolean _playerChanged = false;
+    private boolean _tokenStartedMoving = false;
     private int _rollTrysLeft = 3;
 
     private Player _activePlayer;
@@ -164,6 +165,7 @@ public class TroubleGame {
                     } else {
                         _movingToken = _activePlayer.getTokenAtHome ();
                     }
+                    _tokenStartedMoving = true;
                     _currentState = GameState.MOVE_TOKEN;
                 } else {
                     _availableTokens = _activePlayer.getMovableTokens (diceValue);
@@ -181,6 +183,7 @@ public class TroubleGame {
             if (_hasSelected) {
                 _availableTokens.clear ();
                 _hasSelected = false;
+                _tokenStartedMoving = true;
                 _currentState = GameState.MOVE_TOKEN;
             }
         }
@@ -325,5 +328,14 @@ public class TroubleGame {
     public Player getActivePlayer ()
     {
         return _activePlayer;
+    }
+    
+    public boolean tokenStartedMoving ()
+    {
+        if (_tokenStartedMoving) {
+            _tokenStartedMoving = false;
+            return true;
+        }
+        return false;
     }
 }

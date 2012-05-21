@@ -154,6 +154,13 @@ public final class GameSettings {
     {
         _TokenMesh = new GameMesh (path, isInternal);
     }
+    
+    public void setTokenSound (final String path, final boolean isInternal)
+    {
+        if (_TokenMesh != null) {
+            _TokenMesh.setSound (path, isInternal);
+        }
+    }
 
     public GameMesh getDiceMesh ()
     {
@@ -164,6 +171,13 @@ public final class GameSettings {
                               final String texturePath, final String textureColorFormat)
     {
         _DiceMesh = new GameMesh (path, isInternal, texturePath, textureColorFormat);
+    }
+    
+    public void setDiceSound (final String path, final boolean isInternal)
+    {
+        if (_DiceMesh != null) {
+            _DiceMesh.setSound (path, isInternal);
+        }
     }
     
     public int getNumberOfDice ()

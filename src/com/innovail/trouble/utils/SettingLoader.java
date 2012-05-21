@@ -195,6 +195,10 @@ public class SettingLoader {
         current = gameSettings.getChildByName ("tokens");
         if (current != null) {
             GameSettings.getInstance ().setTokenMesh (current.getAttribute ("file"), current.getBoolean ("is_internal"));
+            Element sound = current.getChildByName ("sound");
+            if (sound != null) {
+                GameSettings.getInstance ().setTokenSound (sound.getAttribute ("file"), sound.getBoolean ("is_internal"));
+            }
         }
         current = gameSettings.getChildByName ("dice");
         if (current != null) {
@@ -203,6 +207,10 @@ public class SettingLoader {
                                                      current.getAttribute ("texture_file"),
                                                      current.getAttribute ("texture_color_format"));
             GameSettings.getInstance ().setNumberOfDice (current.getInt ("number"));
+            Element sound = current.getChildByName ("sound");
+            if (sound != null) {
+                GameSettings.getInstance ().setDiceSound (sound.getAttribute ("file"), sound.getBoolean ("is_internal"));
+            }
         }
         current = gameSettings.getChildByName ("turnout");
         if (current != null) {

@@ -7,7 +7,6 @@ package com.innovail.trouble.screen;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -48,8 +47,6 @@ public class GameScreen extends TroubleScreen {
     private static final float _UP = 1.0f;
     private static final float _DOWN = -1.0f;
     
-    private final Random rand = new Random ();
-
     private final SpriteBatch _spriteBatch;
     private final BackgroundImage _backgroundImage;
     
@@ -135,6 +132,10 @@ public class GameScreen extends TroubleScreen {
         _spots = _myGame.getField ().getSpots ();
         _tokenMesh = GameSettings.getInstance ().getTokenMesh ();
         _players = _myGame.getPlayers ();
+
+        /* Let's do this early so that the resources are available */
+        _diceMesh.getSound ();
+        _tokenMesh.getSound ();
     }
     
     protected void update (final float delta)
@@ -145,6 +146,9 @@ public class GameScreen extends TroubleScreen {
         }
         if (_myGame.playerChanged()) {
             _overlayAlpha = _OverlayMaxAlphas[_MAX];
+        }
+        if (_myGame.tokenStartedMoving ()) {
+            _tokenMesh.getSound ().play ();
         }
     }
     
@@ -225,7 +229,6 @@ public class GameScreen extends TroubleScreen {
         subRenderOverlay (gl, _playerNumberMesh.get (_myGame.getActivePlayer().getNumber ()), currentColor);
         
         if (_overlayAlpha > _OverlayMaxAlphas[_MIN]) {
-            Gdx.app.log (TAG, "Fading: " + _overlayAlpha);
             _overlayAlpha -= _AlphaValueIncrease * delta;
         }
     }
@@ -493,6 +496,7 @@ public class GameScreen extends TroubleScreen {
                         if (Intersector.intersectRayBoundsFast (_touchRay, _backArrowMesh.getBoundingBox ())) {
                             _currentState = TroubleApplicationState.MAIN_MENU;
                         } else if (Intersector.intersectRayBoundsFast (_touchRay, _diceMesh.getBoundingBox ())) {
+                            _diceMesh.getSound ().play ();
                             _myGame.rollDice ();
                         } else if (!_myGame.getAvailableTokens ().isEmpty ()) {
                             final Iterator <Token> tokens = _myGame.getAvailableTokens ().iterator ();
