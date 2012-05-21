@@ -5,7 +5,9 @@
  */
 package com.innovail.trouble.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.badlogic.gdx.graphics.Color;
@@ -39,6 +41,9 @@ public final class GameSettings {
     
     private GameMesh _DiceMesh;
     
+    private GameMesh _PlayerMesh;
+    
+    private List <GameMesh> _PlayerNumberMesh;
     /* END SETTINGS */
     
     
@@ -189,5 +194,48 @@ public final class GameSettings {
     public void setTurnOutRetries (int retries)
     {
         _TurnOutRetries = retries;
+    }
+
+    public void setPlayerMesh (final String path, final Color color,
+                                final boolean isInternal)
+    {
+        _PlayerMesh = new GameMesh (path, color, isInternal);
+    }
+    
+    public void setPlayerMesh (final String path, final boolean isInternal)
+    {
+        _PlayerMesh = new GameMesh (path, isInternal);
+    }
+    
+    public GameMesh getPlayerMesh ()
+    {
+        return _PlayerMesh;
+    }
+    
+    public void addPlayerNumber (final String path, final Color color,
+                                  final boolean isInternal)
+    {
+        if ((_PlayerNumberMesh == null) || (_PlayerNumberMesh.isEmpty ())) {
+            _PlayerNumberMesh = new ArrayList <GameMesh> ();
+        }
+        _PlayerNumberMesh.add (new GameMesh (path, color, isInternal));
+    }
+    
+    public void addPlayerNumber (final String path, final boolean isInternal)
+    {
+        if ((_PlayerNumberMesh == null) || (_PlayerNumberMesh.isEmpty ())) {
+            _PlayerNumberMesh = new ArrayList <GameMesh> ();
+        }
+        _PlayerNumberMesh.add (new GameMesh (path, isInternal));
+    }
+    
+    public GameMesh getPlayerNumberMesh (int number)
+    {
+        return _PlayerNumberMesh.get (number);
+    }
+    
+    public List <GameMesh> getPlayerNumbers ()
+    {
+        return _PlayerNumberMesh;
     }
 }

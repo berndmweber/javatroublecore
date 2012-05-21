@@ -53,7 +53,10 @@ public class GameScreen extends TroubleScreen {
     private final SpriteBatch _spriteBatch;
     private final BackgroundImage _backgroundImage;
     
+    private final GameMesh _playerMesh;
+    private final List <GameMesh> _playerNumberMesh;
     private final GameMesh _backArrowMesh;
+    
     private final GameMesh _spotMesh;
     private final GameMesh _diceMesh;
     private final GameMesh _tokenMesh;
@@ -98,6 +101,8 @@ public class GameScreen extends TroubleScreen {
         _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (AppPartName);
         _backgroundImage.createTexture ().setFilter (TextureFilter.Linear, TextureFilter.Linear);
         _backArrowMesh = ApplicationSettings.getInstance ().getBackArrow ();
+        _playerMesh = GameSettings.getInstance ().getPlayerMesh ();
+        _playerNumberMesh = GameSettings.getInstance ().getPlayerNumbers ();
         _diceMesh = GameSettings.getInstance ().getDiceMesh ();
 
         _viewMatrix = new Matrix4 ();
@@ -145,6 +150,8 @@ public class GameScreen extends TroubleScreen {
         
         renderField (gl);
         renderTokens (gl);
+        
+        renderAnnouncement (gl);
 
         gl.glEnable (GL10.GL_TEXTURE_2D);
         renderDice (gl);
@@ -202,6 +209,25 @@ public class GameScreen extends TroubleScreen {
             }
             calculateOverlayBoundingBox ();
         }
+    }
+    
+    private void renderAnnouncement (GL10 gl)
+    {
+        final Color currentColor = _myGame.getActivePlayer().getColor ();
+        gl.glPushMatrix ();
+        gl.glTranslatef (_overlayPosition.x, _overlayPosition.y, _overlayPosition.z);
+        gl.glRotatef (_overlayAngle.x, 0.0f, 1.0f, 0.0f);
+        gl.glRotatef (_overlayAngle.y - _OverlayMaxAngles[_MAX], 1.0f, 0.0f, 0.0f);
+        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+        _playerMesh.getMesh ().render (GL10.GL_TRIANGLES);
+        gl.glPopMatrix ();
+        gl.glPushMatrix ();
+        gl.glTranslatef (_overlayPosition.x, _overlayPosition.y, _overlayPosition.z);
+        gl.glRotatef (_overlayAngle.x, 0.0f, 1.0f, 0.0f);
+        gl.glRotatef (_overlayAngle.y - _OverlayMaxAngles[_MAX], 1.0f, 0.0f, 0.0f);
+        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+        _playerNumberMesh.get (_myGame.getActivePlayer().getNumber ()).getMesh ().render (GL10.GL_TRIANGLES);
+        gl.glPopMatrix ();
     }
 
     protected void setLighting (final GL10 gl) {

@@ -310,4 +310,9 @@ public class TroubleGame {
         }
         return false;
     }
+    
+    public Player getActivePlayer ()
+    {
+        return _activePlayer;
+    }
 }

@@ -157,6 +157,30 @@ public class SettingLoader {
                 }
             }
         }
+        current = gameSettings.getChildByName ("playerannouncement");
+        if (current != null) {
+            Element colorE = current.getChildByName ("color");
+            if (colorE != null) {
+                final Color color = new Color ();
+                color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
+                GameSettings.getInstance ().setPlayerMesh (current.getAttribute ("file"), color, current.getBoolean ("is_internal"));
+            } else {
+                GameSettings.getInstance ().setPlayerMesh (current.getAttribute ("file"), current.getBoolean ("is_internal"));
+            }
+            final Array <Element> numbers = current.getChildrenByName ("number");
+            if ((numbers != null) && (numbers.size > 0)) {
+                for (int i = 0; i < numbers.size; i++) {
+                    colorE = numbers.get (i).getChildByName ("color");
+                    if (colorE != null) {
+                        final Color color = new Color ();
+                        color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
+                        GameSettings.getInstance ().addPlayerNumber (numbers.get (i).getAttribute ("file"), color, numbers.get (i).getBoolean ("is_internal"));
+                    } else {
+                        GameSettings.getInstance ().addPlayerNumber (numbers.get (i).getAttribute ("file"), numbers.get (i).getBoolean ("is_internal"));
+                    }
+                }
+            }
+        }
         current = gameSettings.getChildByName ("spots");
         if (current != null) {
             final Element colorE = current.getChildByName ("color");
