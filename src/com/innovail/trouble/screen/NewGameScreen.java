@@ -5,17 +5,12 @@
  */
 package com.innovail.trouble.screen;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Intersector;
@@ -32,51 +27,32 @@ import com.innovail.trouble.utils.GameMesh;
 /**
  * 
  */
-public class MainMenuScreen extends TroubleScreen {
-    private static final String TAG = "MainMenuScreen";
-    private static final String AppPartName = TroubleApplicationState.MAIN_MENU;
+public class NewGameScreen extends TroubleScreen {
+    private static final String TAG = "NewGameScreen";
+    private static final String AppPartName = TroubleApplicationState.NEW_GAME;
     
     private final BitmapFont _menuFont;
     private final SpriteBatch _spriteBatch;
     private final BackgroundImage _backgroundImage;
 
     private final GameMesh _logo;
-    private final List <GameMesh> _menuEntriesList;
     
-    private float[] _yRotationAngle;
-    private int[] _yRotationDirection;
-    private static final float _RotationMaxAngle = 2.0f;
-    private static final float _RotationAngleIncrease = 0.2f;
-    private static float _rotationDelta = 0.0f;
-    private static final float _RotationMaxDelta = 0.05f;
-
     private final Matrix4 _viewMatrix;
     private final Matrix4 _transformMatrix;
     
-    public MainMenuScreen ()
+    public NewGameScreen ()
     {
         super ();
         
-        Gdx.app.log (TAG, "MainMenuScreen()");
+        Gdx.app.log (TAG, "NewGameScreen()");
         
-        _currentState = TroubleApplicationState.MAIN_MENU;
+        _currentState = TroubleApplicationState.NEW_GAME;
         
         _spriteBatch = new SpriteBatch ();
-        _menuFont = ApplicationSettings.getInstance ().getGameFont (AppPartName).createBitmapFont ();
-        _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (AppPartName);
-        _backgroundImage.createTexture ().setFilter (TextureFilter.Linear, TextureFilter.Linear);
+        _menuFont = ApplicationSettings.getInstance ().getGameFont (TroubleApplicationState.MAIN_MENU).createBitmapFont ();
+        _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (TroubleApplicationState.MAIN_MENU);
         
-        _logo = ApplicationSettings.getInstance ().getLogo ();
-        
-        _menuEntriesList = ApplicationSettings.getInstance ().getMenuEntryList (AppPartName);
-        _yRotationAngle = new float[_menuEntriesList.size ()];
-        _yRotationDirection = new int[_menuEntriesList.size ()];
-        final Random rand = new Random ();
-        for (int i = 0; i < _menuEntriesList.size (); i++) {
-            _yRotationAngle[i] = rand.nextFloat ();
-            _yRotationAngle[i] *= rand.nextBoolean () ? 1.0f : -1.0f;
-            _yRotationDirection[i] = rand.nextBoolean () ? 1 : -1;
-        }
+        _logo = ApplicationSettings.getInstance ().getMenuEntries (TroubleApplicationState.MAIN_MENU).get (AppPartName);
         
         _viewMatrix = new Matrix4 ();
         _transformMatrix = new Matrix4 ();
@@ -97,12 +73,10 @@ public class MainMenuScreen extends TroubleScreen {
     
     protected void render (final GL11 gl, final float delta)
     {
-        _rotationDelta += delta;
-        
         Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 
         renderLogo (gl);
-        renderMenu (gl);
+        //renderMenu (gl);
 
         gl.glDisable (GL11.GL_CULL_FACE);
         gl.glDisable (GL11.GL_DEPTH_TEST);
@@ -135,7 +109,8 @@ public class MainMenuScreen extends TroubleScreen {
     
     protected void setLighting (final GL11 gl)
     {
-        final Color lightColor = _logo.getColor ();
+        //final Color lightColor = _logo.getColor ();
+        final Color lightColor = Color.BLUE;
         final float[] specular0 = {lightColor.r, lightColor.g, lightColor.b, lightColor.a};
         final float[] position1 = {-2.0f, -2.0f, 1.0f, 0.0f};
         final float[] ambient1 = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -159,24 +134,21 @@ public class MainMenuScreen extends TroubleScreen {
 
     private void renderLogo (final GL11 gl)
     {
-        final Color currentColor = _logo.getColor ();
         final int frontAndOrBack = GL11.GL_FRONT;
         final float[] matSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
         final float[] matShininess = {7.0f};
         
         gl.glPushMatrix ();
         gl.glTranslatef (0.0f, 1.0f, 0.3f);
-        gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
-        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
         gl.glMaterialfv (frontAndOrBack, GL11.GL_SPECULAR, matSpecular, 0);
         gl.glMaterialfv (frontAndOrBack, GL11.GL_SHININESS, matShininess, 0);
         _logo.getMesh ().render (GL11.GL_TRIANGLES);
         gl.glPopMatrix ();
     }
-    
+
     private void renderMenu (final GL11 gl)
     {
-        final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
+        /*final Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
         float yLocation = 0.0f;
         int i = 0;
         while (currentMesh.hasNext ()) {
@@ -203,25 +175,7 @@ public class MainMenuScreen extends TroubleScreen {
             }
             
             yLocation -= 0.7f;
-            
-            if (_rotationDelta >= _RotationMaxDelta) {
-                if (_yRotationDirection[i] == 1) {
-                    _yRotationAngle[i] += _RotationAngleIncrease;
-                    if (_yRotationAngle[i] >= _RotationMaxAngle) {
-                        _yRotationDirection[i] = -1;
-                    }
-                } else {
-                    _yRotationAngle[i] -= _RotationAngleIncrease;
-                    if (_yRotationAngle[i] <= -_RotationMaxAngle) {
-                        _yRotationDirection[i] = 1;
-                    }
-                }
-            }
-            i++;
-        }
-        if (_rotationDelta >= _RotationMaxDelta) {
-            _rotationDelta = 0.0f;
-        }
+        }*/
     }
 
     public void createInputProcessor ()
@@ -250,18 +204,6 @@ public class MainMenuScreen extends TroubleScreen {
                         _filling = true;
                     }
                     break;
-                case Input.Keys.UP:
-                    Gdx.app.log (TAG, "keyDown() - UP");
-                    break;
-                case Input.Keys.DOWN:
-                    Gdx.app.log (TAG, "keyDown() - DOWN");
-                    break;
-                case Input.Keys.LEFT:
-                    Gdx.app.log (TAG, "keyDown() - LEFT");
-                    break;
-                case Input.Keys.RIGHT:
-                    Gdx.app.log (TAG, "keyDown() - RIGHT");
-                    break;
                 default:
                     rv = false;
                 }
@@ -274,7 +216,7 @@ public class MainMenuScreen extends TroubleScreen {
             @Override
             public boolean touchUp (final int x, final int y, final int pointer, final int button) {
                 if (!_isDragged || (_dragEvents < MIN_NUMBER_OF_DRAGS)) {
-                    final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
+                    /*final Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
                     int j = 0;
                     final Ray touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
                     if (_DEBUG) {
@@ -294,8 +236,9 @@ public class MainMenuScreen extends TroubleScreen {
                             }
                         }
                         j++;
-                    }
+                    }*/
                 }
+                _currentState = TroubleApplicationState.GAME;
                 return super.touchUp (x, y, pointer, button);
             }
         });

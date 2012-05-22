@@ -10,6 +10,7 @@ import com.badlogic.gdx.Gdx;
 
 import com.innovail.trouble.screen.GameScreen;
 import com.innovail.trouble.screen.MainMenuScreen;
+import com.innovail.trouble.screen.NewGameScreen;
 import com.innovail.trouble.screen.TroubleScreen;
 import com.innovail.trouble.utils.SettingLoader;
 
@@ -42,7 +43,8 @@ public class JavaTroubleApplication extends Game {
             currentState = currentScreen.getState ();
             switch (TroubleApplicationState.getState (currentState)) {
             case E_NEW_GAME:
-                currentState = TroubleApplicationState.GAME;
+                setScreen (new NewGameScreen ());
+                break;
             case E_GAME:
                 setScreen (new GameScreen ());
                 break;
