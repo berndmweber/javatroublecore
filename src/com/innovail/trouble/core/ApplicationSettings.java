@@ -5,7 +5,9 @@
  */
 package com.innovail.trouble.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.badlogic.gdx.graphics.Color;
@@ -20,15 +22,16 @@ import com.innovail.trouble.utils.GameMesh;
  */
 public final class ApplicationSettings {
     /* SETTINGS */
-    private Map<String, GameFont> _GameFonts;
+    private Map <String, GameFont> _GameFonts;
     
-    private Map<String, BackgroundImage> _BackgroundImages;
+    private Map <String, BackgroundImage> _BackgroundImages;
     
     private String _CopyRightNotice;
     
     private GameMesh _Logo;
     
-    private Map<String, Map<String, GameMesh>> _MenuEntries;
+    private Map <String, Map <String, GameMesh>> _MenuEntries;
+    private Map <String, List <GameMesh>> _MenuEntryList;
     
     private GameMesh _BackArrow;
     /* END SETTINGS */
@@ -84,31 +87,48 @@ public final class ApplicationSettings {
         return null;
     }
     
-    public void setMenuEntry (final String appPart, final String entryName,
-                               final String path, final boolean isInternal)
-    {
-        if (_MenuEntries == null) {
-            _MenuEntries = new HashMap <String, Map <String, GameMesh>> ();
-        }
-        if (!_MenuEntries.containsKey (appPart)) {
-            _MenuEntries.put (appPart, new HashMap <String, GameMesh> ());
-        }
-        final Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
-        currentMap.put (entryName, new MenuEntryMesh (entryName, path, isInternal));
-    }
-
-    public void setMenuEntry (final String appPart, final String entryName,
-                               final String path, final Color color,
+    public void setMenuEntry (final String appPart, final int index,
+                               final String entryName, final String path,
                                final boolean isInternal)
     {
         if (_MenuEntries == null) {
             _MenuEntries = new HashMap <String, Map <String, GameMesh>> ();
         }
+        if (_MenuEntryList == null) {
+            _MenuEntryList = new HashMap <String, List <GameMesh>> ();
+        }
         if (!_MenuEntries.containsKey (appPart)) {
             _MenuEntries.put (appPart, new HashMap <String, GameMesh> ());
         }
+        if (!_MenuEntryList.containsKey (appPart)) {
+            _MenuEntryList.put (appPart, new ArrayList <GameMesh> ());
+        }
+        final Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
+        currentMap.put (entryName, new MenuEntryMesh (entryName, path, isInternal));
+        final List <GameMesh> currentList = _MenuEntryList.get (appPart);
+        currentList.add (index, currentMap.get (entryName));
+    }
+
+    public void setMenuEntry (final String appPart, final int index,
+                               final String entryName, final String path,
+                               final Color color, final boolean isInternal)
+    {
+        if (_MenuEntries == null) {
+            _MenuEntries = new HashMap <String, Map <String, GameMesh>> ();
+        }
+        if (_MenuEntryList == null) {
+            _MenuEntryList = new HashMap <String, List <GameMesh>> ();
+        }
+        if (!_MenuEntries.containsKey (appPart)) {
+            _MenuEntries.put (appPart, new HashMap <String, GameMesh> ());
+        }
+        if (!_MenuEntryList.containsKey (appPart)) {
+            _MenuEntryList.put (appPart, new ArrayList <GameMesh> ());
+        }
         final Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
         currentMap.put (entryName, new MenuEntryMesh (entryName, path, color, isInternal));
+        final List <GameMesh> currentList = _MenuEntryList.get (appPart);
+        currentList.add (index, currentMap.get (entryName));
     }
     
     public GameMesh getMenuEntry (final String appPart, final String name)
@@ -131,6 +151,16 @@ public final class ApplicationSettings {
         if ((_MenuEntries != null) && !_MenuEntries.isEmpty ()) {
             if (_MenuEntries.containsKey (appPart)) {
                 return _MenuEntries.get (appPart);
+            }
+        }
+        return null;
+    }
+
+    public List <GameMesh> getMenuEntryList (final String appPart)
+    {
+        if ((_MenuEntryList != null) && !_MenuEntryList.isEmpty ()) {
+            if (_MenuEntryList.containsKey (appPart)) {
+                return _MenuEntryList.get (appPart);
             }
         }
         return null;

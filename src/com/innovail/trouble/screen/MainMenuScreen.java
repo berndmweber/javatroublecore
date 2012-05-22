@@ -5,9 +5,8 @@
  */
 package com.innovail.trouble.screen;
 
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
@@ -42,8 +41,7 @@ public class MainMenuScreen extends TroubleScreen {
     private final BackgroundImage _backgroundImage;
 
     private final GameMesh _logo;
-    private final Map <String, GameMesh> _menuEntriesMap;
-    private final Collection <GameMesh> _menuEntries;
+    private final List <GameMesh> _menuEntriesList;
     
     private float[] _yRotationAngle;
     private int[] _yRotationDirection;
@@ -70,12 +68,11 @@ public class MainMenuScreen extends TroubleScreen {
         
         _logo = ApplicationSettings.getInstance ().getLogo ();
         
-        _menuEntriesMap = ApplicationSettings.getInstance ().getMenuEntries (AppPartName);
-        _menuEntries = _menuEntriesMap.values ();
-        _yRotationAngle = new float[_menuEntriesMap.size ()];
-        _yRotationDirection = new int[_menuEntriesMap.size ()];
+        _menuEntriesList = ApplicationSettings.getInstance ().getMenuEntryList (AppPartName);
+        _yRotationAngle = new float[_menuEntriesList.size ()];
+        _yRotationDirection = new int[_menuEntriesList.size ()];
         final Random rand = new Random ();
-        for (int i = 0; i < _menuEntriesMap.size (); i++) {
+        for (int i = 0; i < _menuEntriesList.size (); i++) {
             _yRotationAngle[i] = rand.nextFloat ();
             _yRotationAngle[i] *= rand.nextBoolean () ? 1.0f : -1.0f;
             _yRotationDirection[i] = rand.nextBoolean () ? 1 : -1;
@@ -179,7 +176,7 @@ public class MainMenuScreen extends TroubleScreen {
     
     private void renderMenu (final GL11 gl)
     {
-        final Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
+        final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
         float yLocation = 0.0f;
         int i = 0;
         while (currentMesh.hasNext ()) {
@@ -277,7 +274,7 @@ public class MainMenuScreen extends TroubleScreen {
             @Override
             public boolean touchUp (final int x, final int y, final int pointer, final int button) {
                 if (!_isDragged || (_dragEvents < MIN_NUMBER_OF_DRAGS)) {
-                    final Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
+                    final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
                     int j = 0;
                     final Ray touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
                     if (_DEBUG) {

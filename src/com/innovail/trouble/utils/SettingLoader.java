@@ -93,6 +93,7 @@ public class SettingLoader {
                         final Element entry = entries.get (j);
                         if (entry != null) {
                             ApplicationSettings.getInstance ().setMenuEntry (menu.getAttribute ("type") + "Menu",
+                                                                             entry.getInt ("index"),
                                                                              entry.getAttribute ("name"),
                                                                              entry.getAttribute ("file"),
                                                                              entry.getBoolean ("is_internal"));

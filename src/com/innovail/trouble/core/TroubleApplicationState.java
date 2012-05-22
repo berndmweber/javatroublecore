@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.Array;
 public class TroubleApplicationState {
 
     public static final String MAIN_MENU = "mainMenu";
-    public static final String NEW_GAME  = "newGame";
+    public static final String NEW_GAME  = "newGameMenu";
     public static final String SETTINGS  = "settings";
     public static final String GAME      = "game";
     
