@@ -30,7 +30,7 @@ public class GameMesh {
 
     private final boolean _isInternal;
     private boolean _isVFlipped = false;
-    private boolean _useIndices = true;
+    private boolean _useIndices = false;
     private final Color _color;
     private final String _path;
     private final String _texturePath;

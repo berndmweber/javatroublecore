@@ -13,7 +13,7 @@ import java.util.Random;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
@@ -89,6 +89,8 @@ public class MainMenuScreen extends TroubleScreen {
         _camera = new PerspectiveCamera (100, 2f * aspectRatio, 2f);
         _camera.position.set (0, 0, 2);
         _camera.direction.set (0, 0, -4).sub (_camera.position).nor ();
+
+        showFrontAndBack ();
     }
     
     protected void update (final float delta)
@@ -96,17 +98,17 @@ public class MainMenuScreen extends TroubleScreen {
         /* Nothing to do here. */
     }
     
-    protected void render (final GL10 gl, final float delta)
+    protected void render (final GL11 gl, final float delta)
     {
         _rotationDelta += delta;
         
-        Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
+        Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 
         renderLogo (gl);
         renderMenu (gl);
 
-        gl.glDisable (GL10.GL_CULL_FACE);
-        gl.glDisable (GL10.GL_DEPTH_TEST);
+        gl.glDisable (GL11.GL_CULL_FACE);
+        gl.glDisable (GL11.GL_DEPTH_TEST);
     }
 
     protected void renderBackground (final float width, final float height)
@@ -124,7 +126,7 @@ public class MainMenuScreen extends TroubleScreen {
                           _backgroundImage.getHeight (),
                           false, false);
         _spriteBatch.enableBlending ();
-        _spriteBatch.setBlendFunction (GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        _spriteBatch.setBlendFunction (GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
         final String text = ApplicationSettings.getInstance ().getCopyRightNotice ();
         final float textWidth = _menuFont.getBounds (text).width;
         final float textHeight = _menuFont.getBounds (text).height;
@@ -134,7 +136,7 @@ public class MainMenuScreen extends TroubleScreen {
         _spriteBatch.end ();
     }
     
-    protected void setLighting (final GL10 gl)
+    protected void setLighting (final GL11 gl)
     {
         final Color lightColor = _logo.getColor ();
         final float[] specular0 = {lightColor.r, lightColor.g, lightColor.b, lightColor.a};
@@ -143,26 +145,25 @@ public class MainMenuScreen extends TroubleScreen {
         final float[] diffuse1 = {1.0f, 1.0f, 1.0f, 1.0f};
         final float[] specular1 = {1.0f, 1.0f, 1.0f, 1.0f};
         
-        gl.glEnable (GL10.GL_LIGHTING);
-        gl.glLightModelf (GL10.GL_LIGHT_MODEL_TWO_SIDE, 0.0f);
+        gl.glEnable (GL11.GL_LIGHTING);
         
-        gl.glEnable (GL10.GL_LIGHT0);
-        gl.glLightfv (GL10.GL_LIGHT0, GL10.GL_SPECULAR, specular0, 0);
+        gl.glEnable (GL11.GL_LIGHT0);
+        gl.glLightfv (GL11.GL_LIGHT0, GL11.GL_SPECULAR, specular0, 0);
         
-        gl.glEnable (GL10.GL_LIGHT1);
-        gl.glLightfv (GL10.GL_LIGHT1, GL10.GL_AMBIENT, ambient1, 0);
-        gl.glLightfv (GL10.GL_LIGHT1, GL10.GL_DIFFUSE, diffuse1, 0);
-        gl.glLightfv (GL10.GL_LIGHT1, GL10.GL_SPECULAR, specular1, 0);
-        gl.glLightfv (GL10.GL_LIGHT1, GL10.GL_POSITION, position1, 0);
+        gl.glEnable (GL11.GL_LIGHT1);
+        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_AMBIENT, ambient1, 0);
+        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_DIFFUSE, diffuse1, 0);
+        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_SPECULAR, specular1, 0);
+        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_POSITION, position1, 0);
         
-        gl.glEnable (GL10.GL_COLOR_MATERIAL);
-        gl.glEnable (GL10.GL_BLEND);
+        gl.glEnable (GL11.GL_COLOR_MATERIAL);
+        gl.glEnable (GL11.GL_BLEND);
     }
 
-    private void renderLogo (final GL10 gl)
+    private void renderLogo (final GL11 gl)
     {
         final Color currentColor = _logo.getColor ();
-        final int frontAndOrBack = GL10.GL_FRONT;
+        final int frontAndOrBack = GL11.GL_FRONT;
         final float[] matSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
         final float[] matShininess = {7.0f};
         
@@ -170,14 +171,13 @@ public class MainMenuScreen extends TroubleScreen {
         gl.glTranslatef (0.0f, 1.0f, 0.3f);
         gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
         gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-        gl.glMaterialfv (frontAndOrBack, GL10.GL_SPECULAR, matSpecular, 0);
-        gl.glMaterialfv (frontAndOrBack, GL10.GL_SHININESS, matShininess, 0);
-        _logo.getMesh ().render (GL10.GL_TRIANGLES);
+        gl.glMaterialfv (frontAndOrBack, GL11.GL_SPECULAR, matSpecular, 0);
+        gl.glMaterialfv (frontAndOrBack, GL11.GL_SHININESS, matShininess, 0);
+        _logo.getMesh ().render (GL11.GL_TRIANGLES);
         gl.glPopMatrix ();
-        //gl.glDisable (GL10.GL_COLOR_MATERIAL);
      }
     
-    private void renderMenu (final GL10 gl)
+    private void renderMenu (final GL11 gl)
     {
         final Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
         float yLocation = 0.0f;
@@ -187,7 +187,7 @@ public class MainMenuScreen extends TroubleScreen {
             gl.glPushMatrix ();
             gl.glTranslatef (0.0f, yLocation, 0.0f);
             gl.glRotatef (_yRotationAngle[i], 0.0f, 0.0f, 1.0f);
-            thisMesh.getMesh ().render (GL10.GL_TRIANGLES);
+            thisMesh.getMesh ().render (GL11.GL_TRIANGLES);
             gl.glPopMatrix ();
             
             final Matrix4 transform = new Matrix4();
@@ -198,11 +198,11 @@ public class MainMenuScreen extends TroubleScreen {
             thisMesh.transformBoundingBox (transform);
             
             if (_DEBUG) {
-                Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_LINE);
+                Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
                 gl.glPushMatrix ();
-                thisMesh.getBBMesh ().render (GL10.GL_TRIANGLES);
+                thisMesh.getBBMesh ().render (GL11.GL_TRIANGLES);
                 gl.glPopMatrix ();
-                Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
+                Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
             }
             
             yLocation -= 0.7f;
@@ -245,11 +245,11 @@ public class MainMenuScreen extends TroubleScreen {
                 case Input.Keys.R:
                     if (_filling) {
                         Gdx.app.log (TAG, "keyDown() - wireframing");
-                        Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_LINE);
+                        Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
                         _filling = false;
                     } else {
                         Gdx.app.log (TAG, "keyDown() - Filling");
-                        Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
+                        Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
                         _filling = true;
                     }
                     break;

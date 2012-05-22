@@ -9,13 +9,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.GL11;
 
 /**
  * 
  */
 public abstract class TroubleScreen implements Screen {
     private static final String TAG = "TroubleScreen";
+    
+    private boolean _showFrontAndBack = false;
 
     protected static final boolean _DEBUG = false;
     protected static final int _MIN = 0;
@@ -79,41 +81,49 @@ public abstract class TroubleScreen implements Screen {
     {
         update (delta);
         
-        final GL10 gl = Gdx.graphics.getGL10();
+        final GL11 gl = Gdx.graphics.getGL11 ();
         final Color currentColor = Color.BLACK;
 
-        gl.glClear (GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+        gl.glClear (GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
         gl.glClearColor (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
         gl.glViewport (0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         
         renderBackground ((float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
         
-        gl.glDisable (GL10.GL_DITHER);
-        gl.glEnable (GL10.GL_DEPTH_TEST);
-        gl.glEnable (GL10.GL_CULL_FACE);
+        gl.glDisable (GL11.GL_DITHER);
+        gl.glEnable (GL11.GL_DEPTH_TEST);
+        if (!_showFrontAndBack) {
+            gl.glEnable (GL11.GL_CULL_FACE);
+        }
+        gl.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 
         setProjectionAndCamera (gl);
         setLighting (gl);
 
-        gl.glMatrixMode (GL10.GL_MODELVIEW);
-        gl.glShadeModel (GL10.GL_SMOOTH);
+        gl.glMatrixMode (GL11.GL_MODELVIEW);
+        gl.glShadeModel (GL11.GL_SMOOTH);
         
         render (gl, delta);
     }
     
     protected abstract void update (final float delta);
     
-    protected abstract void render (final GL10 gl, final float delta);
+    protected abstract void render (final GL11 gl, final float delta);
     
     protected abstract void renderBackground (final float width, final float height);
     
-    protected void setProjectionAndCamera (final GL10 gl)
+    protected void setProjectionAndCamera (final GL11 gl)
     {
         _camera.update ();
         _camera.apply (gl);
     }
     
-    protected abstract void setLighting (final GL10 gl);
+    protected abstract void setLighting (final GL11 gl);
+    
+    protected void showFrontAndBack ()
+    {
+        _showFrontAndBack = true;
+    }
 
     /* (non-Javadoc)
      * @see com.badlogic.gdx.ApplicationListener#resize(int, int)

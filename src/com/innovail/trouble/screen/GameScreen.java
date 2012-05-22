@@ -11,7 +11,7 @@ import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -42,7 +42,7 @@ public class GameScreen extends TroubleScreen {
     private static final String AppPartName = TroubleApplicationState.GAME;
     
     private static final float[] NoMat = {0.0f, 0.0f, 0.0f, 1.0f};
-    private static final int FrontAndOrBack = GL10.GL_FRONT;
+    private static final int FrontAndOrBack = GL11.GL_FRONT;
     
     private static final float _UP = 1.0f;
     private static final float _DOWN = -1.0f;
@@ -152,7 +152,7 @@ public class GameScreen extends TroubleScreen {
         }
     }
     
-    protected void render (final GL10 gl, final float delta)
+    protected void render (final GL11 gl, final float delta)
     {
         calculateWobbleAngles (delta);
         
@@ -163,12 +163,12 @@ public class GameScreen extends TroubleScreen {
         
         renderAnnouncement (gl, delta);
 
-        gl.glEnable (GL10.GL_TEXTURE_2D);
+        gl.glEnable (GL11.GL_TEXTURE_2D);
         renderDice (gl);
-        gl.glDisable (GL10.GL_TEXTURE_2D);
+        gl.glDisable (GL11.GL_TEXTURE_2D);
         
-        gl.glDisable (GL10.GL_CULL_FACE);
-        gl.glDisable (GL10.GL_DEPTH_TEST);
+        gl.glDisable (GL11.GL_CULL_FACE);
+        gl.glDisable (GL11.GL_DEPTH_TEST);
     }
 
     protected void renderBackground (final float width, final float height)
@@ -188,7 +188,7 @@ public class GameScreen extends TroubleScreen {
         _spriteBatch.end ();
     }
     
-    private void renderOverlay (final GL10 gl)
+    private void renderOverlay (final GL11 gl)
     {
         gl.glPushMatrix ();
         gl.glTranslatef (_overlayPosition.x, _overlayPosition.y, _overlayPosition.z);
@@ -196,14 +196,14 @@ public class GameScreen extends TroubleScreen {
         gl.glRotatef (_overlayAngle.y + _overlayAdditionalAngle, 1.0f, 0.0f, 0.0f);
         final Color currentColor = _backArrowMesh.getColor ();
         gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-        _backArrowMesh.getMesh ().render (GL10.GL_TRIANGLES);
+        _backArrowMesh.getMesh ().render (GL11.GL_TRIANGLES);
         gl.glPopMatrix ();
         if (_DEBUG) {
-            Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_LINE);
+            Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
             gl.glPushMatrix ();
-            _backArrowMesh.getBBMesh ().render (GL10.GL_TRIANGLES);
+            _backArrowMesh.getBBMesh ().render (GL11.GL_TRIANGLES);
             gl.glPopMatrix ();
-            Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
+            Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
         }
         
         if (_showOverlay && (_overlayAdditionalAngle < _OverlayMaxAngles[_MAX])) {
@@ -221,7 +221,7 @@ public class GameScreen extends TroubleScreen {
         }
     }
     
-    private void renderAnnouncement (final GL10 gl, final float delta)
+    private void renderAnnouncement (final GL11 gl, final float delta)
     {
         final Color currentColor = _myGame.getActivePlayer().getColor ();
         
@@ -233,34 +233,40 @@ public class GameScreen extends TroubleScreen {
         }
     }
     
-    private void subRenderOverlay (GL10 gl, GameMesh mesh, Color color)
+    private void subRenderOverlay (GL11 gl, GameMesh mesh, Color color)
     {
         gl.glPushMatrix ();
         gl.glTranslatef (_overlayPosition.x, _overlayPosition.y, _overlayPosition.z);
         gl.glRotatef (_overlayAngle.x, 0.0f, 1.0f, 0.0f);
         gl.glRotatef (_overlayAngle.y - _OverlayMaxAngles[_MAX], 1.0f, 0.0f, 0.0f);
         gl.glColor4f (color.r, color.g, color.b, _overlayAlpha);
-        gl.glEnable (GL10.GL_BLEND);
+        gl.glEnable (GL11.GL_BLEND);
         gl.glDepthMask (false);
-        gl.glBlendFunc (GL10.GL_SRC_ALPHA, GL10.GL_ONE);
-        mesh.getMesh ().render (GL10.GL_TRIANGLES);
+        gl.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+        mesh.getMesh ().render (GL11.GL_TRIANGLES);
         gl.glDepthMask (true);
-        gl.glDisable (GL10.GL_BLEND);
+        gl.glDisable (GL11.GL_BLEND);
         gl.glPopMatrix ();
     }
 
-    protected void setLighting (final GL10 gl) {
-        gl.glEnable (GL10.GL_LIGHTING);
-        gl.glLightModelf (GL10.GL_LIGHT_MODEL_TWO_SIDE, 0.0f);
+    protected void setLighting (final GL11 gl) {
+        final float[] position1 = {10.0f, 5.0f, 1.0f, 1.0f};
+        final float[] ambient1 = {1.0f, 1.0f, 1.0f, 1.0f};
+        final float[] diffuse1 = {1.0f, 1.0f, 1.0f, 1.0f};
+        final float[] specular1 = {1.0f, 1.0f, 1.0f, 1.0f};
+
+        gl.glEnable (GL11.GL_LIGHTING);
         
-        gl.glEnable (GL10.GL_LIGHT0);
+        gl.glEnable (GL11.GL_LIGHT1);
+        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_AMBIENT, ambient1, 0);
+        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_DIFFUSE, diffuse1, 0);
+        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_SPECULAR, specular1, 0);
+        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_POSITION, position1, 0);
         
-        gl.glEnable (GL10.GL_COLOR_MATERIAL);
-        gl.glEnable (GL10.GL_BLEND);
-        gl.glBlendFunc (GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
+        gl.glEnable (GL11.GL_COLOR_MATERIAL);
     }
 
-    private void renderDice (final GL10 gl)
+    private void renderDice (final GL11 gl)
     {
         final Matrix4 transform = new Matrix4();
         final Matrix4 tmp = new Matrix4();
@@ -278,13 +284,13 @@ public class GameScreen extends TroubleScreen {
         
         final Color currentColor = Color.WHITE;
         gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-        _diceMesh.getMesh ().render (GL10.GL_TRIANGLES);
+        _diceMesh.getMesh ().render (GL11.GL_TRIANGLES);
         gl.glPopMatrix ();
         
         _diceMesh.transformBoundingBox (transform);
     }
 
-    private void renderField (final GL10 gl)
+    private void renderField (final GL11 gl)
     {
         if (_myGame != null) {
             _spot = _spots.iterator ();
@@ -302,7 +308,7 @@ public class GameScreen extends TroubleScreen {
                             currentColor.g == 1.0f ? currentColor.g : 0.3f,
                             currentColor.b == 1.0f ? currentColor.b : 0.3f,
                             1.0f};
-                    gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, matEmission, 0);
+                    gl.glMaterialfv (FrontAndOrBack, GL11.GL_EMISSION, matEmission, 0);
                     gl.glRotatef (_wobbleAngle.x, 1.0f, 0.0f, 0.0f);
                     gl.glRotatef (_wobbleAngle.y, 0.0f, 0.0f, 1.0f);
                 }
@@ -310,14 +316,14 @@ public class GameScreen extends TroubleScreen {
                                  currentPosition.y,
                                  currentPosition.z);
                 gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-                _spotMesh.getMesh ().render (GL10.GL_TRIANGLES);
+                _spotMesh.getMesh ().render (GL11.GL_TRIANGLES);
                 gl.glPopMatrix ();
-                gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, NoMat, 0);
+                gl.glMaterialfv (FrontAndOrBack, GL11.GL_EMISSION, NoMat, 0);
             }
         }
     }
 
-    private void renderTokens (final GL10 gl)
+    private void renderTokens (final GL11 gl)
     {
         if (_myGame != null) {
             _player = _players.iterator ();
@@ -355,12 +361,12 @@ public class GameScreen extends TroubleScreen {
                                                       currentColor.g == 1.0f ? currentColor.g : 0.3f,
                                                       currentColor.b == 1.0f ? currentColor.b : 0.3f,
                                                       1.0f};
-                        gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, matEmission, 0);
+                        gl.glMaterialfv (FrontAndOrBack, GL11.GL_EMISSION, matEmission, 0);
                     }
                     
-                    _tokenMesh.getMesh ().render (GL10.GL_TRIANGLES);
+                    _tokenMesh.getMesh ().render (GL11.GL_TRIANGLES);
                     gl.glPopMatrix ();
-                    gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, NoMat, 0);
+                    gl.glMaterialfv (FrontAndOrBack, GL11.GL_EMISSION, NoMat, 0);
                 }
             }
         }
@@ -442,11 +448,11 @@ public class GameScreen extends TroubleScreen {
                 case Input.Keys.R:
                     if (_filling) {
                         Gdx.app.log (TAG, "keyDown() - wireframing");
-                        Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_LINE);
+                        Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
                         _filling = false;
                     } else {
                         Gdx.app.log (TAG, "keyDown() - Filling");
-                        Gdx.gl10.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
+                        Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
                         _filling = true;
                     }
                     break;
