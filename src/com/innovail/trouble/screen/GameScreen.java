@@ -71,12 +71,14 @@ public class GameScreen extends TroubleScreen {
     private static final float[] _OverlayMaxAngles = {66.0f, 90.0f};
     private static final float[] _OverlayMaxAlphas = {0.0f, 1.0f};
     private static final float _AlphaValueIncrease = 0.5f;
+    private static final float _OverlayMaxVisibleTime = 0.7f;
     private final float _overlayRadius;
     private Vector3 _overlayPosition; 
     private Vector2 _overlayAngle;
     private boolean _showOverlay = false;
     private float _overlayAdditionalAngle = _OverlayMaxAngles[_MIN];
     private float _overlayAlpha = _OverlayMaxAlphas[_MAX];
+    private float _overlayVisibleTime = 0.0f;
     
     private static final float _SelectedYOffset = 0.05f;
     private static final float[] _WobbleMaxAngles = {-0.5f, 0.5f};
@@ -145,7 +147,10 @@ public class GameScreen extends TroubleScreen {
             _currentState = TroubleApplicationState.MAIN_MENU;
         }
         if (_myGame.playerChanged()) {
+            _overlayVisibleTime = 0.0f;
             _overlayAlpha = _OverlayMaxAlphas[_MAX];
+        } else {
+            _overlayVisibleTime += delta;
         }
         if (_myGame.tokenStartedMoving ()) {
             _tokenMesh.getSound ().play ();
@@ -228,8 +233,10 @@ public class GameScreen extends TroubleScreen {
         subRenderOverlay (gl, _playerMesh, currentColor);
         subRenderOverlay (gl, _playerNumberMesh.get (_myGame.getActivePlayer().getNumber ()), currentColor);
         
-        if (_overlayAlpha > _OverlayMaxAlphas[_MIN]) {
-            _overlayAlpha -= _AlphaValueIncrease * delta;
+        if (_overlayVisibleTime > _OverlayMaxVisibleTime) {
+            if (_overlayAlpha > _OverlayMaxAlphas[_MIN]) {
+                _overlayAlpha -= _AlphaValueIncrease * delta;
+            }
         }
     }
     
@@ -242,7 +249,11 @@ public class GameScreen extends TroubleScreen {
         gl.glColor4f (color.r, color.g, color.b, _overlayAlpha);
         gl.glEnable (GL11.GL_BLEND);
         gl.glDepthMask (false);
-        gl.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+        if (_overlayAlpha == _OverlayMaxAlphas[_MAX]) {
+            gl.glBlendFunc (GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        } else {
+            gl.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+        }
         mesh.getMesh ().render (GL11.GL_TRIANGLES);
         gl.glDepthMask (true);
         gl.glDisable (GL11.GL_BLEND);
