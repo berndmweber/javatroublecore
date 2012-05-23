@@ -28,6 +28,8 @@ public final class ApplicationSettings {
     
     private String _CopyRightNotice;
     
+    private Map <String, GameMesh> _ApplicationAssets;
+    
     private GameMesh _Logo;
     
     private Map <String, Map <String, GameMesh>> _MenuEntries;
@@ -206,5 +208,33 @@ public final class ApplicationSettings {
     public GameMesh getBackArrow ()
     {
         return _BackArrow;
+    }
+    
+    public void setApplicationAsset (final String name, final String path,
+                                      final Color color, final boolean isInternal)
+    {
+        if (_ApplicationAssets == null) {
+            _ApplicationAssets = new HashMap <String, GameMesh> ();
+        }
+        _ApplicationAssets.put (name, new GameMesh (path, color, isInternal));
+    }
+    
+    public void setApplicationAsset (final String name, final String path,
+                                      final boolean isInternal)
+    {
+        if (_ApplicationAssets == null) {
+            _ApplicationAssets = new HashMap <String, GameMesh> ();
+        }
+        _ApplicationAssets.put (name, new GameMesh (path, isInternal));
+    }
+
+    public GameMesh getApplicationAsset (String name)
+    {
+        if ((_ApplicationAssets != null) && (!_ApplicationAssets.isEmpty ())) {
+            if (_ApplicationAssets.containsKey (name)) {
+                return _ApplicationAssets.get (name);
+            }
+        }
+        return null;
     }
 }

@@ -5,6 +5,9 @@
  */
 package com.innovail.trouble.screen;
 
+import java.util.Iterator;
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -15,6 +18,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 
 import com.innovail.trouble.core.ApplicationSettings;
@@ -36,9 +40,13 @@ public class NewGameScreen extends TroubleScreen {
     private final BackgroundImage _backgroundImage;
 
     private final GameMesh _logo;
+    private final List <GameMesh> _menuEntriesList;
+    private final GameMesh _selectionArrow;
     
     private final Matrix4 _viewMatrix;
     private final Matrix4 _transformMatrix;
+    
+    private static final Vector3 _MenuOffset = new Vector3 (-2.0f, 0.5f, 0.0f);
     
     public NewGameScreen ()
     {
@@ -53,7 +61,9 @@ public class NewGameScreen extends TroubleScreen {
         _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (TroubleApplicationState.MAIN_MENU);
         
         _logo = ApplicationSettings.getInstance ().getMenuEntries (TroubleApplicationState.MAIN_MENU).get (AppPartName);
-        
+        _menuEntriesList = ApplicationSettings.getInstance ().getMenuEntryList (AppPartName);
+       
+        _selectionArrow = ApplicationSettings.getInstance ().getApplicationAsset ("selectionArrow");
         _viewMatrix = new Matrix4 ();
         _transformMatrix = new Matrix4 ();
         
@@ -76,7 +86,7 @@ public class NewGameScreen extends TroubleScreen {
         Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 
         renderLogo (gl);
-        //renderMenu (gl);
+        renderMenu (gl);
 
         gl.glDisable (GL11.GL_CULL_FACE);
         gl.glDisable (GL11.GL_DEPTH_TEST);
@@ -109,7 +119,6 @@ public class NewGameScreen extends TroubleScreen {
     
     protected void setLighting (final GL11 gl)
     {
-        //final Color lightColor = _logo.getColor ();
         final Color lightColor = Color.BLUE;
         final float[] specular0 = {lightColor.r, lightColor.g, lightColor.b, lightColor.a};
         final float[] position1 = {-2.0f, -2.0f, 1.0f, 0.0f};
@@ -148,22 +157,22 @@ public class NewGameScreen extends TroubleScreen {
 
     private void renderMenu (final GL11 gl)
     {
-        /*final Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
+        final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
         float yLocation = 0.0f;
         int i = 0;
         while (currentMesh.hasNext ()) {
             final GameMesh thisMesh = currentMesh.next ();
             gl.glPushMatrix ();
-            gl.glTranslatef (0.0f, yLocation, 0.0f);
-            gl.glRotatef (_yRotationAngle[i], 0.0f, 0.0f, 1.0f);
+            gl.glTranslatef (_MenuOffset.x, yLocation + _MenuOffset.y, _MenuOffset.z);
+            //gl.glRotatef (_yRotationAngle[i], 0.0f, 0.0f, 1.0f);
             thisMesh.getMesh ().render (GL11.GL_TRIANGLES);
             gl.glPopMatrix ();
             
             final Matrix4 transform = new Matrix4();
             final Matrix4 tmp = new Matrix4();
             transform.setToTranslation (0.0f, yLocation, 0.0f);
-            tmp.setToRotation (0.0f, 0.0f, 1.0f, _yRotationAngle[i]);
-            transform.mul(tmp);
+            //tmp.setToRotation (0.0f, 0.0f, 1.0f, _yRotationAngle[i]);
+            //transform.mul(tmp);
             thisMesh.transformBoundingBox (transform);
             
             if (_DEBUG) {
@@ -175,9 +184,13 @@ public class NewGameScreen extends TroubleScreen {
             }
             
             yLocation -= 0.7f;
-        }*/
+        }
     }
 
+    private void renderAsset (String name) {
+        
+    }
+    
     public void createInputProcessor ()
     {
         Gdx.input.setInputProcessor (new GameInputAdapter() {

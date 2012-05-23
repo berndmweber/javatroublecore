@@ -53,6 +53,20 @@ public class SettingLoader {
     
     private static void parseApplicationSettings (final Element applicationSettings)
     {
+        final Element assets = applicationSettings.getChildByName ("assets");
+        if (assets != null) {
+            final Array <Element> assetsA = assets.getChildrenByName ("asset");
+            if ((assetsA != null ) && (assetsA.size > 0)) {
+                for (int i = 0; i < assetsA.size; i++) {
+                    final Element asset = assetsA.get (i);
+                    if (asset != null) {
+                        ApplicationSettings.getInstance ().setApplicationAsset (asset.getAttribute ("name"),
+                                                                                asset.getAttribute ("file"),
+                                                                                asset.getBoolean ("is_internal"));
+                    }
+                }
+            }
+        }
         final Array<Element> menus = applicationSettings.getChildrenByName ("menu");
         if ((menus != null) && (menus.size > 0)) {
             for (int i = 0; i < menus.size; i++) {
