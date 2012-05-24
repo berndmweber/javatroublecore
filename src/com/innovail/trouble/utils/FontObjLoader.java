@@ -93,7 +93,7 @@ public class FontObjLoader {
                         }
                         faces.add (face);
                     }
-                } while (!lines[++i].startsWith ("o "));
+                } while ((lines.length > ++i) && !lines[i].startsWith ("o "));
                 i--;
                 
                 List <String> usedVertices = new ArrayList <String> ();
