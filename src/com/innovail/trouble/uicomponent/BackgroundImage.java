@@ -3,7 +3,7 @@
  * @date:   Apr 18, 2012
  * @author: bweber
  */
-package com.innovail.trouble.utils;
+package com.innovail.trouble.uicomponent;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;

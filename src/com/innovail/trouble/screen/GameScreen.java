@@ -28,10 +28,10 @@ import com.innovail.trouble.core.TroubleGame;
 import com.innovail.trouble.core.gameelement.Player;
 import com.innovail.trouble.core.gameelement.Spot;
 import com.innovail.trouble.core.gameelement.Token;
-import com.innovail.trouble.utils.BackgroundImage;
+import com.innovail.trouble.graphics.GameMesh;
+import com.innovail.trouble.graphics.GamePerspectiveCamera;
+import com.innovail.trouble.uicomponent.BackgroundImage;
 import com.innovail.trouble.utils.GameInputAdapter;
-import com.innovail.trouble.utils.GameMesh;
-import com.innovail.trouble.utils.GamePerspectiveCamera;
 import com.innovail.trouble.utils.MathUtils;
 
 /**

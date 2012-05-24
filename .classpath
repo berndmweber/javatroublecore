@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry exported="true" kind="lib" path="libs/gdx.jar">
+	<classpathentry exported="true" kind="lib" path="libs/gdx.jar" sourcepath="/home/bweber/Downloads/libgdx-0.9.3/sources/gdx-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/home/bweber/Downloads/libgdx-0.9.3/docs/api/"/>
 		</attributes>

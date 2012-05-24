@@ -14,8 +14,7 @@ import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 
-import com.innovail.trouble.utils.GameMesh;
-import com.innovail.trouble.utils.MenuEntryMesh;
+import com.innovail.trouble.graphics.GameMesh;
 
 /**
  * 

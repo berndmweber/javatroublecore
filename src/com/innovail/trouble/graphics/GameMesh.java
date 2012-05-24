@@ -3,7 +3,7 @@
  * @date:   May 8, 2012
  * @author: bweber
  */
-package com.innovail.trouble.utils;
+package com.innovail.trouble.graphics;
 
 import java.io.InputStream;
 

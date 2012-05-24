@@ -24,10 +24,10 @@ import com.badlogic.gdx.math.collision.Ray;
 
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.TroubleApplicationState;
-import com.innovail.trouble.utils.BackgroundImage;
+import com.innovail.trouble.graphics.GameMesh;
+import com.innovail.trouble.uicomponent.BackgroundImage;
+import com.innovail.trouble.uicomponent.MenuEntryMesh;
 import com.innovail.trouble.utils.GameInputAdapter;
-import com.innovail.trouble.utils.MenuEntryMesh;
-import com.innovail.trouble.utils.GameMesh;
 
 /**
  * 

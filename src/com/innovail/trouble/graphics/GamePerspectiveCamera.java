@@ -3,7 +3,7 @@
  * @date:   May 15, 2012
  * @author: bweber
  */
-package com.innovail.trouble.utils;
+package com.innovail.trouble.graphics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.innovail.trouble.utils.MathUtils;
 
 /**
  * 

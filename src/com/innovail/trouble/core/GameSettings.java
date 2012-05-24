@@ -12,7 +12,7 @@ import java.util.Map;
 
 import com.badlogic.gdx.graphics.Color;
 
-import com.innovail.trouble.utils.GameMesh;
+import com.innovail.trouble.graphics.GameMesh;
 
 /**
  * 

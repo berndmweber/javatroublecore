@@ -12,10 +12,10 @@ import java.util.Map;
 
 import com.badlogic.gdx.graphics.Color;
 
-import com.innovail.trouble.utils.BackgroundImage;
-import com.innovail.trouble.utils.GameFont;
-import com.innovail.trouble.utils.MenuEntryMesh;
-import com.innovail.trouble.utils.GameMesh;
+import com.innovail.trouble.graphics.GameFont;
+import com.innovail.trouble.graphics.GameMesh;
+import com.innovail.trouble.uicomponent.BackgroundImage;
+import com.innovail.trouble.uicomponent.MenuEntryMesh;
 
 /**
  * 

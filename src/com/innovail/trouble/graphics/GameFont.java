@@ -3,7 +3,7 @@
  * @date:   Apr 17, 2012
  * @author: bweber
  */
-package com.innovail.trouble.utils;
+package com.innovail.trouble.graphics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;

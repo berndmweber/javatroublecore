@@ -3,9 +3,10 @@
  * @date:   May 8, 2012
  * @author: bweber
  */
-package com.innovail.trouble.utils;
+package com.innovail.trouble.uicomponent;
 
 import com.badlogic.gdx.graphics.Color;
+import com.innovail.trouble.graphics.GameMesh;
 
 /**
  * 
