@@ -16,6 +16,8 @@ import java.util.Map;
 
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.g3d.loaders.obj.ObjLoader;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 
 /**
  * 
@@ -122,11 +124,35 @@ public class FontObjLoader {
                     tempObj += faceBack + "\n";
                 }
                 Mesh tempMesh = ObjLoader.loadObjFromString (tempObj, flipV, useIndices);
+                tempMesh = normalizeMeshPosition (tempMesh);
                 fontMap.put (Character.valueOf (tokens[0].charAt (0)), tempMesh);
             }
         }
         
         return fontMap;
+    }
+    
+    public static Mesh normalizeMeshPosition (Mesh font)
+    {
+        BoundingBox meshBB = font.calculateBoundingBox ();
+        Vector3 centerVector = meshBB.getCenter ();
+        centerVector.mul (-1.0f);
+        
+        /* seems to be the number of faces so times 6 (3 vertices, 3 normals) */
+        int vertArraySize = font.getNumVertices () * 6;
+        float[] tempVerts = new float [vertArraySize];
+        font.getVertices (tempVerts);
+        
+        for (int i = 0; i < vertArraySize; i++) {
+            tempVerts[i++] += centerVector.x;
+            tempVerts[i++] += centerVector.y;
+            tempVerts[i] += centerVector.z;
+            /* skip the normals */
+            i += 3;
+        }
+        
+        font.setVertices (tempVerts);
+        return font;
     }
 
 }
