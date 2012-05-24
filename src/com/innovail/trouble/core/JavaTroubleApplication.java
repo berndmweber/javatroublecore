@@ -39,7 +39,7 @@ public class JavaTroubleApplication extends Game {
     public void render () {
         final TroubleScreen currentScreen = getScreen ();
 
-        if (currentState != currentScreen.getState ()) {
+        if (!currentState.equals (currentScreen.getState ())) {
             currentState = currentScreen.getState ();
             switch (TroubleApplicationState.getState (currentState)) {
             case E_NEW_GAME:
