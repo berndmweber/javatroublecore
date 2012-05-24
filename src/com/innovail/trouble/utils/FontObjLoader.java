@@ -126,7 +126,7 @@ public class FontObjLoader {
             }
         }
         
-        return null;
+        return fontMap;
     }
 
 }
