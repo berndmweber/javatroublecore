@@ -31,7 +31,7 @@ public class GameMesh {
     private final boolean _isInternal;
     private boolean _isVFlipped = false;
     private boolean _useIndices = false;
-    private final Color _color;
+    private Color _color;
     private final String _path;
     private final String _texturePath;
     private final Format _textureColorFormat;
@@ -124,6 +124,11 @@ public class GameMesh {
     public boolean isInternal ()
     {
         return _isInternal;
+    }
+    
+    public void setColor (final Color color)
+    {
+        _color = color;
     }
 
     public Color getColor ()
