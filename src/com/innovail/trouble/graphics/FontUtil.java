@@ -18,13 +18,14 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.innovail.trouble.utils.FontObjLoader;
 
 /**
  * 
  */
 public class FontUtil {
     private static Map <Character, Mesh> _fontMap;
-    private static float _fontSpacing = 0.03f;
+    private static float _fontSpacing = 0.04f;
     
     public static void setFontMap (final Map<Character, Mesh> fontMap)
     {
@@ -42,13 +43,24 @@ public class FontUtil {
             final int textSize = text.length ();
             final Vector2 boxWidth = new Vector2 (Vector2.Zero);
             List <BoundingBox> characterBB = new ArrayList <BoundingBox> ();
+            List <Mesh> characterMesh = new ArrayList <Mesh> ();
             float [][] vertices = new float [textSize][];
             int verticesLength = 0;
             
             /* We need to add a spacer here to compensate for the loop's first character */
             boxWidth.x -= _fontSpacing;
             for (int i = 0; i < textSize; i++) {
-                BoundingBox currentBB = _fontMap.get (Character.valueOf (text.charAt (i))).calculateBoundingBox ();
+                /* Skip spaces */
+                if (text.charAt (i) == ' ') {
+                    continue;
+                }
+                
+                final Mesh character = _fontMap.get (Character.valueOf (text.charAt (i)));
+                if (character == null) {
+                    return null;
+                }
+                characterMesh.add (character);
+                final BoundingBox currentBB = character.calculateBoundingBox ();
                 characterBB.add (currentBB);
                 final Vector3 bbDimensions = currentBB.getDimensions ();
                 boxWidth.x += _fontSpacing + bbDimensions.x;
@@ -57,8 +69,13 @@ public class FontUtil {
                 }
             }
             float newPos = -boxWidth.x / 2;
-            for (int i = 0; i < textSize; i++) {
-                final Mesh character = _fontMap.get (Character.valueOf (text.charAt (i)));
+            for (int i = 0, ci = 0; i < textSize; i++, ci++) {
+                if (text.charAt (i) == ' ') {
+                    newPos += _fontMap.get (Character.valueOf (FontObjLoader.getReferenceCharacter ())).calculateBoundingBox ().getDimensions ().x;
+                    ci--;
+                    continue;
+                }
+                final Mesh character = characterMesh.get (ci);
                 int vertArraySize = character.getNumVertices () * 6;
                 float [] tempVerts = new float [vertArraySize];
                 character.getVertices (tempVerts);
@@ -67,20 +84,22 @@ public class FontUtil {
                     /* skip Y and Z coordinates and the normals */
                     j += 6;
                 }
-                newPos += characterBB.get (i).getDimensions ().x + _fontSpacing;
-                vertices [i] = tempVerts;
+                newPos += characterBB.get (ci).getDimensions ().x + _fontSpacing;
+                vertices [ci] = tempVerts;
                 verticesLength += tempVerts.length;
             }
             
-            List <VertexAttribute> attributes = new ArrayList <VertexAttribute>();
+            List <VertexAttribute> attributes = new ArrayList <VertexAttribute> ();
             attributes.add (new VertexAttribute(Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE));
             attributes.add (new VertexAttribute(Usage.Normal, 3, ShaderProgram.NORMAL_ATTRIBUTE));
             Mesh textMesh = new Mesh (true, verticesLength / 2, 0, attributes.toArray (new VertexAttribute [attributes.size ()]));
             float [] newVertexArray = new float [verticesLength];
             int j = 0;
             for (int i = 0; i < textSize; i++) {
-                for (float vertex : vertices [i]) {
-                    newVertexArray [j++] = vertex;
+                if (vertices [i] != null) {
+                    for (float vertex : vertices [i]) {
+                        newVertexArray [j++] = vertex;
+                    }
                 }
             }
             textMesh.setVertices (newVertexArray);
