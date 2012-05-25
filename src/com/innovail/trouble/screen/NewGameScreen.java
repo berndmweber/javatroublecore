@@ -5,17 +5,31 @@
  */
 package com.innovail.trouble.screen;
 
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL11;
+import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttribute;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.loaders.obj.ObjLoader;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -23,10 +37,12 @@ import com.badlogic.gdx.math.collision.Ray;
 
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.TroubleApplicationState;
-import com.innovail.trouble.utils.BackgroundImage;
+import com.innovail.trouble.graphics.FontUtil;
+import com.innovail.trouble.graphics.GameMesh;
+import com.innovail.trouble.uicomponent.BackgroundImage;
+import com.innovail.trouble.uicomponent.MenuEntryMesh;
+import com.innovail.trouble.utils.FontObjLoader;
 import com.innovail.trouble.utils.GameInputAdapter;
-import com.innovail.trouble.utils.MenuEntryMesh;
-import com.innovail.trouble.utils.GameMesh;
 
 /**
  * 
@@ -46,13 +62,73 @@ public class NewGameScreen extends TroubleScreen {
     private final Matrix4 _viewMatrix;
     private final Matrix4 _transformMatrix;
     
-    private static final Vector3 _MenuOffset = new Vector3 (-2.0f, 0.5f, 0.0f);
+    //private static final Vector3 _MenuOffset = new Vector3 (-2.0f, 0.5f, 0.0f);
+    private static final Vector3 _MenuOffset = new Vector3 (0.0f, 0.0f, -1.0f);
+    
+    Mesh text;
     
     public NewGameScreen ()
     {
         super ();
         
         Gdx.app.log (TAG, "NewGameScreen()");
+        
+        try {
+            FileHandle objFile = null;
+            Map <Character, Mesh> font = null;
+            Map <Character, float[]> fontV = null;
+            objFile = Gdx.files.external ("fontmeshes");
+            InputStream is = null;
+            try {
+                is = objFile.read ();
+            } catch (Exception e) {
+                FileHandle inFile = Gdx.files.internal ("yusuke_all_single_characters.obj");
+                final InputStream in = inFile.read ();
+                font = FontObjLoader.loadObj (in);
+                in.close ();
+                
+                final OutputStream os = objFile.write (false);
+                final ObjectOutput oo = new ObjectOutputStream (os);
+                fontV = new HashMap <Character, float[]> ();
+                Iterator <Character> it = font.keySet ().iterator ();
+                while (it.hasNext ()) {
+                    Character c = it.next ();
+                    Mesh m = font.get (c);
+                    int vertLen = m.getNumVertices () * 6;
+                    float [] vertices = new float [vertLen];
+                    m.getVertices (vertices);
+                    fontV.put (c, vertices);
+                }
+                oo.writeObject ((HashMap<Character, float[]>) fontV);
+                oo.flush ();
+                os.close ();
+                font = null;
+                fontV = null;
+                
+                is = objFile.read ();
+            }
+            
+            ObjectInputStream oi = new ObjectInputStream (is);
+            fontV = (HashMap <Character, float[]>) oi.readObject ();
+            is.close ();
+            
+            font = new HashMap <Character, Mesh> ();
+            List <VertexAttribute> attributes = new ArrayList <VertexAttribute> ();
+            attributes.add (new VertexAttribute(Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE));
+            attributes.add (new VertexAttribute(Usage.Normal, 3, ShaderProgram.NORMAL_ATTRIBUTE));
+            Iterator <Character> it = fontV.keySet ().iterator ();
+            while (it.hasNext ()) {
+                Character c = it.next ();
+                float [] vertices = fontV.get (c);
+                Mesh m = new Mesh (true, vertices.length / 2, 0, attributes.toArray (new VertexAttribute [attributes.size ()]));
+                m.setVertices (vertices);
+                font.put (c, m);
+            }
+            FontUtil.setFontMap (font);
+        } catch (Exception ex) {
+            Gdx.app.log (TAG, ex.getMessage ());
+        }
+        text = FontUtil.createMesh ("Crazy stuff happening!");
         
         _currentState = TroubleApplicationState.NEW_GAME;
         
@@ -157,18 +233,20 @@ public class NewGameScreen extends TroubleScreen {
 
     private void renderMenu (final GL11 gl)
     {
-        final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
+        //final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
+        if (text != null) {
+        //final Iterator <Mesh> currentMesh = font.values ().iterator ();
         float yLocation = 0.0f;
         int i = 0;
-        while (currentMesh.hasNext ()) {
-            final GameMesh thisMesh = currentMesh.next ();
+        //while (currentMesh.hasNext ()) {
+            //final Mesh thisMesh = currentMesh.next ();
             gl.glPushMatrix ();
             gl.glTranslatef (_MenuOffset.x, yLocation + _MenuOffset.y, _MenuOffset.z);
             //gl.glRotatef (_yRotationAngle[i], 0.0f, 0.0f, 1.0f);
-            thisMesh.getMesh ().render (GL11.GL_TRIANGLES);
+            text.render (GL11.GL_TRIANGLES);
             gl.glPopMatrix ();
             
-            final Matrix4 transform = new Matrix4();
+            /*final Matrix4 transform = new Matrix4();
             final Matrix4 tmp = new Matrix4();
             transform.setToTranslation (0.0f, yLocation, 0.0f);
             //tmp.setToRotation (0.0f, 0.0f, 1.0f, _yRotationAngle[i]);
@@ -183,7 +261,8 @@ public class NewGameScreen extends TroubleScreen {
                 Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
             }
             
-            yLocation -= 0.7f;
+            yLocation -= 0.7f;*/
+        //}
         }
     }
 
