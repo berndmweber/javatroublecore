@@ -24,7 +24,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
  */
 public class FontUtil {
     private static Map <Character, Mesh> _fontMap;
-    private static float _fontSpacing = 0.1f;
+    private static float _fontSpacing = 0.03f;
     
     public static void setFontMap (final Map<Character, Mesh> fontMap)
     {
@@ -66,8 +66,8 @@ public class FontUtil {
                     tempVerts[j] += newPos;
                     /* skip Y and Z coordinates and the normals */
                     j += 6;
-                    newPos += characterBB.get (i).getDimensions ().x + _fontSpacing;
                 }
+                newPos += characterBB.get (i).getDimensions ().x + _fontSpacing;
                 vertices [i] = tempVerts;
                 verticesLength += tempVerts.length;
             }
@@ -89,28 +89,4 @@ public class FontUtil {
         
         return null;
     }
-
-    public static Mesh normalizeMeshPosition (Mesh font)
-    {
-        BoundingBox meshBB = font.calculateBoundingBox ();
-        Vector3 centerVector = meshBB.getCenter ();
-        centerVector.mul (-1.0f);
-        
-        /* seems to be the number of faces so times 6 (3 vertices, 3 normals) */
-        int vertArraySize = font.getNumVertices () * 6;
-        float[] tempVerts = new float [vertArraySize];
-        font.getVertices (tempVerts);
-        
-        for (int i = 0; i < vertArraySize; i++) {
-            tempVerts[i++] += centerVector.x;
-            tempVerts[i++] += centerVector.y;
-            tempVerts[i] += centerVector.z;
-            /* skip the normals */
-            i += 3;
-        }
-        
-        font.setVertices (tempVerts);
-        return font;
-    }
-
 }
