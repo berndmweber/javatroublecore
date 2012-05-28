@@ -55,6 +55,18 @@ public class SettingLoader {
     {
         final Element assets = applicationSettings.getChildByName ("assets");
         if (assets != null) {
+            final Array <Element> fonts = assets.getChildrenByName ("font");
+            if ((fonts != null) && (fonts.size > 0)) {
+                for (int i = 0; i < fonts.size; i++) {
+                    final Element font = fonts.get (i);
+                    if (font != null) {
+                        ApplicationSettings.getInstance ().setGameFont (font.getAttribute ("type"),
+                                                                        font.getAttribute ("file"),
+                                                                        font.getAttribute ("image"),
+                                                                        font.getBoolean ("is_internal"));
+                    }
+                }
+            }
             final Array <Element> assetsA = assets.getChildrenByName ("asset");
             if ((assetsA != null ) && (assetsA.size > 0)) {
                 for (int i = 0; i < assetsA.size; i++) {
@@ -71,14 +83,7 @@ public class SettingLoader {
         if ((menus != null) && (menus.size > 0)) {
             for (int i = 0; i < menus.size; i++) {
                 final Element menu = menus.get (i);
-                Element current = menu.getChildByName ("font");
-                if (current != null) {
-                    ApplicationSettings.getInstance ().setGameFont (menu.getAttribute ("type") + "Menu",
-                                                                    current.getAttribute ("file"),
-                                                                    current.getAttribute ("image"),
-                                                                    current.getBoolean ("is_internal"));
-                }
-                current = menu.getChildByName ("copyright");
+                Element current = menu.getChildByName ("copyright");
                 if (current != null) {
                     ApplicationSettings.getInstance ().setCopyRightNotice (current.getText ());
                 }
@@ -109,8 +114,7 @@ public class SettingLoader {
                             ApplicationSettings.getInstance ().setMenuEntry (menu.getAttribute ("type") + "Menu",
                                                                              entry.getInt ("index"),
                                                                              entry.getAttribute ("name"),
-                                                                             entry.getAttribute ("file"),
-                                                                             entry.getBoolean ("is_internal"));
+                                                                             entry.getAttribute ("text"));
                         }
                     }
                 }

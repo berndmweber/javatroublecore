@@ -6,6 +6,7 @@
 package com.innovail.trouble.uicomponent;
 
 import com.badlogic.gdx.graphics.Color;
+import com.innovail.trouble.graphics.FontUtil;
 import com.innovail.trouble.graphics.GameMesh;
 
 /**
@@ -13,7 +14,7 @@ import com.innovail.trouble.graphics.GameMesh;
  */
 public class MenuEntryMesh extends GameMesh {
 
-    private final String _name; // NOPMD by bweber on 5/16/12 10:21 AM
+    private final String _name;
     
     /**
      * @param path
@@ -53,6 +54,12 @@ public class MenuEntryMesh extends GameMesh {
     public MenuEntryMesh (final String name, final String path) {
         super (path);
         _name = name;
+    }
+    
+    public MenuEntryMesh (final String [] name)
+    {
+        super (FontUtil.createMesh (name[1]));
+        _name = name[0];
     }
 
     public String getName ()

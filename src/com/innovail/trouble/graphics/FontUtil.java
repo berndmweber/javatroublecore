@@ -32,6 +32,11 @@ public class FontUtil {
         _fontMap = fontMap;
     }
     
+    public static Map<Character, Mesh> getFontMap ()
+    {
+       return _fontMap;
+    }
+    
     public static void setFontSpacing (final float spacing)
     {
         _fontSpacing = spacing;

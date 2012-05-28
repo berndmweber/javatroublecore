@@ -121,6 +121,17 @@ public class GameMesh {
         _textureColorFormat = null;
     }
     
+    public GameMesh (final Mesh preCompiled)
+    {
+        _path = null;
+        _color = Color.WHITE;
+        _isInternal = true;
+        _texturePath = null;
+        _textureColorFormat = null;
+        _mesh = preCompiled;
+        _bb = _mesh.calculateBoundingBox ();
+    }
+    
     public boolean isInternal ()
     {
         return _isInternal;

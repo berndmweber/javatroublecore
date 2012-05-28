@@ -50,20 +50,20 @@ public final class ApplicationSettings {
         return instance;
     }
     
-    public void setGameFont (final String appPart, final String fontFilePath,
+    public void setGameFont (final String fontType, final String fontFilePath,
                               final String fontImagePath, final boolean isInternal)
     {
         if (_GameFonts == null) {
             _GameFonts = new HashMap<String, GameFont> ();
         }
-        _GameFonts.put (appPart, new GameFont (fontFilePath, fontImagePath, isInternal));
+        _GameFonts.put (fontType, new GameFont (fontType, fontFilePath, fontImagePath, isInternal));
     }
     
-    public GameFont getGameFont (final String appPart)
+    public GameFont getGameFont (final String type)
     {
         if ((_GameFonts != null) && !_GameFonts.isEmpty ()) {
-            if (_GameFonts.containsKey (appPart)) {
-                return _GameFonts.get (appPart);
+            if (_GameFonts.containsKey (type)) {
+                return _GameFonts.get (type);
             }
         }
         return null;
@@ -133,6 +133,36 @@ public final class ApplicationSettings {
         currentList.add (index, currentMap.get (entryName));
     }
     
+    public void setMenuEntry (final String appPart, final int index,
+                               final String entryName, final String displayText)
+    {
+        if (_MenuEntries == null) {
+        _MenuEntries = new HashMap <String, Map <String, GameMesh>> ();
+        }
+        if (_MenuEntryList == null) {
+        _MenuEntryList = new HashMap <String, List <GameMesh>> ();
+        }
+        if (!_MenuEntries.containsKey (appPart)) {
+        _MenuEntries.put (appPart, new HashMap <String, GameMesh> ());
+        }
+        if (!_MenuEntryList.containsKey (appPart)) {
+        _MenuEntryList.put (appPart, new ArrayList <GameMesh> ());
+        }
+        final Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
+        final String [] name = new String [] {entryName, displayText};
+        currentMap.put (entryName, new MenuEntryMesh (name));
+        final List <GameMesh> currentList = _MenuEntryList.get (appPart);
+        currentList.add (index, currentMap.get (entryName));
+    }
+    
+    private String createEntryName (String name)
+    {
+        name = name.trim ();
+        name = name.replaceAll ("\\s", "");
+        name = String.valueOf (Character.toLowerCase (name.charAt (0))) + name.substring (1);
+        return name;
+    }
+
     public GameMesh getMenuEntry (final String appPart, final String name)
     {
         if ((_MenuEntries != null) && !_MenuEntries.isEmpty ()) {

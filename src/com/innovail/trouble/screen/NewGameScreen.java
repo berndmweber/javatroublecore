@@ -38,7 +38,9 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.TroubleApplicationState;
 import com.innovail.trouble.graphics.FontUtil;
+import com.innovail.trouble.graphics.GameFont;
 import com.innovail.trouble.graphics.GameMesh;
+import com.innovail.trouble.graphics.GameFont.FontType;
 import com.innovail.trouble.uicomponent.BackgroundImage;
 import com.innovail.trouble.uicomponent.MenuEntryMesh;
 import com.innovail.trouble.utils.FontObjLoader;
@@ -133,7 +135,7 @@ public class NewGameScreen extends TroubleScreen {
         _currentState = TroubleApplicationState.NEW_GAME;
         
         _spriteBatch = new SpriteBatch ();
-        _menuFont = ApplicationSettings.getInstance ().getGameFont (TroubleApplicationState.MAIN_MENU).createBitmapFont ();
+        _menuFont = ApplicationSettings.getInstance ().getGameFont (GameFont.typeToString(FontType.BITMAP)).getBitmapFont ();
         _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (TroubleApplicationState.MAIN_MENU);
         
         _logo = ApplicationSettings.getInstance ().getMenuEntries (TroubleApplicationState.MAIN_MENU).get (AppPartName);
