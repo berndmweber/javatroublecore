@@ -172,7 +172,7 @@ public class MainMenuScreen extends TroubleScreen {
         gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
         gl.glMaterialfv (frontAndOrBack, GL11.GL_SPECULAR, matSpecular, 0);
         gl.glMaterialfv (frontAndOrBack, GL11.GL_SHININESS, matShininess, 0);
-        _logo.getMesh ().render (GL11.GL_TRIANGLES);
+        _logo.getMesh ().render ();
         gl.glPopMatrix ();
     }
     
@@ -186,7 +186,7 @@ public class MainMenuScreen extends TroubleScreen {
             gl.glPushMatrix ();
             gl.glTranslatef (0.0f, yLocation, 0.0f);
             gl.glRotatef (_yRotationAngle[i], 0.0f, 0.0f, 1.0f);
-            thisMesh.getMesh ().render (GL11.GL_TRIANGLES);
+            thisMesh.getMesh ().render ();
             gl.glPopMatrix ();
             
             final Matrix4 transform = new Matrix4();

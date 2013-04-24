@@ -201,7 +201,7 @@ public class GameScreen extends TroubleScreen {
         gl.glRotatef (_overlayAngle.y + _overlayAdditionalAngle, 1.0f, 0.0f, 0.0f);
         final Color currentColor = _backArrowMesh.getColor ();
         gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-        _backArrowMesh.getMesh ().render (GL11.GL_TRIANGLES);
+        _backArrowMesh.getMesh ().render ();
         gl.glPopMatrix ();
         if (_DEBUG) {
             Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
@@ -254,7 +254,7 @@ public class GameScreen extends TroubleScreen {
         } else {
             gl.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE);
         }
-        mesh.getMesh ().render (GL11.GL_TRIANGLES);
+        mesh.getMesh ().render ();
         gl.glDepthMask (true);
         gl.glDisable (GL11.GL_BLEND);
         gl.glPopMatrix ();
@@ -295,7 +295,7 @@ public class GameScreen extends TroubleScreen {
         
         final Color currentColor = Color.WHITE;
         gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-        _diceMesh.getMesh ().render (GL11.GL_TRIANGLES);
+        _diceMesh.getMesh ().render ();
         gl.glPopMatrix ();
         
         _diceMesh.transformBoundingBox (transform);
@@ -327,7 +327,7 @@ public class GameScreen extends TroubleScreen {
                                  currentPosition.y,
                                  currentPosition.z);
                 gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-                _spotMesh.getMesh ().render (GL11.GL_TRIANGLES);
+                _spotMesh.getMesh ().render ();
                 gl.glPopMatrix ();
                 gl.glMaterialfv (FrontAndOrBack, GL11.GL_EMISSION, NoMat, 0);
             }
@@ -375,7 +375,7 @@ public class GameScreen extends TroubleScreen {
                         gl.glMaterialfv (FrontAndOrBack, GL11.GL_EMISSION, matEmission, 0);
                     }
                     
-                    _tokenMesh.getMesh ().render (GL11.GL_TRIANGLES);
+                    _tokenMesh.getMesh ().render ();
                     gl.glPopMatrix ();
                     gl.glMaterialfv (FrontAndOrBack, GL11.GL_EMISSION, NoMat, 0);
                 }

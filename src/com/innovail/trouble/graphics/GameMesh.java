@@ -5,7 +5,7 @@
  */
 package com.innovail.trouble.graphics;
 
-import java.io.InputStream;
+import java.util.UUID;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
@@ -17,7 +17,11 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.loaders.obj.ObjLoader;
+import com.badlogic.gdx.graphics.g3d.ModelLoaderHints;
+import com.badlogic.gdx.graphics.g3d.loaders.ModelLoaderRegistry;
+import com.badlogic.gdx.graphics.g3d.model.SubMesh;
+import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
+import com.badlogic.gdx.graphics.g3d.model.still.StillSubMesh;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -30,7 +34,6 @@ public class GameMesh {
 
     private final boolean _isInternal;
     private boolean _isVFlipped = false;
-    private boolean _useIndices = false;
     private Color _color;
     private final String _path;
     private final String _texturePath;
@@ -38,7 +41,7 @@ public class GameMesh {
     private String _soundPath;
     private boolean _soundIsInternal;
     
-    private Mesh _mesh;
+    private StillModel _mesh;
     private Texture _texture;
     private Sound _sound;
     private BoundingBox _bb;
@@ -123,13 +126,17 @@ public class GameMesh {
     
     public GameMesh (final Mesh preCompiled)
     {
+        final String uuid = UUID.randomUUID ().toString ();
+        final SubMesh sm = new StillSubMesh (uuid, preCompiled, 0);
+
         _path = null;
         _color = Color.WHITE;
         _isInternal = true;
         _texturePath = null;
         _textureColorFormat = null;
-        _mesh = preCompiled;
-        _bb = _mesh.calculateBoundingBox ();
+        
+        _mesh = new StillModel (sm);
+        _mesh.getBoundingBox (_bb);
     }
     
     public boolean isInternal ()
@@ -152,7 +159,7 @@ public class GameMesh {
         return _path;
     }
     
-    public Mesh getMesh ()
+    public StillModel getMesh ()
     {
         if (_mesh == null) {
             if ((_path != null) && !_path.isEmpty ()) {
@@ -163,10 +170,8 @@ public class GameMesh {
                     } else {
                         objFile = Gdx.files.external (_path);
                     }
-                    final InputStream in = objFile.read ();
-                    _mesh = ObjLoader.loadObj (in, _isVFlipped, _useIndices);
-                    in.close ();
-                    _bb = _mesh.calculateBoundingBox ();
+                    _mesh = ModelLoaderRegistry.loadStillModel (objFile, new ModelLoaderHints  (_isVFlipped));
+                    _mesh.getBoundingBox (_bb);
                     //Gdx.app.log (TAG, _path + ": BoundingBox - " + _bb.toString ());
                 } catch (Exception ex) {
                     Gdx.app.log (TAG, ex.getMessage ());
@@ -190,7 +195,6 @@ public class GameMesh {
                 _texture = new Texture(objFile, _textureColorFormat, true);
                 _texture.setFilter(TextureFilter.MipMap, TextureFilter.Linear);
                 _isVFlipped = true;
-                _useIndices = false;
             }
         }
         return _texture;
@@ -203,7 +207,7 @@ public class GameMesh {
     
     public BoundingBox transformBoundingBox (final Matrix4 transform)
     {
-        _bb = _mesh.calculateBoundingBox ();
+        _mesh.getBoundingBox (_bb);
         //Gdx.app.log (TAG, _path + ": BoundingBox - " + _bb.toString ());
         _bb.mul (transform);
         return _bb;

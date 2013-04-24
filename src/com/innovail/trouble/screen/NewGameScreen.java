@@ -28,12 +28,9 @@ import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.loaders.obj.ObjLoader;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.Ray;
 
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.TroubleApplicationState;
@@ -42,7 +39,6 @@ import com.innovail.trouble.graphics.GameFont;
 import com.innovail.trouble.graphics.GameMesh;
 import com.innovail.trouble.graphics.GameFont.FontType;
 import com.innovail.trouble.uicomponent.BackgroundImage;
-import com.innovail.trouble.uicomponent.MenuEntryMesh;
 import com.innovail.trouble.utils.FontObjLoader;
 import com.innovail.trouble.utils.GameInputAdapter;
 
@@ -229,7 +225,7 @@ public class NewGameScreen extends TroubleScreen {
         gl.glTranslatef (0.0f, 1.0f, 0.3f);
         gl.glMaterialfv (frontAndOrBack, GL11.GL_SPECULAR, matSpecular, 0);
         gl.glMaterialfv (frontAndOrBack, GL11.GL_SHININESS, matShininess, 0);
-        _logo.getMesh ().render (GL11.GL_TRIANGLES);
+        _logo.getMesh ().render ();
         gl.glPopMatrix ();
     }
 
