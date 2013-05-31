@@ -164,7 +164,7 @@ public class MainMenuScreen extends TroubleScreen {
         final Color currentColor = _logo.getColor ();
         final int frontAndOrBack = GL11.GL_FRONT;
         final float[] matSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
-        final float[] matShininess = {7.0f};
+        final float[] matShininess = {7.0f, 0.0f, 0.0f, 0.0f};
         
         gl.glPushMatrix ();
         gl.glTranslatef (0.0f, 1.0f, 0.3f);

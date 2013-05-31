@@ -137,16 +137,16 @@ public final class ApplicationSettings {
                                final String entryName, final String displayText)
     {
         if (_MenuEntries == null) {
-        _MenuEntries = new HashMap <String, Map <String, GameMesh>> ();
+            _MenuEntries = new HashMap <String, Map <String, GameMesh>> ();
         }
         if (_MenuEntryList == null) {
-        _MenuEntryList = new HashMap <String, List <GameMesh>> ();
+            _MenuEntryList = new HashMap <String, List <GameMesh>> ();
         }
         if (!_MenuEntries.containsKey (appPart)) {
-        _MenuEntries.put (appPart, new HashMap <String, GameMesh> ());
+            _MenuEntries.put (appPart, new HashMap <String, GameMesh> ());
         }
         if (!_MenuEntryList.containsKey (appPart)) {
-        _MenuEntryList.put (appPart, new ArrayList <GameMesh> ());
+            _MenuEntryList.put (appPart, new ArrayList <GameMesh> ());
         }
         final Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
         final String [] name = new String [] {entryName, displayText};

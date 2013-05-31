@@ -28,13 +28,14 @@ import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.TroubleApplicationState;
-import com.innovail.trouble.graphics.FontUtil;
+import com.innovail.trouble.graphics.FontStillModel;
 import com.innovail.trouble.graphics.GameFont;
 import com.innovail.trouble.graphics.GameMesh;
 import com.innovail.trouble.graphics.GameFont.FontType;
@@ -63,7 +64,7 @@ public class NewGameScreen extends TroubleScreen {
     //private static final Vector3 _MenuOffset = new Vector3 (-2.0f, 0.5f, 0.0f);
     private static final Vector3 _MenuOffset = new Vector3 (0.0f, 0.0f, -1.0f);
     
-    Mesh text;
+    StillModel text;
     
     public NewGameScreen ()
     {
@@ -71,62 +72,7 @@ public class NewGameScreen extends TroubleScreen {
         
         Gdx.app.log (TAG, "NewGameScreen()");
         
-        try {
-            FileHandle objFile = null;
-            Map <Character, Mesh> font = null;
-            Map <Character, float[]> fontV = null;
-            objFile = Gdx.files.external ("fontmeshes");
-            InputStream is = null;
-            try {
-                is = objFile.read ();
-            } catch (Exception e) {
-                FileHandle inFile = Gdx.files.internal ("yusuke_all_single_characters.obj");
-                final InputStream in = inFile.read ();
-                font = FontObjLoader.loadObj (in);
-                in.close ();
-                
-                final OutputStream os = objFile.write (false);
-                final ObjectOutput oo = new ObjectOutputStream (os);
-                fontV = new HashMap <Character, float[]> ();
-                Iterator <Character> it = font.keySet ().iterator ();
-                while (it.hasNext ()) {
-                    Character c = it.next ();
-                    Mesh m = font.get (c);
-                    int vertLen = m.getNumVertices () * 6;
-                    float [] vertices = new float [vertLen];
-                    m.getVertices (vertices);
-                    fontV.put (c, vertices);
-                }
-                oo.writeObject ((HashMap<Character, float[]>) fontV);
-                oo.flush ();
-                os.close ();
-                font = null;
-                fontV = null;
-                
-                is = objFile.read ();
-            }
-            
-            ObjectInputStream oi = new ObjectInputStream (is);
-            fontV = (HashMap <Character, float[]>) oi.readObject ();
-            is.close ();
-            
-            font = new HashMap <Character, Mesh> ();
-            List <VertexAttribute> attributes = new ArrayList <VertexAttribute> ();
-            attributes.add (new VertexAttribute(Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE));
-            attributes.add (new VertexAttribute(Usage.Normal, 3, ShaderProgram.NORMAL_ATTRIBUTE));
-            Iterator <Character> it = fontV.keySet ().iterator ();
-            while (it.hasNext ()) {
-                Character c = it.next ();
-                float [] vertices = fontV.get (c);
-                Mesh m = new Mesh (true, vertices.length / 2, 0, attributes.toArray (new VertexAttribute [attributes.size ()]));
-                m.setVertices (vertices);
-                font.put (c, m);
-            }
-            FontUtil.setFontMap (font);
-        } catch (Exception ex) {
-            Gdx.app.log (TAG, ex.getMessage ());
-        }
-        text = FontUtil.createMesh ("Crazy stuff happening!");
+        text = ApplicationSettings.getInstance ().getGameFont (GameFont.typeToString (FontType.MESH)).getMeshFont ().createStillModel ("Crazy stuff happening!");
         
         _currentState = TroubleApplicationState.NEW_GAME;
         
@@ -219,7 +165,7 @@ public class NewGameScreen extends TroubleScreen {
     {
         final int frontAndOrBack = GL11.GL_FRONT;
         final float[] matSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
-        final float[] matShininess = {7.0f};
+        final float[] matShininess = {7.0f, 0.0f, 0.0f, 0.0f};
         
         gl.glPushMatrix ();
         gl.glTranslatef (0.0f, 1.0f, 0.3f);
@@ -241,7 +187,7 @@ public class NewGameScreen extends TroubleScreen {
             gl.glPushMatrix ();
             gl.glTranslatef (_MenuOffset.x, yLocation + _MenuOffset.y, _MenuOffset.z);
             //gl.glRotatef (_yRotationAngle[i], 0.0f, 0.0f, 1.0f);
-            text.render (GL11.GL_TRIANGLES);
+            text.render ();
             gl.glPopMatrix ();
             
             /*final Matrix4 transform = new Matrix4();

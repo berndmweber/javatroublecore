@@ -89,11 +89,10 @@ public class GameInputAdapter implements InputProcessor {
     }
 
     /* (non-Javadoc)
-     * @see com.badlogic.gdx.InputProcessor#touchMoved(int, int)
+     * @see com.badlogic.gdx.InputProcessor#mouseMoved(int, int)
      */
     @Override
-    public boolean touchMoved (final int x, final int y)
-    {
+    public boolean mouseMoved (final int screenX, final int screenY) {
         return false;
     }
 

@@ -22,7 +22,9 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.utils.Json;
 import com.innovail.trouble.utils.FontObjLoader;
 
 /**
@@ -43,6 +45,7 @@ public class GameFont {
     private boolean _flipFont = false;
     
     private BitmapFont _bitmapFont = null;
+    private FontStillModel _meshFont = null;
     
     public GameFont (final String fontType, final String fontFilePath,
                       final String fontImagePath, final boolean isInternal)
@@ -90,11 +93,10 @@ public class GameFont {
     }
     
     @SuppressWarnings ("unchecked")
-    public boolean getMeshFont ()
+    public FontStillModel getMeshFont ()
     {
-        if ((FontUtil.getFontMap () == null) && (_fontType == FontType.MESH)) {
-            Map <Character, Mesh> font = null;
-            if (_fontImagePath == null) {
+        if ((_meshFont == null) && (_fontType == FontType.MESH)) {
+            if ((_fontImagePath == null) || _fontImagePath.isEmpty ()) {
                 try {
                     FileHandle inFile = null;
                     if (_isInternal) {
@@ -102,82 +104,44 @@ public class GameFont {
                     } else {
                         inFile = Gdx.files.external (_fontFilePath);
                     }
-                    final InputStream in = inFile.read ();
-                    font = FontObjLoader.loadObj (in);
-                    in.close ();
+                    _meshFont = FontObjLoader.loadObj (inFile);
+                    createMeshFontPictureFile ();
                 } catch (Exception e) {
                     Gdx.app.log (TAG, e.getMessage ());
                 }
             } else {
                 try {
-                    Map <Character, float[]> fontV = null;
                     FileHandle objFile = null;
                     if (_isInternal) {
                         objFile = Gdx.files.internal (_fontImagePath);
                     } else {
                         objFile = Gdx.files.external (_fontImagePath);
                     }
-                    InputStream is = null;
-                    is = objFile.read ();
-                    ObjectInputStream oi = new ObjectInputStream (is);
-                    fontV = (HashMap <Character, float[]>) oi.readObject ();
-                    is.close ();
-                
-                    font = new HashMap <Character, Mesh> ();
-                    List <VertexAttribute> attributes = new ArrayList <VertexAttribute> ();
-                    attributes.add (new VertexAttribute(Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE));
-                    attributes.add (new VertexAttribute(Usage.Normal, 3, ShaderProgram.NORMAL_ATTRIBUTE));
-                    Iterator <Character> it = fontV.keySet ().iterator ();
-                    while (it.hasNext ()) {
-                        Character c = it.next ();
-                        float [] vertices = fontV.get (c);
-                        Mesh m = new Mesh (true, vertices.length / 2, 0, attributes.toArray (new VertexAttribute [attributes.size ()]));
-                        m.setVertices (vertices);
-                        font.put (c, m);
-                    }
+                    
+                    Json json = new Json ();
+                    FontStillModel.setJsonSerializer (json);
+                    _meshFont = json.fromJson (FontStillModel.class, objFile);
                 } catch (Exception ex) {
                     Gdx.app.log (TAG, ex.getMessage ());
                 }
             }
-            FontUtil.setFontMap (font);
         }
-        return (FontUtil.getFontMap () != null);
+        return _meshFont;
     }
     
     @SuppressWarnings ("unchecked")
     public void createMeshFontPictureFile ()
     {
         try {
-            Map <Character, Mesh> font = null;
-            Map <Character, float[]> fontV = null;
-            FileHandle objFile = null;
-            FileHandle inFile = null;
+            if (_meshFont != null) {
+                FileHandle objFile = null;
 
-            objFile = Gdx.files.external (_fontImagePath);
-            if (_isInternal) {
-                inFile = Gdx.files.internal (_fontFilePath);
-            } else {
-                inFile = Gdx.files.external (_fontFilePath);
+                objFile = Gdx.files.external (_fontImagePath);
+
+                Json json = new Json ();
+                FontStillModel.setJsonSerializer (json);
+                json.toJson (_meshFont, objFile);
             }
-            final InputStream in = inFile.read ();
-            font = FontObjLoader.loadObj (in);
-            in.close ();
-            
-            final OutputStream os = objFile.write (false);
-            final ObjectOutput oo = new ObjectOutputStream (os);
-            fontV = new HashMap <Character, float[]> ();
-            Iterator <Character> it = font.keySet ().iterator ();
-            while (it.hasNext ()) {
-                Character c = it.next ();
-                Mesh m = font.get (c);
-                int vertLen = m.getNumVertices () * 6;
-                float [] vertices = new float [vertLen];
-                m.getVertices (vertices);
-                fontV.put (c, vertices);
-            }
-            oo.writeObject ((HashMap<Character, float[]>) fontV);
-            oo.flush ();
-            os.close ();
         } catch (Exception ex) {
             Gdx.app.log (TAG, ex.getMessage ());
         }
@@ -192,7 +156,10 @@ public class GameFont {
             }
             break;
         case MESH:
-            return (FontUtil.getFontMap () != null);
+            if (_meshFont != null) {
+                return true;
+            }
+            break;
         }
         return false;
     }

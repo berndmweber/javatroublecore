@@ -44,7 +44,7 @@ public class GameMesh {
     private StillModel _mesh;
     private Texture _texture;
     private Sound _sound;
-    private BoundingBox _bb;
+    private BoundingBox _bb = new BoundingBox ();
     private Mesh _bbMesh;
 
     public GameMesh (final String path, final Color color,
@@ -124,18 +124,15 @@ public class GameMesh {
         _textureColorFormat = null;
     }
     
-    public GameMesh (final Mesh preCompiled)
+    public GameMesh (final StillModel preCompiled)
     {
-        final String uuid = UUID.randomUUID ().toString ();
-        final SubMesh sm = new StillSubMesh (uuid, preCompiled, 0);
-
+        _mesh = preCompiled;
         _path = null;
         _color = Color.WHITE;
         _isInternal = true;
         _texturePath = null;
         _textureColorFormat = null;
         
-        _mesh = new StillModel (sm);
         _mesh.getBoundingBox (_bb);
     }
     

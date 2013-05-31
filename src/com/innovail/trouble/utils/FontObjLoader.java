@@ -5,139 +5,57 @@
  */
 package com.innovail.trouble.utils;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.g3d.loaders.obj.ObjLoader;
+import com.badlogic.gdx.graphics.g3d.ModelLoaderHints;
+import com.badlogic.gdx.graphics.g3d.loaders.ModelLoaderRegistry;
+import com.badlogic.gdx.graphics.g3d.loaders.g3d.G3dLoader;
+import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
+import com.badlogic.gdx.graphics.g3d.model.still.StillSubMesh;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+
+import com.innovail.trouble.graphics.FontStillModel;
 
 /**
  * 
  */
 public class FontObjLoader {
     
-    private static char _ReferenceCharacter = '_';
-    
-
-    public static Map <Character, Mesh> loadObj (final InputStream in)
+    public static FontStillModel loadObj (final FileHandle handle)
     {
-        return loadObj (in, false);
+        return loadObj (handle, false);
     }
     
-    public static Map <Character, Mesh> loadObj (final InputStream in, final boolean flipV)
+    public static FontStillModel loadObj (final FileHandle handle, final boolean flipV)
     {
-        return loadObj (in, flipV, false);
+        return loadObj (handle, flipV, false);
     }
     
-    public static Map <Character, Mesh> loadObj (final InputStream in, final boolean flipV, final boolean useIndices)
+    public static FontStillModel loadObj (final FileHandle handle, final boolean flipV, final boolean useIndices)
     {
-        String line = "";
+        StillModel tempStillModel = ModelLoaderRegistry.loadStillModel (handle, new ModelLoaderHints (flipV));
+        FontStillModel font = new FontStillModel (loadFontFromStillModel (tempStillModel));
 
-        try {
-            BufferedReader reader = new BufferedReader (new InputStreamReader (in));
-            StringBuffer b = new StringBuffer ();
-            String l = reader.readLine ();
-            while (l != null) {
-                b.append (l);
-                b.append ("\n");
-                l = reader.readLine ();
-            }
-
-            line = b.toString ();
-            reader.close ();
-        } catch (Exception ex) {
-                return null;
-        }
-        return loadFontFromString (line, flipV, useIndices);
+        return font;
     }
     
-    public static Map <Character, Mesh> loadFontFromString (final String obj, final boolean flipV, final boolean useIndices)
+    public static StillModel loadFontFromStillModel (final StillModel model)
     {
-        final String [] lines = obj.split ("\n");
-        final List <String> vertices = new ArrayList <String> ();
-        final List <String> normals = new ArrayList <String> ();
-        final List <String[][]> faces = new ArrayList <String[][]> ();
-        final Map <Character, Mesh> fontMap = new HashMap <Character, Mesh> ();
         float referenceEdge = 0.0f;
+        StillSubMesh [] subMeshes = model.subMeshes; 
+        // The first submesh is the reference character
+        StillSubMesh reference = subMeshes[0];
+        BoundingBox referenceBB = new BoundingBox ();
         
-        vertices.add (null);
-        normals.add (null);
-        
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines [i];
-            if (line.startsWith ("o ")) {
-                String [] tokens = line.split ("\\.");
-                if (tokens[1].isEmpty ()) {
-                    tokens[1] = "._";
-                }
-                tokens = tokens[1].split ("_");
-                if (tokens[0].isEmpty ()) {
-                    tokens[0] = "_";
-                }
-                String tempObj = new String (lines [i++] + "\n");
-                faces.clear ();
-                do {
-                    line = lines [i];
-                    if (line.startsWith ("v ")) {
-                        vertices.add (line);
-                    } else if (line.startsWith ("vn ")) {
-                        normals.add (line);
-                    } else if (line.startsWith ("f ")) {
-                        String[] fTokens = line.split("[ ]+");
-                        String [][] face = new String [3][];
-                        for (int j = 0; j < face.length; j++) {
-                            String [] parts = fTokens[j+1].split("/");
-                            face[j] = parts;
-                        }
-                        faces.add (face);
-                    }
-                } while ((lines.length > ++i) && !lines[i].startsWith ("o "));
-                i--;
-                
-                List <String> usedVertices = new ArrayList <String> ();
-                List <String> usedNormals = new ArrayList <String> ();
-                final Iterator<String[][]> faceIt = faces.iterator ();
-                while (faceIt.hasNext ()) {
-                    String [][] face = faceIt.next ();
-                    String faceBack = "f";
-                    for (int j = 0; j < face.length; j++) {
-                        if (!usedVertices.contains (face[j][0])) {
-                            usedVertices.add (face[j][0]);
-                            tempObj += vertices.get (Integer.valueOf (face[j][0])) + "\n";
-                            face [j][0] = String.valueOf (usedVertices.size ());
-                        } else {
-                            face [j][0] = String.valueOf (usedVertices.indexOf (face [j][0]) + 1);
-                        }
-                        if (!usedNormals.contains (face[j][2])) {
-                            usedNormals.add (face[j][2]);
-                            tempObj += normals.get (Integer.valueOf (face[j][2])) + "\n";
-                            face [j][2] = String.valueOf (usedNormals.size ());
-                        } else {
-                            face [j][2] = String.valueOf (usedNormals.indexOf (face [j][2]) + 1);
-                        }
-                        faceBack += " " + face [j][0] + "/" + face [j][1] + "/" + face [j][2];
-                    }
-                    tempObj += faceBack + "\n";
-                }
-                Mesh tempMesh = ObjLoader.loadObjFromString (tempObj, flipV, useIndices);
-                if (tokens[0].charAt (0) == _ReferenceCharacter) {
-                    /* We need the inverse */
-                    referenceEdge = tempMesh.calculateBoundingBox ().getMin ().y * -1.0f;
-                }
-                tempMesh = normalizeMeshPosition (tempMesh, referenceEdge);
-                fontMap.put (Character.valueOf (tokens[0].charAt (0)), tempMesh);
-            }
+        reference.getBoundingBox (referenceBB);
+        referenceEdge = referenceBB.getMin ().y * -1.0f;
+        // Go through the remaining submeshes and normalize their position in reference to the first submesh
+        for (int i = 1; i < subMeshes.length; i++) {
+            subMeshes[i].setMesh (normalizeMeshPosition (subMeshes[i].getMesh (), referenceEdge));
         }
-        
-        return fontMap;
+
+        return model;
     }
     
     public static Mesh normalizeMeshPosition (final Mesh font, final float referenceEdge)
@@ -164,15 +82,4 @@ public class FontObjLoader {
         font.setVertices (tempVerts);
         return font;
     }
-    
-    public static void redefineReferenceCharacter (char newReference)
-    {
-        _ReferenceCharacter = newReference;
-    }
-    
-    public static char getReferenceCharacter ()
-    {
-        return _ReferenceCharacter;
-    }
-
 }

@@ -6,8 +6,11 @@
 package com.innovail.trouble.uicomponent;
 
 import com.badlogic.gdx.graphics.Color;
-import com.innovail.trouble.graphics.FontUtil;
+import com.innovail.trouble.core.ApplicationSettings;
+import com.innovail.trouble.graphics.FontStillModel;
+import com.innovail.trouble.graphics.GameFont;
 import com.innovail.trouble.graphics.GameMesh;
+import com.innovail.trouble.graphics.GameFont.FontType;
 
 /**
  * 
@@ -58,7 +61,7 @@ public class MenuEntryMesh extends GameMesh {
     
     public MenuEntryMesh (final String [] name)
     {
-        super (FontUtil.createMesh (name[1]));
+        super (ApplicationSettings.getInstance ().getGameFont (GameFont.typeToString (FontType.MESH)).getMeshFont ().createStillModel (name[1]));
         _name = name[0];
     }
 
