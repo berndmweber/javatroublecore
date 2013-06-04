@@ -165,6 +165,7 @@ public class TroubleGame {
                     } else {
                         _movingToken = _activePlayer.getTokenAtHome ();
                     }
+                    _activePlayer.deselectAllTokens ();
                     _tokenStartedMoving = true;
                     _currentState = GameState.MOVE_TOKEN;
                 } else {
@@ -180,11 +181,15 @@ public class TroubleGame {
                 }
             }
         } else {
-            if (_hasSelected) {
-                _availableTokens.clear ();
-                _hasSelected = false;
-                _tokenStartedMoving = true;
-                _currentState = GameState.MOVE_TOKEN;
+            if ((_availableTokens.size () == 1) && (!_hasSelected)) {
+                selectToken (_availableTokens.get (0));
+            } else {
+                if (_hasSelected) {
+                    _availableTokens.clear ();
+                    _hasSelected = false;
+                    _tokenStartedMoving = true;
+                    _currentState = GameState.MOVE_TOKEN;
+                }
             }
         }
     }
