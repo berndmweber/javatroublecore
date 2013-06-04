@@ -5,28 +5,36 @@
  */
 package com.innovail.trouble.graphics;
 
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.g3d.materials.Material;
+import com.badlogic.gdx.graphics.g3d.loaders.g3d.G3dLoader;
+import com.badlogic.gdx.graphics.g3d.loaders.g3d.chunks.G3dExporter;
 import com.badlogic.gdx.graphics.g3d.model.SubMesh;
 import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
 import com.badlogic.gdx.graphics.g3d.model.still.StillSubMesh;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.OrderedMap;
 
 /**
  * 
  */
 public class FontStillModel {
+    private static final String TAG = "FontStillModel";
+
     private final StillModel _fontModel;
     private Map <Character, String> _fontMap;
     private float _fontSpacing = 0.04f;
@@ -146,99 +154,38 @@ public class FontStillModel {
 
         return null;
     }
-    
-    public static void setJsonSerializer (Json json) {
-        json.setSerializer (FontStillModel.class, new Json.Serializer <FontStillModel> () {
 
-            @SuppressWarnings ("rawtypes")
-            @Override
-            public void write (Json json, FontStillModel object, Class knownType) {
-                json.writeObjectStart ();
-                json.writeValue ("fontMap", object.getFontMap ());
-                json.writeValue ("referenceCharacter", object.getReferenceCharacter ());
-                json.writeValue ("fontSpacing", Float.valueOf (object.getFontSpacing ()));
-                json.writeObjectStart ("stillModel");
-                SubMesh [] subMeshes = object.getStillModel ().getSubMeshes ();
-                for (int i = 0; i < subMeshes.length; i++) {
-                    json.writeObjectStart (subMeshes[i].name);
-                    json.writeValue ("material", subMeshes[i].material);
-                    json.writeValue ("primitiveType", subMeshes[i].primitiveType);
-                    json.writeObjectStart ("mesh");
-                    json.writeValue ("isStatic", Boolean.valueOf (true));
-                    json.writeValue ("maxVertices", Integer.valueOf (subMeshes[i].getMesh ().getMaxVertices ()));
-                    json.writeValue ("maxIndices", Integer.valueOf (subMeshes[i].getMesh ().getMaxIndices ()));
-                    json.writeValue ("attributes", subMeshes[i].getMesh ().getVertexAttributes ());
-                    float [] vertices = new float [subMeshes[i].getMesh ().getNumVertices () * 6];
-                    subMeshes[i].getMesh ().getVertices (vertices);
-                    json.writeValue ("vertices", vertices);
-                    json.writeObjectEnd ();
-                    json.writeObjectEnd ();
-                }
-                json.writeObjectEnd ();
-                json.writeObjectEnd ();
-            }
+    public void exportModel (FileHandle handleSM, FileHandle handleFSM) {
+        G3dExporter.export (_fontModel, handleSM);
+        try {
+            final OutputStream os = handleFSM.write (false);
+            final ObjectOutput oo = new ObjectOutputStream (os);
+            oo.writeObject (_fontMap);
+            oo.writeFloat (_fontSpacing);
+            oo.writeChar (_referenceCharacter);
+            oo.flush ();
+            os.close ();
+        } catch (Exception ex) {
+            Gdx.app.log (TAG, ex.getMessage ());
+        }
+    }
 
-            @SuppressWarnings ({ "rawtypes", "unchecked" })
-            @Override
-            public FontStillModel read (Json json, Object jsonData, Class type) {
-                ArrayList <SubMesh> subMeshes = new ArrayList <SubMesh> ();
-                OrderedMap fontMap = (OrderedMap) json.readValue ("fontMap", OrderedMap.class, jsonData);
-                Map <Character, String> actualFontMap = new HashMap <Character, String> ();
-                OrderedMap.Keys map = fontMap.keys ();
-                while (map.hasNext ()) {
-                    String entry = (String) map.next ();
-                    Character key = Character.valueOf (entry.charAt (0));
-                    String value = json.readValue (entry, String.class, fontMap);
-                    actualFontMap.put (key, value);
-                }
-                Character referenceCharacter = (Character) json.readValue ("referenceCharacter", Character.class, jsonData);
-                float fontSpacing = ((Float) json.readValue ("fontSpacing", Float.class, jsonData)).floatValue ();
-                OrderedMap stillModel = (OrderedMap) json.readValue ("stillModel", OrderedMap.class, jsonData);
-                OrderedMap.Keys model = stillModel.keys ();
-                while (model.hasNext ()) {
-                    String name = (String) model.next ();
-                    OrderedMap subMesh = (OrderedMap) json.readValue (name, OrderedMap.class, stillModel);
-                    OrderedMap material = (OrderedMap) json.readValue ("material", OrderedMap.class, subMesh);
-                    Material actualMaterial = new Material (json.readValue ("name", String.class, material));
-                    int primitiveType = ((Integer) json.readValue ("primitiveType", Integer.class, subMesh)).intValue ();
-                    OrderedMap mesh = (OrderedMap) json.readValue ("mesh", OrderedMap.class, subMesh);
-                    boolean isStatic = ((Boolean) json.readValue ("isStatic", Boolean.class, mesh)).booleanValue ();
-                    int maxVertices = ((Integer) json.readValue ("maxVertices", Integer.class, mesh)).intValue ();
-                    int maxIndices = ((Integer) json.readValue ("maxIndices", Integer.class, mesh)).intValue ();
-                    OrderedMap vertexAttributes = (OrderedMap) json.readValue ("attributes", OrderedMap.class, mesh);
-                    ArrayList <OrderedMap> attributesOrdered = (ArrayList <OrderedMap>) json.readValue ("attributes", ArrayList.class, vertexAttributes);
-                    ArrayList <VertexAttribute> attributes = new ArrayList <VertexAttribute> ();
-                    for (int i = 0; i < attributesOrdered.size (); i++) {
-                        OrderedMap currentAttribute = attributesOrdered.get (i);
-                        int usage = ((Integer) json.readValue ("usage", Integer.class, currentAttribute)).intValue ();
-                        int numComponents = ((Integer) json.readValue ("numComponents", Integer.class, currentAttribute)).intValue ();
-                        String alias = (String) json.readValue ("alias", String.class, currentAttribute);
-                        attributes.add (new VertexAttribute (usage, numComponents, alias));
-                    }
-                    ArrayList <Float> vertices = (ArrayList <Float>) json.readValue ("vertices", ArrayList.class, mesh);
-                    float [] verticesArray = new float [vertices.size ()];
-                    for (int i = 0; i < vertices.size (); i++) {
-                        Float f = vertices.get (i);
-                        verticesArray [i] = (f != null ? f.floatValue () : Float.NaN);
-                    }
-                    short [] indicesArray = new short [maxIndices];
-                    for (short index = 0; index < maxIndices; index++) {
-                        indicesArray [index] = index;
-                    }
-                    Mesh actualMesh = new Mesh (isStatic, maxVertices, maxIndices, attributes.toArray (new VertexAttribute [attributes.size ()]));
-                    actualMesh.setVertices (verticesArray);
-                    actualMesh.setIndices (indicesArray);
-                    SubMesh actualSubMesh = new StillSubMesh (name, actualMesh, primitiveType);
-                    actualSubMesh.material = actualMaterial;
-                    subMeshes.add (actualSubMesh);
-                }
-
-                StillModel actualStillModel = new StillModel (subMeshes.toArray (new SubMesh [subMeshes.size ()]));
-                FontStillModel fontStillModel = new FontStillModel (actualStillModel, actualFontMap, referenceCharacter);
-                fontStillModel.setFontSpacing (fontSpacing);
-                
-                return fontStillModel;
-            }
-        });
+    @SuppressWarnings ("unchecked")
+    public static FontStillModel importModel (FileHandle handleSM, FileHandle handleFSM) {
+        StillModel tempModel = G3dLoader.loadStillModel (handleSM);
+        FontStillModel fsm = null;
+        try {
+            final InputStream is = handleFSM.read ();
+            final ObjectInput oi = new ObjectInputStream (is);
+            Map <Character, String> fm = (HashMap<Character, String>) oi.readObject ();
+            float fs = oi.readFloat ();
+            char rc = oi.readChar ();
+            oi.close ();
+            fsm = new FontStillModel (tempModel, fm, rc);
+            fsm.setFontSpacing (fs);
+        } catch (Exception ex) {
+            Gdx.app.log (TAG, ex.getMessage ());
+        }
+        return fsm;
     }
 }

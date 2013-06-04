@@ -5,26 +5,9 @@
  */
 package com.innovail.trouble.graphics;
 
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.utils.Json;
 import com.innovail.trouble.utils.FontObjLoader;
 
 /**
@@ -46,7 +29,7 @@ public class GameFont {
     
     private BitmapFont _bitmapFont = null;
     private FontStillModel _meshFont = null;
-    
+
     public GameFont (final String fontType, final String fontFilePath,
                       final String fontImagePath, final boolean isInternal)
     {
@@ -58,7 +41,7 @@ public class GameFont {
             getMeshFont ();
         }
     }
-    
+
     public GameFont (final String fontType, final String fontFilePath,
                       final String fontImagePath)
     {
@@ -70,12 +53,12 @@ public class GameFont {
             getMeshFont ();
         }
     }
-    
+
     public void flipFont ()
     {
         _flipFont = true;
     }
-    
+
     public BitmapFont getBitmapFont ()
     {
         if ((_bitmapFont == null) && (_fontType == FontType.BITMAP)) {
@@ -91,8 +74,7 @@ public class GameFont {
         }
         return _bitmapFont;
     }
-    
-    @SuppressWarnings ("unchecked")
+
     public FontStillModel getMeshFont ()
     {
         if ((_meshFont == null) && (_fontType == FontType.MESH)) {
@@ -111,16 +93,19 @@ public class GameFont {
                 }
             } else {
                 try {
-                    FileHandle objFile = null;
+                    FileHandle smFile = null;
+                    FileHandle fsmFile = null;
                     if (_isInternal) {
-                        objFile = Gdx.files.internal (_fontImagePath);
+                        smFile = Gdx.files.internal (_fontImagePath);
+                        final String fsmPath = smFile.pathWithoutExtension ().concat (".fsm");
+                        fsmFile = Gdx.files.internal (fsmPath);
                     } else {
-                        objFile = Gdx.files.external (_fontImagePath);
+                        smFile = Gdx.files.external (_fontImagePath);
+                        final String fsmPath = smFile.pathWithoutExtension ().concat (".fsm");
+                        fsmFile = Gdx.files.external (fsmPath);
                     }
-                    
-                    Json json = new Json ();
-                    FontStillModel.setJsonSerializer (json);
-                    _meshFont = json.fromJson (FontStillModel.class, objFile);
+
+                    _meshFont = FontStillModel.importModel (smFile, fsmFile);
                 } catch (Exception ex) {
                     Gdx.app.log (TAG, ex.getMessage ());
                 }
@@ -128,25 +113,22 @@ public class GameFont {
         }
         return _meshFont;
     }
-    
-    @SuppressWarnings ("unchecked")
+
     public void createMeshFontPictureFile ()
     {
         try {
             if (_meshFont != null) {
-                FileHandle objFile = null;
-
-                objFile = Gdx.files.external (_fontImagePath);
-
-                Json json = new Json ();
-                FontStillModel.setJsonSerializer (json);
-                json.toJson (_meshFont, objFile);
+                final FileHandle smFile = Gdx.files.external (_fontImagePath);
+                final String fsmPath = smFile.pathWithoutExtension ().concat (".fsm");
+                FileHandle fsmFile = Gdx.files.external (fsmPath);
+                
+                _meshFont.exportModel (smFile, fsmFile);
             }
         } catch (Exception ex) {
             Gdx.app.log (TAG, ex.getMessage ());
         }
     }
-    
+
     public boolean hasFont ()
     {
         switch (_fontType) {
