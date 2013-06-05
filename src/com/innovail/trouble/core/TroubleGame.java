@@ -46,6 +46,7 @@ public class TroubleGame {
     private boolean _hasSelected = false;
     private boolean _playerChanged = false;
     private boolean _tokenStartedMoving = false;
+    private boolean _tokenMoved = false;
     private int _rollTrysLeft = 3;
 
     private Player _activePlayer;
@@ -112,7 +113,8 @@ public class TroubleGame {
         final int maxRetries = GameSettings.getInstance ().getTurnOutRetries ();
         
         if (_dice.getCurrentFaceValue (0) != GameSettings.getInstance ().getTurnOutValue ()) {
-            if (_activePlayer.hasTokensOnField ()) {
+            if (_activePlayer.hasTokensOnField () || _tokenMoved) {
+                _tokenMoved = false;
                 getNextPlayer ();
                 _rollTrysLeft = maxRetries;
             } else {
@@ -216,6 +218,7 @@ public class TroubleGame {
                 _movingToken.move ();
             }
         } else {
+            _tokenMoved = true;
             _movingToken = null;
             _currentState = GameState.WIN_GAME;
         }
