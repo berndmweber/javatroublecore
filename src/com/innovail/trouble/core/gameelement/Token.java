@@ -14,7 +14,7 @@ import com.badlogic.gdx.math.Vector3;
  * 
  */
 public class Token {
-    private static final int NUMBER_OF_STEPS = 2;
+    private static final int NUMBER_OF_STEPS = 20;
     
     private final Player _owner;
     private Spot _position;
