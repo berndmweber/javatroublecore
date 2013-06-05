@@ -513,8 +513,10 @@ public class GameScreen extends TroubleScreen {
                         if (Intersector.intersectRayBoundsFast (_touchRay, _backArrowMesh.getBoundingBox ())) {
                             _currentState = TroubleApplicationState.MAIN_MENU;
                         } else if (Intersector.intersectRayBoundsFast (_touchRay, _diceMesh.getBoundingBox ())) {
-                            _diceMesh.getSound ().play ();
-                            _myGame.rollDice ();
+                            if (_myGame.canRollDice ()) {
+                                _diceMesh.getSound ().play ();
+                                _myGame.rollDice ();
+                            }
                         } else if (!_myGame.getAvailableTokens ().isEmpty ()) {
                             final Iterator <Token> tokens = _myGame.getAvailableTokens ().iterator ();
                             while (tokens.hasNext ()) {

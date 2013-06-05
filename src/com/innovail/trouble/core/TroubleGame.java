@@ -232,6 +232,10 @@ public class TroubleGame {
             } else {
                 _foeToken.move ();
             }
+            /* NVTROUB-4: Need to actually set the position now since the owner
+             * token wasn't null before.
+             */
+            _movingToken.setPosition (_movingToken.getPosition ());
         } else {
             /* Need to do this to reset doneMoving boolean */
             _movingToken.doneMoving ();
@@ -278,7 +282,7 @@ public class TroubleGame {
     
     public void rollDice ()
     {
-        if (_currentState == GameState.ROLL_DIE) {
+        if (canRollDice ()) {
             _dice.roll ();
             _hasRolled = true;
         }
@@ -316,6 +320,14 @@ public class TroubleGame {
     public boolean isFinished ()
     {
         if (_currentState == GameState.END_GAME) {
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean canRollDice ()
+    {
+        if (_currentState == GameState.ROLL_DIE) {
             return true;
         }
         return false;
