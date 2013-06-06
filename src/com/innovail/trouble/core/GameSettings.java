@@ -1,5 +1,5 @@
 /**
- * @file:   com.innovail.trouble.core - Settings.java
+ * @file:   com.innovail.trouble.core - GameSettings.java
  * @date:   Apr 14, 2012
  * @author: bweber
  */

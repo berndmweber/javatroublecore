@@ -1,5 +1,5 @@
 /**
- * @file:   com.innovail.trouble.core - Token.java
+ * @file:   com.innovail.trouble.core.gameelement - Token.java
  * @date:   Apr 14, 2012
  * @author: bweber
  */

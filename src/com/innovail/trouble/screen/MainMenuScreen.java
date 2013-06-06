@@ -1,5 +1,5 @@
 /**
- * @file:   com.innovail.trouble.core - MenuScreen.java
+ * @file:   com.innovail.trouble.screen - MainMenuScreen.java
  * @date:   Apr 15, 2012
  * @author: bweber
  */

@@ -1,5 +1,5 @@
 /**
- * @file:   com.innovail.trouble.utils - GamePerspectiveCamera.java
+ * @file:   com.innovail.trouble.graphics - GamePerspectiveCamera.java
  * @date:   May 15, 2012
  * @author: bweber
  */

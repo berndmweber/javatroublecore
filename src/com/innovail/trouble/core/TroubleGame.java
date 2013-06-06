@@ -1,5 +1,5 @@
 /**
- * @file:   com.innovail.trouble.core - Game.java
+ * @file:   com.innovail.trouble.core - TroubleGame.java
  * @date:   Apr 15, 2012
  * @author: bweber
  */

@@ -1,5 +1,5 @@
 /**
- * @file:   com.innovail.trouble.core - TroubleScreen.java
+ * @file:   com.innovail.trouble.screen - TroubleScreen.java
  * @date:   Apr 15, 2012
  * @author: bweber
  */

@@ -1,5 +1,5 @@
 /**
- * @file:   com.innovail.trouble.utils - BackgroundImage.java
+ * @file:   com.innovail.trouble.uicomponent - BackgroundImage.java
  * @date:   Apr 18, 2012
  * @author: bweber
  */

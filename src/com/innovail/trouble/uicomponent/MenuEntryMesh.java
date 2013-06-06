@@ -1,5 +1,5 @@
 /**
- * @file:   com.innovail.trouble.utils - MenuEntryMesh.java
+ * @file:   com.innovail.trouble.uicomponent - MenuEntryMesh.java
  * @date:   May 8, 2012
  * @author: bweber
  */
@@ -7,7 +7,6 @@ package com.innovail.trouble.uicomponent;
 
 import com.badlogic.gdx.graphics.Color;
 import com.innovail.trouble.core.ApplicationSettings;
-import com.innovail.trouble.graphics.FontStillModel;
 import com.innovail.trouble.graphics.GameFont;
 import com.innovail.trouble.graphics.GameMesh;
 import com.innovail.trouble.graphics.GameFont.FontType;

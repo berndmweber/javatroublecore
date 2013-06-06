@@ -1,5 +1,5 @@
 /**
- * @file:   com.innovail.trouble.utils - GameFont.java
+ * @file:   com.innovail.trouble.graphics - GameFont.java
  * @date:   Apr 17, 2012
  * @author: bweber
  */
