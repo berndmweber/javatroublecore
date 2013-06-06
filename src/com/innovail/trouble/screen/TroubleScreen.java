@@ -80,29 +80,28 @@ public abstract class TroubleScreen implements Screen {
     public void render (final float delta)
     {
         update (delta);
-        
+
         final GL11 gl = Gdx.graphics.getGL11 ();
         final Color currentColor = Color.BLACK;
 
         gl.glClear (GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
         gl.glClearColor (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-        gl.glViewport (0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        
+
         renderBackground ((float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
         
-        gl.glDisable (GL11.GL_DITHER);
+        gl.glEnable (GL11.GL_DITHER);
         gl.glEnable (GL11.GL_DEPTH_TEST);
         if (!_showFrontAndBack) {
             gl.glEnable (GL11.GL_CULL_FACE);
+            gl.glShadeModel (GL11.GL_SMOOTH);
         }
-        gl.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+        gl.glPolygonMode (GL11.GL_FRONT, GL11.GL_FILL);
 
         setProjectionAndCamera (gl);
         setLighting (gl);
 
         gl.glMatrixMode (GL11.GL_MODELVIEW);
-        gl.glShadeModel (GL11.GL_SMOOTH);
-        
+
         render (gl, delta);
     }
     

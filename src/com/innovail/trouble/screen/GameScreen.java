@@ -42,7 +42,7 @@ public class GameScreen extends TroubleScreen {
     private static final String AppPartName = TroubleApplicationState.GAME;
     
     private static final float[] NoMat = {0.0f, 0.0f, 0.0f, 1.0f};
-    private static final int FrontAndOrBack = GL11.GL_FRONT;
+    private static final int FrontAndOrBack = GL11.GL_FRONT_AND_BACK;
     
     private static final float _UP = 1.0f;
     private static final float _DOWN = -1.0f;
@@ -266,15 +266,16 @@ public class GameScreen extends TroubleScreen {
         final float[] diffuse1 = {1.0f, 1.0f, 1.0f, 1.0f};
         final float[] specular1 = {1.0f, 1.0f, 1.0f, 1.0f};
 
-        gl.glEnable (GL11.GL_LIGHTING);
-        
-        gl.glEnable (GL11.GL_LIGHT1);
-        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_AMBIENT, ambient1, 0);
-        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_DIFFUSE, diffuse1, 0);
-        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_SPECULAR, specular1, 0);
-        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_POSITION, position1, 0);
-        
+        gl.glLightfv (GL11.GL_LIGHT0, GL11.GL_AMBIENT, ambient1, 0);
+        gl.glLightfv (GL11.GL_LIGHT0, GL11.GL_DIFFUSE, diffuse1, 0);
+        gl.glLightfv (GL11.GL_LIGHT0, GL11.GL_SPECULAR, specular1, 0);
+        gl.glLightfv (GL11.GL_LIGHT0, GL11.GL_POSITION, position1, 0);
+
         gl.glEnable (GL11.GL_COLOR_MATERIAL);
+
+        gl.glEnable (GL11.GL_LIGHTING);
+        gl.glEnable (GL11.GL_LIGHT0);
+
     }
 
     private void renderDice (final GL11 gl)

@@ -138,23 +138,30 @@ public class MainMenuScreen extends TroubleScreen {
     protected void setLighting (final GL11 gl)
     {
         final Color lightColor = _logo.getColor ();
+        final int frontAndOrBack = GL11.GL_FRONT_AND_BACK;
+
         final float[] specular0 = {lightColor.r, lightColor.g, lightColor.b, lightColor.a};
         final float[] position1 = {-2.0f, -2.0f, 1.0f, 0.0f};
         final float[] ambient1 = {1.0f, 1.0f, 1.0f, 1.0f};
         final float[] diffuse1 = {1.0f, 1.0f, 1.0f, 1.0f};
         final float[] specular1 = {1.0f, 1.0f, 1.0f, 1.0f};
-        
-        gl.glEnable (GL11.GL_LIGHTING);
-        
-        gl.glEnable (GL11.GL_LIGHT0);
+
+        final float[] matSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
+        final float[] matShininess = {7.0f, 0.0f, 0.0f, 0.0f};
+
         gl.glLightfv (GL11.GL_LIGHT0, GL11.GL_SPECULAR, specular0, 0);
         
-        gl.glEnable (GL11.GL_LIGHT1);
         gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_AMBIENT, ambient1, 0);
         gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_DIFFUSE, diffuse1, 0);
         gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_SPECULAR, specular1, 0);
         gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_POSITION, position1, 0);
-        
+
+        gl.glMaterialfv (frontAndOrBack, GL11.GL_SPECULAR, matSpecular, 0);
+        gl.glMaterialfv (frontAndOrBack, GL11.GL_SHININESS, matShininess, 0);
+
+        gl.glEnable (GL11.GL_LIGHT0);
+        gl.glEnable (GL11.GL_LIGHT1);
+        gl.glEnable (GL11.GL_LIGHTING);
         gl.glEnable (GL11.GL_COLOR_MATERIAL);
         gl.glEnable (GL11.GL_BLEND);
     }
@@ -162,16 +169,11 @@ public class MainMenuScreen extends TroubleScreen {
     private void renderLogo (final GL11 gl)
     {
         final Color currentColor = _logo.getColor ();
-        final int frontAndOrBack = GL11.GL_FRONT;
-        final float[] matSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
-        final float[] matShininess = {7.0f, 0.0f, 0.0f, 0.0f};
-        
+
         gl.glPushMatrix ();
         gl.glTranslatef (0.0f, 1.0f, 0.3f);
         gl.glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
         gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-        gl.glMaterialfv (frontAndOrBack, GL11.GL_SPECULAR, matSpecular, 0);
-        gl.glMaterialfv (frontAndOrBack, GL11.GL_SHININESS, matShininess, 0);
         _logo.getMesh ().render ();
         gl.glPopMatrix ();
     }
