@@ -69,24 +69,22 @@ public class NewGameScreen extends TroubleScreen {
     public NewGameScreen ()
     {
         super ();
-        
+
         Gdx.app.log (TAG, "NewGameScreen()");
-        
+
         text = ApplicationSettings.getInstance ().getGameFont (GameFont.typeToString (FontType.MESH)).getMeshFont ().createStillModel ("Crazy stuff happening!");
-        
-        _currentState = TroubleApplicationState.NEW_GAME;
-        
+
         _spriteBatch = new SpriteBatch ();
         _menuFont = ApplicationSettings.getInstance ().getGameFont (GameFont.typeToString(FontType.BITMAP)).getBitmapFont ();
         _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (TroubleApplicationState.MAIN_MENU);
         
         _logo = ApplicationSettings.getInstance ().getMenuEntries (TroubleApplicationState.MAIN_MENU).get (AppPartName);
         _menuEntriesList = ApplicationSettings.getInstance ().getMenuEntryList (AppPartName);
-       
+
         _selectionArrow = ApplicationSettings.getInstance ().getApplicationAsset ("selectionArrow");
         _viewMatrix = new Matrix4 ();
         _transformMatrix = new Matrix4 ();
-        
+
         final float aspectRatio = (float) Gdx.graphics.getWidth () /
                                    (float) Gdx.graphics.getHeight ();
         _camera = new PerspectiveCamera (100, 2f * aspectRatio, 2f);
@@ -95,6 +93,12 @@ public class NewGameScreen extends TroubleScreen {
 
         showFrontAndBack ();
     }
+
+    @Override
+    public void setOwnState () {
+        _currentState = TroubleApplicationState.NEW_GAME;
+    }
+
     
     protected void update (final float delta)
     {
@@ -135,30 +139,6 @@ public class NewGameScreen extends TroubleScreen {
                         Gdx.graphics.getWidth () / 2 - textWidth / 2,
                         textHeight + 5);
         _spriteBatch.end ();
-    }
-    
-    protected void setLighting (final GL11 gl)
-    {
-        final Color lightColor = Color.BLUE;
-        final float[] specular0 = {lightColor.r, lightColor.g, lightColor.b, lightColor.a};
-        final float[] position1 = {-2.0f, -2.0f, 1.0f, 0.0f};
-        final float[] ambient1 = {1.0f, 1.0f, 1.0f, 1.0f};
-        final float[] diffuse1 = {1.0f, 1.0f, 1.0f, 1.0f};
-        final float[] specular1 = {1.0f, 1.0f, 1.0f, 1.0f};
-        
-        gl.glEnable (GL11.GL_LIGHTING);
-        
-        gl.glEnable (GL11.GL_LIGHT0);
-        gl.glLightfv (GL11.GL_LIGHT0, GL11.GL_SPECULAR, specular0, 0);
-        
-        gl.glEnable (GL11.GL_LIGHT1);
-        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_AMBIENT, ambient1, 0);
-        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_DIFFUSE, diffuse1, 0);
-        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_SPECULAR, specular1, 0);
-        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_POSITION, position1, 0);
-        
-        gl.glEnable (GL11.GL_COLOR_MATERIAL);
-        gl.glEnable (GL11.GL_BLEND);
     }
 
     private void renderLogo (final GL11 gl)
@@ -275,6 +255,7 @@ public class NewGameScreen extends TroubleScreen {
                     }*/
                 }
                 _currentState = TroubleApplicationState.GAME;
+//                _currentState = TroubleApplicationState.LOADING;
                 return super.touchUp (x, y, pointer, button);
             }
         });

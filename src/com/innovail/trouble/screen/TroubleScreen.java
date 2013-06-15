@@ -32,21 +32,34 @@ public abstract class TroubleScreen implements Screen {
 
     public TroubleScreen ()
     {
+        init (true);
+    }
+
+    public void init () {
+        init (false);
+    }
+
+    protected void init (boolean full) {
+        if (!full) {
+            setOwnState ();
+        }
         createInputProcessor ();
     }
-    
+
     public abstract void createInputProcessor ();
-    
+
     public String getState ()
     {
         return _currentState;
     }
-    
+
+    public abstract void setOwnState ();
+
     public boolean DebugEnabled ()
     {
         return _DEBUG;
     }
-    
+
     public Camera getCamera ()
     {
         return _camera;
@@ -104,20 +117,54 @@ public abstract class TroubleScreen implements Screen {
 
         render (gl, delta);
     }
-    
+
     protected abstract void update (final float delta);
-    
+
     protected abstract void render (final GL11 gl, final float delta);
-    
+
     protected abstract void renderBackground (final float width, final float height);
-    
+
     protected void setProjectionAndCamera (final GL11 gl)
     {
         _camera.update ();
         _camera.apply (gl);
     }
-    
-    protected abstract void setLighting (final GL11 gl);
+
+    protected void setLighting (final GL11 gl)
+    {
+        setLighting (gl, Color.BLUE);
+    }
+
+    protected void setLighting (final GL11 gl, Color light)
+    {
+        final Color lightColor = light;
+        final int frontAndOrBack = GL11.GL_FRONT_AND_BACK;
+
+        final float[] specular0 = {lightColor.r, lightColor.g, lightColor.b, lightColor.a};
+        final float[] position1 = {-2.0f, -2.0f, 1.0f, 0.0f};
+        final float[] ambient1 = {1.0f, 1.0f, 1.0f, 1.0f};
+        final float[] diffuse1 = {1.0f, 1.0f, 1.0f, 1.0f};
+        final float[] specular1 = {1.0f, 1.0f, 1.0f, 1.0f};
+
+        final float[] matSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
+        final float[] matShininess = {7.0f, 0.0f, 0.0f, 0.0f};
+
+        gl.glLightfv (GL11.GL_LIGHT0, GL11.GL_SPECULAR, specular0, 0);
+
+        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_AMBIENT, ambient1, 0);
+        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_DIFFUSE, diffuse1, 0);
+        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_SPECULAR, specular1, 0);
+        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_POSITION, position1, 0);
+
+        gl.glMaterialfv (frontAndOrBack, GL11.GL_SPECULAR, matSpecular, 0);
+        gl.glMaterialfv (frontAndOrBack, GL11.GL_SHININESS, matShininess, 0);
+
+        gl.glEnable (GL11.GL_LIGHT0);
+        gl.glEnable (GL11.GL_LIGHT1);
+        gl.glEnable (GL11.GL_LIGHTING);
+        gl.glEnable (GL11.GL_COLOR_MATERIAL);
+        gl.glEnable (GL11.GL_BLEND);
+    }
     
     protected void showFrontAndBack ()
     {

@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Intersector;
@@ -37,14 +36,14 @@ import com.innovail.trouble.utils.GameInputAdapter;
 public class MainMenuScreen extends TroubleScreen {
     private static final String TAG = "MainMenuScreen";
     private static final String AppPartName = TroubleApplicationState.MAIN_MENU;
-    
+
     private final BitmapFont _menuFont;
     private final SpriteBatch _spriteBatch;
     private final BackgroundImage _backgroundImage;
 
     private final GameMesh _logo;
     private final List <GameMesh> _menuEntriesList;
-    
+
     private float[] _yRotationAngle;
     private int[] _yRotationDirection;
     private static final float _RotationMaxAngle = 2.0f;
@@ -54,22 +53,19 @@ public class MainMenuScreen extends TroubleScreen {
 
     private final Matrix4 _viewMatrix;
     private final Matrix4 _transformMatrix;
-    
+
     public MainMenuScreen ()
     {
         super ();
-        
+
         Gdx.app.log (TAG, "MainMenuScreen()");
-        
-        _currentState = TroubleApplicationState.MAIN_MENU;
-        
+
         _spriteBatch = new SpriteBatch ();
         _menuFont = ApplicationSettings.getInstance ().getGameFont (GameFont.typeToString(FontType.BITMAP)).getBitmapFont ();
         _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (AppPartName);
-        _backgroundImage.createTexture ().setFilter (TextureFilter.Linear, TextureFilter.Linear);
-        
+
         _logo = ApplicationSettings.getInstance ().getLogo ();
-        
+
         _menuEntriesList = ApplicationSettings.getInstance ().getMenuEntryList (AppPartName);
         _yRotationAngle = new float[_menuEntriesList.size ()];
         _yRotationDirection = new int[_menuEntriesList.size ()];
@@ -79,7 +75,7 @@ public class MainMenuScreen extends TroubleScreen {
             _yRotationAngle[i] *= rand.nextBoolean () ? 1.0f : -1.0f;
             _yRotationDirection[i] = rand.nextBoolean () ? 1 : -1;
         }
-        
+
         _viewMatrix = new Matrix4 ();
         _transformMatrix = new Matrix4 ();
         
@@ -91,16 +87,21 @@ public class MainMenuScreen extends TroubleScreen {
 
         showFrontAndBack ();
     }
-    
+
+    @Override
+    public void setOwnState () {
+        _currentState = TroubleApplicationState.MAIN_MENU;
+    }
+
     protected void update (final float delta)
     {
         /* Nothing to do here. */
     }
-    
+
     protected void render (final GL11 gl, final float delta)
     {
         _rotationDelta += delta;
-        
+
         Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 
         renderLogo (gl);
@@ -134,36 +135,11 @@ public class MainMenuScreen extends TroubleScreen {
                         textHeight + 5);
         _spriteBatch.end ();
     }
-    
+
+    @Override
     protected void setLighting (final GL11 gl)
     {
-        final Color lightColor = _logo.getColor ();
-        final int frontAndOrBack = GL11.GL_FRONT_AND_BACK;
-
-        final float[] specular0 = {lightColor.r, lightColor.g, lightColor.b, lightColor.a};
-        final float[] position1 = {-2.0f, -2.0f, 1.0f, 0.0f};
-        final float[] ambient1 = {1.0f, 1.0f, 1.0f, 1.0f};
-        final float[] diffuse1 = {1.0f, 1.0f, 1.0f, 1.0f};
-        final float[] specular1 = {1.0f, 1.0f, 1.0f, 1.0f};
-
-        final float[] matSpecular = {1.0f, 1.0f, 1.0f, 1.0f};
-        final float[] matShininess = {7.0f, 0.0f, 0.0f, 0.0f};
-
-        gl.glLightfv (GL11.GL_LIGHT0, GL11.GL_SPECULAR, specular0, 0);
-        
-        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_AMBIENT, ambient1, 0);
-        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_DIFFUSE, diffuse1, 0);
-        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_SPECULAR, specular1, 0);
-        gl.glLightfv (GL11.GL_LIGHT1, GL11.GL_POSITION, position1, 0);
-
-        gl.glMaterialfv (frontAndOrBack, GL11.GL_SPECULAR, matSpecular, 0);
-        gl.glMaterialfv (frontAndOrBack, GL11.GL_SHININESS, matShininess, 0);
-
-        gl.glEnable (GL11.GL_LIGHT0);
-        gl.glEnable (GL11.GL_LIGHT1);
-        gl.glEnable (GL11.GL_LIGHTING);
-        gl.glEnable (GL11.GL_COLOR_MATERIAL);
-        gl.glEnable (GL11.GL_BLEND);
+        setLighting (gl, _logo.getColor ());
     }
 
     private void renderLogo (final GL11 gl)
@@ -177,7 +153,7 @@ public class MainMenuScreen extends TroubleScreen {
         _logo.getMesh ().render ();
         gl.glPopMatrix ();
     }
-    
+
     private void renderMenu (final GL11 gl)
     {
         final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
@@ -197,7 +173,7 @@ public class MainMenuScreen extends TroubleScreen {
             tmp.setToRotation (0.0f, 0.0f, 1.0f, _yRotationAngle[i]);
             transform.mul(tmp);
             thisMesh.transformBoundingBox (transform);
-            
+
             if (_DEBUG) {
                 Gdx.gl11.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
                 gl.glPushMatrix ();
@@ -207,7 +183,7 @@ public class MainMenuScreen extends TroubleScreen {
             }
             
             yLocation -= 0.7f;
-            
+
             if (_rotationDelta >= _RotationMaxDelta) {
                 if (_yRotationDirection[i] == 1) {
                     _yRotationAngle[i] += _RotationAngleIncrease;

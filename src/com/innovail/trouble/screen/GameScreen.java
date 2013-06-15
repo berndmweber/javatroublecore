@@ -94,14 +94,9 @@ public class GameScreen extends TroubleScreen {
     public GameScreen ()
     {
         super ();
-        
-        Gdx.app.log (TAG, "GameScreen()");
-        
-        _currentState = TroubleApplicationState.GAME;
-        
+
         _spriteBatch = new SpriteBatch ();
         _backgroundImage = ApplicationSettings.getInstance ().getBackgroundImage (AppPartName);
-        _backgroundImage.createTexture ().setFilter (TextureFilter.Linear, TextureFilter.Linear);
         _backArrowMesh = ApplicationSettings.getInstance ().getBackArrow ();
         _playerMesh = GameSettings.getInstance ().getPlayerMesh ();
         _playerNumberMesh = GameSettings.getInstance ().getPlayerNumbers ();
@@ -139,7 +134,17 @@ public class GameScreen extends TroubleScreen {
         _diceMesh.getSound ();
         _tokenMesh.getSound ();
     }
-    
+
+    public void init (boolean full) {
+        Gdx.app.log (TAG, "GameScreen()");
+        super.init (full);
+    }
+
+    @Override
+    public void setOwnState () {
+        _currentState = TroubleApplicationState.GAME;
+    }
+
     protected void update (final float delta)
     {
         _myGame.updateGame ();

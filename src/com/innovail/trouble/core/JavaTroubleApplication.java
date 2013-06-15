@@ -8,9 +8,7 @@ package com.innovail.trouble.core;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
-import com.innovail.trouble.screen.GameScreen;
-import com.innovail.trouble.screen.MainMenuScreen;
-import com.innovail.trouble.screen.NewGameScreen;
+import com.innovail.trouble.core.TroubleApplicationState.StateEnum;
 import com.innovail.trouble.screen.TroubleScreen;
 import com.innovail.trouble.utils.SettingLoader;
 
@@ -20,8 +18,17 @@ import com.innovail.trouble.utils.SettingLoader;
 public class JavaTroubleApplication extends Game {
     private static final String TAG = "JavaTroubleApplication";
 
-    public String currentState = TroubleApplicationState.MAIN_MENU;
-    
+    public String currentState = TroubleApplicationState.LOADING;
+//    public String currentState = TroubleApplicationState.MAIN_MENU;
+
+    private static final float _DotMaxDelta = 0.4f;
+    private static float _displayDelta = 0.0f;
+
+    private final TroubleScreen [] _screenList = new TroubleScreen [StateEnum.values ().length];
+
+    private boolean _screensLoaded = false;
+    private int _screenIterator = 0;
+
     /* (non-Javadoc)
      * @see com.badlogic.gdx.ApplicationListener#create()
      */
@@ -29,7 +36,7 @@ public class JavaTroubleApplication extends Game {
     public void create () {
         Gdx.app.log (TAG, "Creating JavaTroubleApplication.");
         SettingLoader.loadSettings ();
-        setScreen (new MainMenuScreen ());
+        setScreen (getScreen (TroubleApplicationState.getState (currentState)));
     }
 
     /* (non-Javadoc)
@@ -37,32 +44,70 @@ public class JavaTroubleApplication extends Game {
      */
     @Override
     public void render () {
+        final float currentDelta = Gdx.graphics.getDeltaTime ();
         final TroubleScreen currentScreen = getScreen ();
+
+        _displayDelta += currentDelta;
 
         if (!currentState.equals (currentScreen.getState ())) {
             currentState = currentScreen.getState ();
             switch (TroubleApplicationState.getState (currentState)) {
-            case E_NEW_GAME:
-                setScreen (new NewGameScreen ());
-                break;
             case E_GAME:
-                setScreen (new GameScreen ());
+                setScreen (getScreen (StateEnum.E_GAME));
+                break;
+            case E_LOADING:
+                setScreen (getScreen (StateEnum.E_LOADING));
+                break;
+            case E_NEW_GAME:
+                setScreen (getScreen (StateEnum.E_NEW_GAME));
                 break;
             case E_SETTINGS:
             case E_MAIN_MENU:
             default:
-                setScreen (new MainMenuScreen ());
+                setScreen (getScreen (StateEnum.E_MAIN_MENU));
                 break;
             }
         }
 
         // update the screen
-        currentScreen.render (Gdx.graphics.getDeltaTime ());
+        currentScreen.render (currentDelta);
+
+        if (!_screensLoaded && (_displayDelta > _DotMaxDelta)) {
+            getScreen (TroubleApplicationState.getState (TroubleApplicationState.ALL.get (_screenIterator++)), false);
+            if (_screenIterator == StateEnum.values ().length) {
+                _screensLoaded = true;
+                setScreen (getScreen (StateEnum.E_MAIN_MENU));
+            }
+            _displayDelta = 0;
+        }
     }
 
     /**
     */
     public TroubleScreen getScreen () {
-        return (TroubleScreen)super.getScreen ();
+        return (TroubleScreen) super.getScreen ();
+    }
+
+    private TroubleScreen getScreen (StateEnum gameState) {
+        return getScreen (gameState, true);
+    }
+
+    private TroubleScreen getScreen (StateEnum gameState, boolean init) {
+        TroubleScreen currentScreen = _screenList [gameState.ordinal ()];
+        if (currentScreen == null) {
+            try {
+                _screenList [gameState.ordinal ()] = currentScreen = (TroubleScreen) TroubleApplicationState.getScreenClass (gameState).newInstance ();
+            } catch (InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        if (init) {
+            currentScreen.init ();
+        }
+        return currentScreen;
     }
 }

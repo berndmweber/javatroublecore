@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 
 import com.innovail.trouble.graphics.GameFont;
 import com.innovail.trouble.graphics.GameMesh;
@@ -76,7 +77,9 @@ public final class ApplicationSettings {
         if (_BackgroundImages == null) {
             _BackgroundImages = new HashMap<String, BackgroundImage> ();
         }
-        _BackgroundImages.put (appPart, new BackgroundImage (path, width, height, isInternal));
+        BackgroundImage tempBI = new BackgroundImage (path, width, height, isInternal);
+        tempBI.createTexture ().setFilter (TextureFilter.Linear, TextureFilter.Linear);
+        _BackgroundImages.put (appPart, tempBI);
     }
     
     public BackgroundImage getBackgroundImage (final String appPart)
