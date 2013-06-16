@@ -19,7 +19,6 @@ public class JavaTroubleApplication extends Game {
     private static final String TAG = "JavaTroubleApplication";
 
     public String currentState = TroubleApplicationState.LOADING;
-//    public String currentState = TroubleApplicationState.MAIN_MENU;
 
     private static final float _DotMaxDelta = 0.4f;
     private static float _displayDelta = 0.0f;
@@ -69,7 +68,7 @@ public class JavaTroubleApplication extends Game {
             }
         }
 
-        // update the screen
+        /* update the screen */
         currentScreen.render (currentDelta);
 
         if (!_screensLoaded && (_displayDelta > _DotMaxDelta)) {
@@ -97,12 +96,8 @@ public class JavaTroubleApplication extends Game {
         if (currentScreen == null) {
             try {
                 _screenList [gameState.ordinal ()] = currentScreen = (TroubleScreen) TroubleApplicationState.getScreenClass (gameState).newInstance ();
-            } catch (InstantiationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (Exception e) {
+                Gdx.app.log (TAG, e.getMessage ());
             }
         }
         if (init) {

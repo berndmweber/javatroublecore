@@ -58,6 +58,7 @@ public class TroubleApplicationState {
         return StateEnum.E_MAIN_MENU;
     }
 
+    @SuppressWarnings ("rawtypes")
     public static Class getScreenClass (final StateEnum state)
     {
         switch (state) {
