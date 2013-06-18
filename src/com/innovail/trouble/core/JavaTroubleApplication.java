@@ -1,6 +1,6 @@
 /**
- * @file:   com.innovail.trouble.core - JavaTroubleApplication.java
- * @date:   Feb 26, 2012
+ * @file: com.innovail.trouble.core - JavaTroubleApplication.java
+ * @date: Feb 26, 2012
  * @author: bweber
  */
 package com.innovail.trouble.core;
@@ -15,7 +15,8 @@ import com.innovail.trouble.utils.SettingLoader;
 /**
  * 
  */
-public class JavaTroubleApplication extends Game {
+public class JavaTroubleApplication extends Game
+{
     private static final String TAG = "JavaTroubleApplication";
 
     public String currentState = TroubleApplicationState.LOADING;
@@ -28,21 +29,55 @@ public class JavaTroubleApplication extends Game {
     private boolean _screensLoaded = false;
     private int _screenIterator = 0;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see com.badlogic.gdx.ApplicationListener#create()
      */
     @Override
-    public void create () {
+    public void create ()
+    {
         Gdx.app.log (TAG, "Creating JavaTroubleApplication.");
         SettingLoader.loadSettings ();
         setScreen (getScreen (TroubleApplicationState.getState (currentState)));
     }
 
-    /* (non-Javadoc)
+    /**
+    */
+    @Override
+    public TroubleScreen getScreen ()
+    {
+        return (TroubleScreen) super.getScreen ();
+    }
+
+    private TroubleScreen getScreen (final StateEnum gameState)
+    {
+        return getScreen (gameState, true);
+    }
+
+    private TroubleScreen getScreen (final StateEnum gameState,
+                                     final boolean init)
+    {
+        TroubleScreen currentScreen = _screenList[gameState.ordinal ()];
+        if (currentScreen == null) {
+            try {
+                _screenList[gameState.ordinal ()] = currentScreen = (TroubleScreen) TroubleApplicationState.getScreenClass (gameState).newInstance ();
+            } catch (final Exception e) {
+                Gdx.app.log (TAG, e.getMessage ());
+            }
+        }
+        if (init) {
+            currentScreen.init ();
+        }
+        return currentScreen;
+    }
+
+    /*
+     * (non-Javadoc)
      * @see com.badlogic.gdx.ApplicationListener#render()
      */
     @Override
-    public void render () {
+    public void render ()
+    {
         final float currentDelta = Gdx.graphics.getDeltaTime ();
         final TroubleScreen currentScreen = getScreen ();
 
@@ -79,30 +114,5 @@ public class JavaTroubleApplication extends Game {
             }
             _displayDelta = 0;
         }
-    }
-
-    /**
-    */
-    public TroubleScreen getScreen () {
-        return (TroubleScreen) super.getScreen ();
-    }
-
-    private TroubleScreen getScreen (StateEnum gameState) {
-        return getScreen (gameState, true);
-    }
-
-    private TroubleScreen getScreen (StateEnum gameState, boolean init) {
-        TroubleScreen currentScreen = _screenList [gameState.ordinal ()];
-        if (currentScreen == null) {
-            try {
-                _screenList [gameState.ordinal ()] = currentScreen = (TroubleScreen) TroubleApplicationState.getScreenClass (gameState).newInstance ();
-            } catch (Exception e) {
-                Gdx.app.log (TAG, e.getMessage ());
-            }
-        }
-        if (init) {
-            currentScreen.init ();
-        }
-        return currentScreen;
     }
 }

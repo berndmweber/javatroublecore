@@ -1,6 +1,6 @@
 /**
- * @file:   com.innovail.trouble.core - TroubleGame.java
- * @date:   Apr 15, 2012
+ * @file: com.innovail.trouble.core - TroubleGame.java
+ * @date: Apr 15, 2012
  * @author: bweber
  */
 package com.innovail.trouble.core;
@@ -19,11 +19,8 @@ import com.innovail.trouble.core.gameelement.Token;
 /**
  * 
  */
-public class TroubleGame {
-    private static final String TAG = "TroubleGame";
-    
-    private static final boolean DEBUG = true;
-    
+public class TroubleGame
+{
     private enum GameState {
         EVALUATE_PLAYERS,
         ROLL_DIE,
@@ -33,15 +30,19 @@ public class TroubleGame {
         WIN_GAME,
         END_GAME,
         UNDEFINED
-    };
-    
+    }
+
+    private static final String TAG = "TroubleGame";
+
+    private static final boolean DEBUG = true;;
+
     private List <Player> _players;
     private Field _gameField;
     private Dice _dice;
-    
+
     private GameState _currentState = GameState.ROLL_DIE;
     private GameState _lastState = GameState.UNDEFINED;
-    
+
     private boolean _hasRolled = false;
     private boolean _hasSelected = false;
     private boolean _playerChanged = false;
@@ -54,7 +55,14 @@ public class TroubleGame {
     private Token _foeToken;
     private List <Token> _availableTokens;
 
-    
+    public boolean canRollDice ()
+    {
+        if (_currentState == GameState.ROLL_DIE) {
+            return true;
+        }
+        return false;
+    }
+
     public void createGame ()
     {
         _players = new ArrayList <Player> ();
@@ -64,54 +72,20 @@ public class TroubleGame {
         }
         for (int i = 0; i < numberOfPlayers; i++) {
             _players.add (new Player (i));
-            _players.get (i).createTokens (GameSettings.getInstance ().getNumberOfTokensPerPlayer(numberOfPlayers));
+            _players.get (i).createTokens (GameSettings.getInstance ().getNumberOfTokensPerPlayer (numberOfPlayers));
         }
         _activePlayer = _players.get (0);
         _activePlayer.makeActive ();
-        
+
         _gameField = Field.createField (_players);
         _dice = new Dice (GameSettings.getInstance ().getNumberOfDice ());
         _availableTokens = new ArrayList <Token> ();
     }
-    
-    public void updateGame ()
-    {
-        if (_currentState != _lastState) {
-            if (DEBUG) {
-                Gdx.app.log (TAG, "Current State: " + _currentState.toString ());
-            }
-        }
-        _lastState = _currentState;
-        
-        switch (_currentState) {
-        case EVALUATE_PLAYERS:
-            evaluatePlayersHandler ();
-            break;
-        case ROLL_DIE:
-            rollDiceHandler ();
-            break;
-        case SELECT_TOKEN:
-            selectTokenHandler ();
-            break;
-        case MOVE_TOKEN:
-            moveTokenHandler ();
-            break;
-        case REMOVE_FOE_TOKEN:
-            removeFoeTokenHandler ();
-            break;
-        case WIN_GAME:
-            winGameHandler ();
-            break;
-        case END_GAME:
-        default:
-            break;
-        }
-    }
-    
+
     private void evaluatePlayersHandler ()
     {
         final int maxRetries = GameSettings.getInstance ().getTurnOutRetries ();
-        
+
         if (_dice.getCurrentFaceValue (0) != GameSettings.getInstance ().getTurnOutValue ()) {
             if (_activePlayer.hasTokensOnField () || _tokenMoved) {
                 _tokenMoved = false;
@@ -127,13 +101,127 @@ public class TroubleGame {
             _rollTrysLeft = maxRetries;
         }
         _currentState = GameState.ROLL_DIE;
-        
+
         if (DEBUG) {
             Gdx.app.log (TAG, "tries left: " + _rollTrysLeft);
             Gdx.app.log (TAG, "Player: " + _activePlayer.getName ());
         }
     }
-    
+
+    public Player getActivePlayer ()
+    {
+        return _activePlayer;
+    }
+
+    public List <Token> getAvailableTokens ()
+    {
+        return _availableTokens;
+    }
+
+    public Dice getDice ()
+    {
+        return _dice;
+    }
+
+    public Field getField ()
+    {
+        return _gameField;
+    }
+
+    private void getNextPlayer ()
+    {
+        if (_players.indexOf (_activePlayer) == _players.size () - 1) {
+            _activePlayer = _players.get (0);
+        } else {
+            _activePlayer = _players.get (_players.indexOf (_activePlayer) + 1);
+        }
+        if (_activePlayer.hasFinished ()) {
+            getNextPlayer ();
+        }
+        _playerChanged = true;
+    }
+
+    public List <Player> getPlayers ()
+    {
+        return _players;
+    }
+
+    public boolean isFinished ()
+    {
+        if (_currentState == GameState.END_GAME) {
+            return true;
+        }
+        return false;
+    }
+
+    private void moveTokenHandler ()
+    {
+        if (!_movingToken.doneMoving ()) {
+            if (!_movingToken.isMoving ()) {
+                if (_movingToken.getPosition ().isHome ()) {
+                    _movingToken.moveToStart ();
+                } else {
+                    _movingToken.moveTo (_dice.getCurrentFaceValue (0));
+                }
+            } else {
+                if (_movingToken.isLastMove ()) {
+                    final Token potentialFoe = _movingToken.getMoveNextPosition ().getCurrentToken ();
+                    if ((potentialFoe != null) && !_movingToken.getOwner ().equals (potentialFoe.getOwner ())) {
+                        _foeToken = potentialFoe;
+                        _currentState = GameState.REMOVE_FOE_TOKEN;
+                    }
+                }
+                _movingToken.move ();
+            }
+        } else {
+            _tokenMoved = true;
+            _movingToken = null;
+            _currentState = GameState.WIN_GAME;
+        }
+    }
+
+    public boolean playerChanged ()
+    {
+        if (_playerChanged) {
+            _playerChanged = false;
+            return true;
+        }
+        return false;
+    }
+
+    private void removeFoeTokenHandler ()
+    {
+        if (!_foeToken.doneMoving ()) {
+            if (_movingToken.isMoving ()) {
+                _movingToken.move ();
+            }
+            if (!_foeToken.isMoving ()) {
+                _foeToken.moveToHome ();
+            } else {
+                _foeToken.move ();
+            }
+            /*
+             * NVTROUB-4: Need to actually set the position now since the owner
+             * token wasn't null before.
+             */
+            _movingToken.setPosition (_movingToken.getPosition ());
+        } else {
+            /* Need to do this to reset doneMoving boolean */
+            _movingToken.doneMoving ();
+            _foeToken = null;
+            _movingToken = null;
+            _currentState = GameState.WIN_GAME;
+        }
+    }
+
+    public void rollDice ()
+    {
+        if (canRollDice ()) {
+            _dice.roll ();
+            _hasRolled = true;
+        }
+    }
+
     private void rollDiceHandler ()
     {
         if (_hasRolled) {
@@ -141,11 +229,22 @@ public class TroubleGame {
             _currentState = GameState.SELECT_TOKEN;
         }
     }
-    
+
+    public void selectToken (final Token selected)
+    {
+        if ((_currentState == GameState.SELECT_TOKEN) && !_availableTokens.isEmpty ()) {
+            if (_availableTokens.contains (selected)) {
+                _movingToken = selected;
+                _activePlayer.deselectAllTokens ();
+                _hasSelected = true;
+            }
+        }
+    }
+
     private void selectTokenHandler ()
     {
         final int diceValue = _dice.getCurrentFaceValue (0);
-        
+
         if (_availableTokens.isEmpty ()) {
             if (diceValue == GameSettings.getInstance ().getTurnOutValue ()) {
                 if (_activePlayer.hasTokensAtHome ()) {
@@ -153,16 +252,16 @@ public class TroubleGame {
                         _movingToken = _activePlayer.getTokenOnStart ();
                         do {
                             final Token potentialToken = _movingToken.getTargetPosition (diceValue).getCurrentToken ();
-                            if ((potentialToken != null) &&
-                                 potentialToken.getOwner ().equals (_activePlayer))
-                            {
+                            if ((potentialToken != null) && potentialToken.getOwner ().equals (_activePlayer)) {
                                 _movingToken = potentialToken;
                             } else {
                                 break;
                             }
-                        /* TODO: This needs to be revisited. There is a chance that this could lead to
-                         * an infinite loop depending on the play field.
-                         */
+                            /*
+                             * TODO: This needs to be revisited. There is a
+                             * chance that this could lead to an infinite loop
+                             * depending on the play field.
+                             */
                         } while (true);
                     } else {
                         _movingToken = _activePlayer.getTokenAtHome ();
@@ -195,59 +294,50 @@ public class TroubleGame {
             }
         }
     }
-    
-    private void moveTokenHandler ()
+
+    public boolean tokenStartedMoving ()
     {
-        if (!_movingToken.doneMoving ()) {
-            if (!_movingToken.isMoving ()) {
-                if (_movingToken.getPosition ().isHome ()) {
-                    _movingToken.moveToStart ();
-                } else {
-                    _movingToken.moveTo (_dice.getCurrentFaceValue (0));
-                }
-            } else {
-                if (_movingToken.isLastMove ()) {
-                    final Token potentialFoe = _movingToken.getMoveNextPosition ().getCurrentToken ();
-                    if ((potentialFoe != null) &&
-                         !_movingToken.getOwner ().equals (potentialFoe.getOwner ()))
-                    {
-                        _foeToken = potentialFoe;
-                        _currentState = GameState.REMOVE_FOE_TOKEN;
-                    }
-                }
-                _movingToken.move ();
+        if (_tokenStartedMoving) {
+            _tokenStartedMoving = false;
+            return true;
+        }
+        return false;
+    }
+
+    public void updateGame ()
+    {
+        if (_currentState != _lastState) {
+            if (DEBUG) {
+                Gdx.app.log (TAG, "Current State: " + _currentState.toString ());
             }
-        } else {
-            _tokenMoved = true;
-            _movingToken = null;
-            _currentState = GameState.WIN_GAME;
+        }
+        _lastState = _currentState;
+
+        switch (_currentState) {
+        case EVALUATE_PLAYERS:
+            evaluatePlayersHandler ();
+            break;
+        case ROLL_DIE:
+            rollDiceHandler ();
+            break;
+        case SELECT_TOKEN:
+            selectTokenHandler ();
+            break;
+        case MOVE_TOKEN:
+            moveTokenHandler ();
+            break;
+        case REMOVE_FOE_TOKEN:
+            removeFoeTokenHandler ();
+            break;
+        case WIN_GAME:
+            winGameHandler ();
+            break;
+        case END_GAME:
+        default:
+            break;
         }
     }
-    
-    private void removeFoeTokenHandler ()
-    {
-        if (!_foeToken.doneMoving ()) {
-            if (_movingToken.isMoving ()) {
-                _movingToken.move ();
-            }
-            if (!_foeToken.isMoving ()) {
-                _foeToken.moveToHome ();
-            } else {
-                _foeToken.move ();
-            }
-            /* NVTROUB-4: Need to actually set the position now since the owner
-             * token wasn't null before.
-             */
-            _movingToken.setPosition (_movingToken.getPosition ());
-        } else {
-            /* Need to do this to reset doneMoving boolean */
-            _movingToken.doneMoving ();
-            _foeToken = null;
-            _movingToken = null;
-            _currentState = GameState.WIN_GAME;
-        }
-    }
-    
+
     private void winGameHandler ()
     {
         if (_activePlayer.hasAllTokensFinished ()) {
@@ -266,96 +356,5 @@ public class TroubleGame {
         } else {
             _currentState = GameState.EVALUATE_PLAYERS;
         }
-    }
-    
-    public Field getField ()
-    {
-        return _gameField;
-    }
-    
-    public List <Player> getPlayers ()
-    {
-        return _players;
-    }
-    
-    public Dice getDice ()
-    {
-        return _dice;
-    }
-    
-    public void rollDice ()
-    {
-        if (canRollDice ()) {
-            _dice.roll ();
-            _hasRolled = true;
-        }
-    }
-
-    public void selectToken (Token selected)
-    {
-        if ((_currentState == GameState.SELECT_TOKEN) && !_availableTokens.isEmpty ()) {
-            if (_availableTokens.contains (selected)) {
-                _movingToken = selected;
-                _activePlayer.deselectAllTokens ();
-                _hasSelected = true;
-            }
-        }
-    }
-    
-    public List <Token> getAvailableTokens ()
-    {
-        return _availableTokens;
-    }
-    
-    private void getNextPlayer ()
-    {
-        if (_players.indexOf (_activePlayer) == _players.size () - 1) {
-            _activePlayer = _players.get (0);
-        } else {
-            _activePlayer = _players.get (_players.indexOf (_activePlayer) + 1);
-        }
-        if (_activePlayer.hasFinished ()) {
-            getNextPlayer ();
-        }
-        _playerChanged = true;
-    }
-    
-    public boolean isFinished ()
-    {
-        if (_currentState == GameState.END_GAME) {
-            return true;
-        }
-        return false;
-    }
-    
-    public boolean canRollDice ()
-    {
-        if (_currentState == GameState.ROLL_DIE) {
-            return true;
-        }
-        return false;
-    }
-    
-    public boolean playerChanged ()
-    {
-        if (_playerChanged) {
-            _playerChanged = false;
-            return true;
-        }
-        return false;
-    }
-    
-    public Player getActivePlayer ()
-    {
-        return _activePlayer;
-    }
-    
-    public boolean tokenStartedMoving ()
-    {
-        if (_tokenStartedMoving) {
-            _tokenStartedMoving = false;
-            return true;
-        }
-        return false;
     }
 }

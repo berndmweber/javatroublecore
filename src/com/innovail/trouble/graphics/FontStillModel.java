@@ -32,52 +32,60 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 /**
  * 
  */
-public class FontStillModel {
+public class FontStillModel
+{
     private static final String TAG = "FontStillModel";
 
     private final StillModel _fontModel;
     private Map <Character, String> _fontMap;
     private float _fontSpacing = 0.04f;
+
     private Character _referenceCharacter;
 
-    public FontStillModel (StillModel model) {
+    @SuppressWarnings ("unchecked")
+    public static FontStillModel importModel (final FileHandle handleSM,
+                                              final FileHandle handleFSM)
+    {
+        final StillModel tempModel = G3dLoader.loadStillModel (handleSM);
+        FontStillModel fsm = null;
+        try {
+            final InputStream is = handleFSM.read ();
+            final ObjectInput oi = new ObjectInputStream (is);
+            final Map <Character, String> fm = (HashMap <Character, String>) oi.readObject ();
+            final float fs = oi.readFloat ();
+            final char rc = oi.readChar ();
+            oi.close ();
+            fsm = new FontStillModel (tempModel, fm, rc);
+            fsm.setFontSpacing (fs);
+        } catch (final Exception ex) {
+            Gdx.app.log (TAG, ex.getMessage ());
+        }
+        return fsm;
+    }
+
+    public FontStillModel (final StillModel model)
+    {
         _fontModel = model;
         createFontMap ();
     }
 
-    public FontStillModel (StillModel model, Map <Character, String> fontMap, Character referenceCharacter) {
+    public FontStillModel (final StillModel model,
+                           final Map <Character, String> fontMap,
+                           final Character referenceCharacter)
+    {
         _fontModel = model;
         _fontMap = fontMap;
         _referenceCharacter = referenceCharacter;
     }
 
-    public Map <Character, String> getFontMap () {
-        return _fontMap;
-    }
-
-    public Character getReferenceCharacter () {
-        return _referenceCharacter;
-    }
-    
-    public float getFontSpacing () {
-        return _fontSpacing;
-    }
-    
-    public StillModel getStillModel () {
-        return _fontModel;
-    }
-
-    public void setFontSpacing (final float spacing) {
-        _fontSpacing = spacing;
-    }
-
-    private void createFontMap () {
+    private void createFontMap ()
+    {
         if ((_fontMap == null) || _fontMap.isEmpty ()) {
             _fontMap = new HashMap <Character, String> ();
         }
-        SubMesh [] subMeshes = _fontModel.getSubMeshes ();
-        for (int i = 0; i< subMeshes.length; i++) {
-            String line = subMeshes[i].name;
+        final SubMesh [] subMeshes = _fontModel.getSubMeshes ();
+        for (int i = 0; i < subMeshes.length; i++) {
+            final String line = subMeshes[i].name;
             String [] tokens = line.split ("\\.");
             if (tokens[1].isEmpty ()) {
                 tokens[1] = "._";
@@ -93,13 +101,14 @@ public class FontStillModel {
         }
     }
 
-    public StillModel createStillModel (final String text) {
+    public StillModel createStillModel (final String text)
+    {
         if ((_fontMap != null) && !_fontMap.isEmpty ()) {
             final int textSize = text.length ();
             final Vector2 boxWidth = new Vector2 (Vector2.Zero);
-            List <SubMesh> characterMeshes = new ArrayList <SubMesh> ();
+            final List <SubMesh> characterMeshes = new ArrayList <SubMesh> ();
             final BoundingBox referenceBB = new BoundingBox ();
-            List <Float> xVectors = new ArrayList <Float> ();
+            final List <Float> xVectors = new ArrayList <Float> ();
 
             _fontModel.getSubMesh (_fontMap.get (_referenceCharacter)).getBoundingBox (referenceBB);
             /*
@@ -119,7 +128,7 @@ public class FontStillModel {
                 if (tempSubMesh == null) {
                     return null;
                 }
-                final SubMesh character = (SubMesh) new StillSubMesh (newName, tempSubMesh.getMesh ().copy (true), tempSubMesh.primitiveType, tempSubMesh.material);
+                final SubMesh character = new StillSubMesh (newName, tempSubMesh.getMesh ().copy (true), tempSubMesh.primitiveType, tempSubMesh.material);
                 final BoundingBox currentBB = new BoundingBox ();
                 character.getBoundingBox (currentBB);
                 final Vector3 bbDimensions = currentBB.getDimensions ();
@@ -132,11 +141,11 @@ public class FontStillModel {
             }
             boxWidth.x -= _fontSpacing;
 
-            float newPos = -boxWidth.x / 2;
+            final float newPos = -boxWidth.x / 2;
             for (int i = 0; i < characterMeshes.size (); i++) {
-                Mesh currentMesh = characterMeshes.get (i).getMesh ();
-                int vertArraySize = currentMesh.getNumVertices () * 6;
-                float[] tempVerts = new float[vertArraySize];
+                final Mesh currentMesh = characterMeshes.get (i).getMesh ();
+                final int vertArraySize = currentMesh.getNumVertices () * 6;
+                final float [] tempVerts = new float [vertArraySize];
                 currentMesh.getVertices (tempVerts);
                 for (int j = 0; j < vertArraySize;) {
                     tempVerts[j] += newPos + xVectors.get (i);
@@ -145,9 +154,9 @@ public class FontStillModel {
                 }
                 currentMesh.setVertices (tempVerts);
             }
-            SubMesh [] textMeshArray = new SubMesh [characterMeshes.size ()];
+            final SubMesh [] textMeshArray = new SubMesh [characterMeshes.size ()];
             characterMeshes.toArray (textMeshArray);
-            StillModel textMesh = new StillModel (textMeshArray);
+            final StillModel textMesh = new StillModel (textMeshArray);
 
             return textMesh;
         }
@@ -155,7 +164,9 @@ public class FontStillModel {
         return null;
     }
 
-    public void exportModel (FileHandle handleSM, FileHandle handleFSM) {
+    public void exportModel (final FileHandle handleSM,
+                             final FileHandle handleFSM)
+    {
         G3dExporter.export (_fontModel, handleSM);
         try {
             final OutputStream os = handleFSM.write (false);
@@ -165,27 +176,33 @@ public class FontStillModel {
             oo.writeChar (_referenceCharacter);
             oo.flush ();
             os.close ();
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             Gdx.app.log (TAG, ex.getMessage ());
         }
     }
 
-    @SuppressWarnings ("unchecked")
-    public static FontStillModel importModel (FileHandle handleSM, FileHandle handleFSM) {
-        StillModel tempModel = G3dLoader.loadStillModel (handleSM);
-        FontStillModel fsm = null;
-        try {
-            final InputStream is = handleFSM.read ();
-            final ObjectInput oi = new ObjectInputStream (is);
-            Map <Character, String> fm = (HashMap<Character, String>) oi.readObject ();
-            float fs = oi.readFloat ();
-            char rc = oi.readChar ();
-            oi.close ();
-            fsm = new FontStillModel (tempModel, fm, rc);
-            fsm.setFontSpacing (fs);
-        } catch (Exception ex) {
-            Gdx.app.log (TAG, ex.getMessage ());
-        }
-        return fsm;
+    public Map <Character, String> getFontMap ()
+    {
+        return _fontMap;
+    }
+
+    public float getFontSpacing ()
+    {
+        return _fontSpacing;
+    }
+
+    public Character getReferenceCharacter ()
+    {
+        return _referenceCharacter;
+    }
+
+    public StillModel getStillModel ()
+    {
+        return _fontModel;
+    }
+
+    public void setFontSpacing (final float spacing)
+    {
+        _fontSpacing = spacing;
     }
 }

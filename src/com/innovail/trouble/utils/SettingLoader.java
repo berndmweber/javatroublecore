@@ -1,6 +1,6 @@
 /**
- * @file:   com.innovail.trouble.utils - SettingLoader.java
- * @date:   Apr 14, 2012
+ * @file: com.innovail.trouble.utils - SettingLoader.java
+ * @date: Apr 14, 2012
  * @author: bweber
  */
 package com.innovail.trouble.utils;
@@ -20,37 +20,26 @@ import com.innovail.trouble.core.GameSettings;
 /**
  * 
  */
-public class SettingLoader {
+public class SettingLoader
+{
     private static final String TAG = "SettingLoader";
     private static FileHandle defaultSettingsFile;
     private static Element defaultSettings;
-    
+
     public static void loadSettings ()
     {
         defaultSettingsFile = Gdx.files.internal ("defaultsettings.xml");
-        final XmlReader xmlReader = new XmlReader();
+        final XmlReader xmlReader = new XmlReader ();
         try {
             defaultSettings = xmlReader.parse (defaultSettingsFile);
             if (defaultSettings != null) {
                 parseSettings ();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             Gdx.app.log (TAG, e.getMessage ());
         }
     }
 
-    private static void parseSettings ()
-    {
-        Element settings = defaultSettings.getChildByName ("application");
-        if (settings != null) {
-            parseApplicationSettings (settings);
-        }
-        settings = defaultSettings.getChildByName ("game");
-        if (settings != null) {
-            parseGameSettings (settings);
-        }
-    }
-    
     private static void parseApplicationSettings (final Element applicationSettings)
     {
         final Element assets = applicationSettings.getChildByName ("assets");
@@ -68,7 +57,7 @@ public class SettingLoader {
                 }
             }
             final Array <Element> assetsA = assets.getChildrenByName ("asset");
-            if ((assetsA != null ) && (assetsA.size > 0)) {
+            if ((assetsA != null) && (assetsA.size > 0)) {
                 for (int i = 0; i < assetsA.size; i++) {
                     final Element asset = assetsA.get (i);
                     if (asset != null) {
@@ -79,7 +68,7 @@ public class SettingLoader {
                 }
             }
         }
-        final Array<Element> menus = applicationSettings.getChildrenByName ("menu");
+        final Array <Element> menus = applicationSettings.getChildrenByName ("menu");
         if ((menus != null) && (menus.size > 0)) {
             for (int i = 0; i < menus.size; i++) {
                 final Element menu = menus.get (i);
@@ -101,12 +90,15 @@ public class SettingLoader {
                     if (colorE != null) {
                         final Color color = new Color ();
                         color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
-                        ApplicationSettings.getInstance ().setLogo (current.getAttribute ("file"), color, current.getBoolean ("is_internal"));
+                        ApplicationSettings.getInstance ().setLogo (current.getAttribute ("file"),
+                                                                    color,
+                                                                    current.getBoolean ("is_internal"));
                     } else {
-                        ApplicationSettings.getInstance ().setLogo (current.getAttribute ("file"), current.getBoolean ("is_internal"));
+                        ApplicationSettings.getInstance ().setLogo (current.getAttribute ("file"),
+                                                                    current.getBoolean ("is_internal"));
                     }
                 }
-                final Array<Element> entries = menu.getChildrenByName ("entry");
+                final Array <Element> entries = menu.getChildrenByName ("entry");
                 if ((entries != null) && (entries.size > 0)) {
                     for (int j = 0; j < entries.size; j++) {
                         final Element entry = entries.get (j);
@@ -114,7 +106,11 @@ public class SettingLoader {
                             ApplicationSettings.getInstance ().setMenuEntry (menu.getAttribute ("type") + "Menu",
                                                                              entry.getInt ("index"),
                                                                              entry.getAttribute ("name"),
-                                                                             entry.getAttribute ("text"));
+                                                                             entry.getAttribute ("text"),
+                                                                             entry.getAttribute ("type", null),
+                                                                             entry.getInt ("mincount", 0),
+                                                                             entry.getInt ("maxcount", 0));
+
                         }
                     }
                 }
@@ -136,14 +132,17 @@ public class SettingLoader {
                 if (colorE != null) {
                     final Color color = new Color ();
                     color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
-                    ApplicationSettings.getInstance ().setBackArrow (current.getAttribute ("file"), color, current.getBoolean ("is_internal"));
+                    ApplicationSettings.getInstance ().setBackArrow (current.getAttribute ("file"),
+                                                                    color,
+                                                                    current.getBoolean ("is_internal"));
                 } else {
-                    ApplicationSettings.getInstance ().setBackArrow (current.getAttribute ("file"), current.getBoolean ("is_internal"));
+                    ApplicationSettings.getInstance ().setBackArrow (current.getAttribute ("file"),
+                                                                     current.getBoolean ("is_internal"));
                 }
             }
         }
     }
-    
+
     private static void parseGameSettings (final Element gameSettings)
     {
         Element current = gameSettings.getChildByName ("numberofplayers");
@@ -151,7 +150,7 @@ public class SettingLoader {
             GameSettings.getInstance ().setNumberOfPlayers (current.getInt ("default"));
             GameSettings.getInstance ().setMinimumNumberOfPlayers (current.getInt ("minimum"));
         }
-        final Array<Element> playersSettings = gameSettings.getChildrenByName ("players");
+        final Array <Element> playersSettings = gameSettings.getChildrenByName ("players");
         if ((playersSettings != null) && (playersSettings.size > 0)) {
             for (int i = 0; i < playersSettings.size; i++) {
                 final Element players = playersSettings.get (i);
@@ -165,7 +164,7 @@ public class SettingLoader {
         }
         current = gameSettings.getChildByName ("playerdefaults");
         if (current != null) {
-            final Array<Element> players = current.getChildrenByName ("player");
+            final Array <Element> players = current.getChildrenByName ("player");
             if ((players != null) && (players.size > 0)) {
                 for (int i = 0; i < players.size; i++) {
                     final Element player = players.get (i);
@@ -182,9 +181,12 @@ public class SettingLoader {
             if (colorE != null) {
                 final Color color = new Color ();
                 color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
-                GameSettings.getInstance ().setPlayerMesh (current.getAttribute ("file"), color, current.getBoolean ("is_internal"));
+                GameSettings.getInstance ().setPlayerMesh (current.getAttribute ("file"),
+                                                           color,
+                                                           current.getBoolean ("is_internal"));
             } else {
-                GameSettings.getInstance ().setPlayerMesh (current.getAttribute ("file"), current.getBoolean ("is_internal"));
+                GameSettings.getInstance ().setPlayerMesh (current.getAttribute ("file"),
+                                                           current.getBoolean ("is_internal"));
             }
             final Array <Element> numbers = current.getChildrenByName ("number");
             if ((numbers != null) && (numbers.size > 0)) {
@@ -193,9 +195,12 @@ public class SettingLoader {
                     if (colorE != null) {
                         final Color color = new Color ();
                         color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
-                        GameSettings.getInstance ().addPlayerNumber (numbers.get (i).getAttribute ("file"), color, numbers.get (i).getBoolean ("is_internal"));
+                        GameSettings.getInstance ().addPlayerNumber (numbers.get (i).getAttribute ("file"),
+                                                                     color,
+                                                                     numbers.get (i).getBoolean ("is_internal"));
                     } else {
-                        GameSettings.getInstance ().addPlayerNumber (numbers.get (i).getAttribute ("file"), numbers.get (i).getBoolean ("is_internal"));
+                        GameSettings.getInstance ().addPlayerNumber (numbers.get (i).getAttribute ("file"),
+                                                                     numbers.get (i).getBoolean ("is_internal"));
                     }
                 }
             }
@@ -214,7 +219,7 @@ public class SettingLoader {
         current = gameSettings.getChildByName ("tokens");
         if (current != null) {
             GameSettings.getInstance ().setTokenMesh (current.getAttribute ("file"), current.getBoolean ("is_internal"));
-            Element sound = current.getChildByName ("sound");
+            final Element sound = current.getChildByName ("sound");
             if (sound != null) {
                 GameSettings.getInstance ().setTokenSound (sound.getAttribute ("file"), sound.getBoolean ("is_internal"));
             }
@@ -226,7 +231,7 @@ public class SettingLoader {
                                                      current.getAttribute ("texture_file"),
                                                      current.getAttribute ("texture_color_format"));
             GameSettings.getInstance ().setNumberOfDice (current.getInt ("number"));
-            Element sound = current.getChildByName ("sound");
+            final Element sound = current.getChildByName ("sound");
             if (sound != null) {
                 GameSettings.getInstance ().setDiceSound (sound.getAttribute ("file"), sound.getBoolean ("is_internal"));
             }
@@ -237,5 +242,17 @@ public class SettingLoader {
             GameSettings.getInstance ().setTurnOutRetries (current.getInt ("retries"));
         }
     }
-    
+
+    private static void parseSettings ()
+    {
+        Element settings = defaultSettings.getChildByName ("application");
+        if (settings != null) {
+            parseApplicationSettings (settings);
+        }
+        settings = defaultSettings.getChildByName ("game");
+        if (settings != null) {
+            parseGameSettings (settings);
+        }
+    }
+
 }

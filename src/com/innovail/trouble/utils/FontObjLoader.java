@@ -1,6 +1,6 @@
 /**
- * @file:   com.innovail.trouble.utils - FontObjLoader.java
- * @date:   May 23, 2012
+ * @file: com.innovail.trouble.utils - FontObjLoader.java
+ * @date: May 23, 2012
  * @author: bweber
  */
 package com.innovail.trouble.utils;
@@ -19,55 +19,61 @@ import com.innovail.trouble.graphics.FontStillModel;
 /**
  * 
  */
-public class FontObjLoader {
-    
-    public static FontStillModel loadObj (final FileHandle handle)
-    {
-        return loadObj (handle, false);
-    }
-    
-    public static FontStillModel loadObj (final FileHandle handle, final boolean flipV)
-    {
-        return loadObj (handle, flipV, false);
-    }
-    
-    public static FontStillModel loadObj (final FileHandle handle, final boolean flipV, final boolean useIndices)
-    {
-        StillModel tempStillModel = ModelLoaderRegistry.loadStillModel (handle, new ModelLoaderHints (flipV));
-        FontStillModel font = new FontStillModel (loadFontFromStillModel (tempStillModel));
+public class FontObjLoader
+{
 
-        return font;
-    }
-    
     public static StillModel loadFontFromStillModel (final StillModel model)
     {
         float referenceEdge = 0.0f;
-        StillSubMesh [] subMeshes = model.subMeshes; 
+        final StillSubMesh [] subMeshes = model.subMeshes;
         // The first submesh is the reference character
-        StillSubMesh reference = subMeshes[0];
-        BoundingBox referenceBB = new BoundingBox ();
-        
+        final StillSubMesh reference = subMeshes[0];
+        final BoundingBox referenceBB = new BoundingBox ();
+
         reference.getBoundingBox (referenceBB);
         referenceEdge = referenceBB.getMin ().y * -1.0f;
-        // Go through the remaining submeshes and normalize their position in reference to the first submesh
+        // Go through the remaining submeshes and normalize their position in
+        // reference to the first submesh
         for (int i = 1; i < subMeshes.length; i++) {
             subMeshes[i].setMesh (normalizeMeshPosition (subMeshes[i].getMesh (), referenceEdge));
         }
 
         return model;
     }
-    
-    public static Mesh normalizeMeshPosition (final Mesh font, final float referenceEdge)
+
+    public static FontStillModel loadObj (final FileHandle handle)
+    {
+        return loadObj (handle, false);
+    }
+
+    public static FontStillModel loadObj (final FileHandle handle,
+                                          final boolean flipV)
+    {
+        return loadObj (handle, flipV, false);
+    }
+
+    public static FontStillModel loadObj (final FileHandle handle,
+                                          final boolean flipV,
+                                          final boolean useIndices)
+    {
+        final StillModel tempStillModel = ModelLoaderRegistry.loadStillModel (handle, new ModelLoaderHints (flipV));
+        final FontStillModel font = new FontStillModel (loadFontFromStillModel (tempStillModel));
+
+        return font;
+    }
+
+    public static Mesh normalizeMeshPosition (final Mesh font,
+                                              final float referenceEdge)
     {
         final BoundingBox meshBB = font.calculateBoundingBox ();
         final Vector3 minVector = meshBB.getMin ();
         minVector.mul (-1.0f);
-        
+
         /* seems to be the number of faces so times 6 (3 vertices, 3 normals) */
         final int vertArraySize = font.getNumVertices () * 6;
-        final float[] tempVerts = new float [vertArraySize];
+        final float [] tempVerts = new float [vertArraySize];
         font.getVertices (tempVerts);
-        
+
         /* We want to lower/left align the character to the 0/0/0 coordinate */
         for (int i = 0; i < vertArraySize; i++) {
             tempVerts[i++] += minVector.x;
@@ -77,7 +83,7 @@ public class FontObjLoader {
             /* skip the normals */
             i += 3;
         }
-        
+
         font.setVertices (tempVerts);
         return font;
     }

@@ -18,9 +18,9 @@ import com.innovail.trouble.core.gameelement.Spot.Attributes;
  */
 public final class Field {
     private List <Spot> _spots;
-    
+
     private static Field instance;
-    
+
     /* This will only work for 4 players right now... */
     private static Vector3[] _spotPosition = {
                                         new Vector3 (0, 0, 0), //0 HP P0
@@ -41,7 +41,7 @@ public final class Field {
                                         new Vector3 (2, 0, 5), //15 FP P0
                                         new Vector3 (3, 0, 5), //16 FP P0
                                         new Vector3 (4, 0, 5), //17 FP P0
-                                        
+
                                         new Vector3 (10, 0, 0), //0 HP P1
                                         new Vector3 (10, 0, 1), //1 HP P1
                                         new Vector3 (9, 0, 1), //2 HP P1
@@ -60,7 +60,7 @@ public final class Field {
                                         new Vector3 (5, 0, 2), //15 FP P1
                                         new Vector3 (5, 0, 3), //16 FP P1
                                         new Vector3 (5, 0, 4), //17 FP P1
-                                        
+
                                         new Vector3 (10, 0, 10), //0 HP P2
                                         new Vector3 (9, 0, 10), //1 HP P2
                                         new Vector3 (9, 0, 9), //2 HP P2
@@ -79,7 +79,7 @@ public final class Field {
                                         new Vector3 (8, 0, 5), //15 FP P2
                                         new Vector3 (7, 0, 5), //16 FP P2
                                         new Vector3 (6, 0, 5), //17 FP P2
-                                        
+
                                         new Vector3 (0, 0, 10), //0 HP P3
                                         new Vector3 (0, 0, 9), //1 HP P3
                                         new Vector3 (1, 0, 9), //2 HP P3
@@ -99,7 +99,7 @@ public final class Field {
                                         new Vector3 (5, 0, 7), //16 FP P3
                                         new Vector3 (5, 0, 6), //17 FP P3
                                         };
-    
+
     private Field ()
     {}
 
@@ -112,7 +112,7 @@ public final class Field {
              */
             normalizeVectors (new Vector3 (-5, 0, -5));
         }
-        
+
         instance._spots = new ArrayList <Spot> ();
 
         int positionIndex = 0;
@@ -177,15 +177,15 @@ public final class Field {
                 }
             }
         }
-        
+
         return instance;
     }
-    
+
     public List <Spot> getSpots ()
     {
         return _spots;
     }
-    
+
     public static void normalizeVectors (final Vector3 normal)
     {
         for (int i = 0; i < _spotPosition.length; i++) {
