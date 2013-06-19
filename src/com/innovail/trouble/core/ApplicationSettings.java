@@ -16,7 +16,8 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.innovail.trouble.graphics.GameFont;
 import com.innovail.trouble.graphics.GameMesh;
 import com.innovail.trouble.uicomponent.BackgroundImage;
-import com.innovail.trouble.uicomponent.MenuEntryMesh;
+import com.innovail.trouble.uicomponent.MenuEntryFactory;
+import com.innovail.trouble.utils.Parameters;
 
 /**
  * 
@@ -203,13 +204,12 @@ public final class ApplicationSettings
     public void setMenuEntry (final String appPart, final int index,
                               final String entryName, final String displayText)
     {
-        setMenuEntry (appPart, index, entryName, displayText, null, 0, 0);
+        setMenuEntry (appPart, index, entryName, displayText, null, null);
     }
 
     public void setMenuEntry (final String appPart, final int index,
                               final String entryName, final String displayText,
-                              final String type, final int minCount,
-                              final int maxCount)
+                              final String type, final Parameters params)
     {
         if (_MenuEntries == null) {
             _MenuEntries = new HashMap <String, Map <String, GameMesh>> ();
@@ -224,15 +224,8 @@ public final class ApplicationSettings
             _MenuEntryList.put (appPart, new ArrayList <GameMesh> ());
         }
         final Map <String, GameMesh> currentMap = _MenuEntries.get (appPart);
-        final String[] name = new String[] { entryName, displayText };
-        currentMap.put (entryName, new MenuEntryMesh (name));
-        if (type != null) {
-            final MenuEntryMesh current = ((MenuEntryMesh) currentMap.get (entryName));
-            current.setType (type);
-            if ((minCount != 0) || (maxCount != 0)) {
-                current.setMinMaxCount (minCount, maxCount);
-            }
-        }
+        final String [] name = new String [] { entryName, displayText };
+        currentMap.put (entryName, MenuEntryFactory.createMenuEntry (name, type, params));
         final List <GameMesh> currentList = _MenuEntryList.get (appPart);
         currentList.add (index, currentMap.get (entryName));
     }

@@ -27,7 +27,7 @@ import com.innovail.trouble.graphics.GameFont;
 import com.innovail.trouble.graphics.GameFont.FontType;
 import com.innovail.trouble.graphics.GameMesh;
 import com.innovail.trouble.uicomponent.BackgroundImage;
-import com.innovail.trouble.uicomponent.MenuEntryMesh;
+import com.innovail.trouble.uicomponent.MenuEntry;
 import com.innovail.trouble.utils.GameInputAdapter;
 
 /**
@@ -67,7 +67,7 @@ public class NewGameScreen extends TroubleScreen
 
         final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
         while (currentMesh.hasNext ()) {
-            final MenuEntryMesh currentMEMesh = (MenuEntryMesh) currentMesh.next ();
+            MenuEntry currentMEMesh = (MenuEntry) currentMesh.next ();
             currentMEMesh.setOffset (_MenuOffset);
         }
 
@@ -204,7 +204,7 @@ public class NewGameScreen extends TroubleScreen
         final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
         final Vector3 menuOffset = new Vector3 (0.0f, 0.0f, 0.0f);
         while (currentMesh.hasNext ()) {
-            final MenuEntryMesh currentMEMesh = (MenuEntryMesh) currentMesh.next ();
+            final MenuEntry currentMEMesh = (MenuEntry) currentMesh.next ();
             currentMEMesh.render (gl, menuOffset);
             menuOffset.y -= 0.7f;
         }
