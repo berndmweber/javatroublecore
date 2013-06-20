@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.XmlReader.Element;
 
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.GameSettings;
+import com.innovail.trouble.graphics.GameColor;
 
 /**
  * 
@@ -88,8 +89,7 @@ public class SettingLoader
                 if (current != null) {
                     final Element colorE = current.getChildByName ("color");
                     if (colorE != null) {
-                        final Color color = new Color ();
-                        color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
+                        final Color color = new GameColor (colorE.getAttribute ("name"));
                         ApplicationSettings.getInstance ().setLogo (current.getAttribute ("file"),
                                                                     color,
                                                                     current.getBoolean ("is_internal"));
@@ -132,8 +132,7 @@ public class SettingLoader
             if (current != null) {
                 final Element colorE = current.getChildByName ("color");
                 if (colorE != null) {
-                    final Color color = new Color ();
-                    color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
+                    final Color color = new GameColor (colorE.getAttribute ("name"));
                     ApplicationSettings.getInstance ().setBackArrow (current.getAttribute ("file"),
                                                                     color,
                                                                     current.getBoolean ("is_internal"));
@@ -171,8 +170,7 @@ public class SettingLoader
                 for (int i = 0; i < players.size; i++) {
                     final Element player = players.get (i);
                     final Element colorE = player.getChildByName ("color");
-                    final Color color = new Color ();
-                    color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
+                    final Color color = new GameColor (colorE.getAttribute ("name"));
                     GameSettings.getInstance ().setPlayerColor (player.getInt ("number") - 1, color);
                 }
             }
@@ -181,8 +179,7 @@ public class SettingLoader
         if (current != null) {
             Element colorE = current.getChildByName ("color");
             if (colorE != null) {
-                final Color color = new Color ();
-                color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
+                final Color color = new GameColor (colorE.getAttribute ("name"));
                 GameSettings.getInstance ().setPlayerMesh (current.getAttribute ("file"),
                                                            color,
                                                            current.getBoolean ("is_internal"));
@@ -195,8 +192,7 @@ public class SettingLoader
                 for (int i = 0; i < numbers.size; i++) {
                     colorE = numbers.get (i).getChildByName ("color");
                     if (colorE != null) {
-                        final Color color = new Color ();
-                        color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
+                        final Color color = new GameColor (colorE.getAttribute ("name"));
                         GameSettings.getInstance ().addPlayerNumber (numbers.get (i).getAttribute ("file"),
                                                                      color,
                                                                      numbers.get (i).getBoolean ("is_internal"));
@@ -211,8 +207,7 @@ public class SettingLoader
         if (current != null) {
             final Element colorE = current.getChildByName ("color");
             if (colorE != null) {
-                final Color color = new Color ();
-                color.set (colorE.getFloat ("r"), colorE.getFloat ("g"), colorE.getFloat ("b"), colorE.getFloat ("a"));
+                final Color color = new GameColor (colorE.getAttribute ("name"));
                 GameSettings.getInstance ().setSpotMesh (current.getAttribute ("file"),
                                                          color,
                                                          current.getBoolean ("is_internal"));

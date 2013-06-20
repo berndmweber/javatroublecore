@@ -200,6 +200,12 @@ public class LoadingScreen extends TroubleScreen
     }
 
     @Override
+    protected void setLighting (final GL11 gl)
+    {
+        setLighting (gl, _logo.getColor ());
+    }
+
+    @Override
     public void setOwnState ()
     {
         _currentState = AppPartName;

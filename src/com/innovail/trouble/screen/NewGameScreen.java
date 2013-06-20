@@ -214,6 +214,12 @@ public class NewGameScreen extends TroubleScreen
     }
 
     @Override
+    protected void setLighting (final GL11 gl)
+    {
+        setLighting (gl, ApplicationSettings.getInstance ().getLogo ().getColor ());
+    }
+
+    @Override
     public void setOwnState ()
     {
         _currentState = TroubleApplicationState.NEW_GAME;

@@ -29,7 +29,6 @@ import com.innovail.trouble.graphics.GameFont.FontType;
 import com.innovail.trouble.graphics.GameMesh;
 import com.innovail.trouble.uicomponent.BackgroundImage;
 import com.innovail.trouble.uicomponent.MenuEntry;
-import com.innovail.trouble.uicomponent.MenuEntryMesh;
 import com.innovail.trouble.utils.GameInputAdapter;
 
 /**

@@ -28,6 +28,7 @@ import com.innovail.trouble.core.TroubleGame;
 import com.innovail.trouble.core.gameelement.Player;
 import com.innovail.trouble.core.gameelement.Spot;
 import com.innovail.trouble.core.gameelement.Token;
+import com.innovail.trouble.graphics.GameColor;
 import com.innovail.trouble.graphics.GameMesh;
 import com.innovail.trouble.graphics.GamePerspectiveCamera;
 import com.innovail.trouble.uicomponent.BackgroundImage;
@@ -514,10 +515,17 @@ public class GameScreen extends TroubleScreen
     @Override
     protected void setLighting (final GL11 gl)
     {
+        final Color lightColor = GameColor.getColor ("dark_grey");
+
+        final float [] specular0 = { lightColor.r, lightColor.g, lightColor.b,
+                                    lightColor.a };
+
         final float [] position1 = { 10.0f, 5.0f, 1.0f, 1.0f };
         final float [] ambient1 = { 1.0f, 1.0f, 1.0f, 1.0f };
         final float [] diffuse1 = { 1.0f, 1.0f, 1.0f, 1.0f };
         final float [] specular1 = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+        gl.glLightfv (GL10.GL_LIGHT0, GL10.GL_SPECULAR, specular0, 0);
 
         gl.glLightfv (GL10.GL_LIGHT1, GL10.GL_AMBIENT, ambient1, 0);
         gl.glLightfv (GL10.GL_LIGHT1, GL10.GL_DIFFUSE, diffuse1, 0);
@@ -527,6 +535,7 @@ public class GameScreen extends TroubleScreen
         gl.glEnable (GL10.GL_COLOR_MATERIAL);
 
         gl.glEnable (GL10.GL_LIGHTING);
+        gl.glEnable (GL10.GL_LIGHT0);
         gl.glEnable (GL10.GL_LIGHT1);
 
     }

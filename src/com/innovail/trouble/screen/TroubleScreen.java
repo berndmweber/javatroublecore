@@ -148,7 +148,7 @@ public abstract class TroubleScreen implements Screen
 
     protected void setLighting (final GL11 gl)
     {
-        setLighting (gl, Color.BLUE);
+        setLighting (gl, Color.WHITE);
     }
 
     protected void setLighting (final GL11 gl, final Color light)
