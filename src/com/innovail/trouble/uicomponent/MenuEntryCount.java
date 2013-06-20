@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.math.Intersector;
@@ -107,25 +108,26 @@ public class MenuEntryCount extends MenuEntry
     }
 
     @Override
-    public void render (final GL11 gl, final Vector3 menuOffset)
+    public void render (final GL11 gl, final Vector3 menuOffset, final Color color)
     {
-        render (gl, menuOffset, this, _entryPosition);
+        render (gl, menuOffset, this, _entryPosition, color);
         if ((_manipulators != null) && !_manipulators.isEmpty ()) {
             if (_minCount != _maxCount) {
-                render (gl, menuOffset, _manipulators.get (SmallerKey), _manipPosition.get (SmallerKey));
+                render (gl, menuOffset, _manipulators.get (SmallerKey), _manipPosition.get (SmallerKey), color);
             }
-            render (gl, menuOffset, _manipulators.get (Integer.toString (_currentCount)), _manipPosition.get (Integer.toString (_currentCount)));
+            render (gl, menuOffset, _manipulators.get (Integer.toString (_currentCount)), _manipPosition.get (Integer.toString (_currentCount)), color);
             if (_minCount != _maxCount) {
-                render (gl, menuOffset, _manipulators.get (LargerKey), _manipPosition.get (LargerKey));
+                render (gl, menuOffset, _manipulators.get (LargerKey), _manipPosition.get (LargerKey), color);
             }
         }
     }
 
     public void render (final GL11 gl, final Vector3 menuOffset,
-                        final GameMesh mesh, final Vector3 position)
+                        final GameMesh mesh, final Vector3 position, final Color color)
     {
         gl.glPushMatrix ();
         gl.glTranslatef (position.x + menuOffset.x, position.y + menuOffset.y, position.z + menuOffset.z);
+        gl.glColor4f (color.r, color.g, color.b, color.a);
         mesh.getMesh ().render ();
         gl.glPopMatrix ();
 

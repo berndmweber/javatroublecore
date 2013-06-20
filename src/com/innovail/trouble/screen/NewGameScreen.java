@@ -23,12 +23,15 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 
 import com.innovail.trouble.core.ApplicationSettings;
+import com.innovail.trouble.core.GameSettings;
 import com.innovail.trouble.core.TroubleApplicationState;
+import com.innovail.trouble.graphics.GameColor;
 import com.innovail.trouble.graphics.GameFont;
 import com.innovail.trouble.graphics.GameFont.FontType;
 import com.innovail.trouble.graphics.GameMesh;
 import com.innovail.trouble.uicomponent.BackgroundImage;
 import com.innovail.trouble.uicomponent.MenuEntry;
+import com.innovail.trouble.uicomponent.MenuEntryColorSelector;
 import com.innovail.trouble.utils.GameInputAdapter;
 
 /**
@@ -70,6 +73,10 @@ public class NewGameScreen extends TroubleScreen
         while (currentMesh.hasNext ()) {
             final MenuEntry currentMEMesh = (MenuEntry) currentMesh.next ();
             currentMEMesh.setOffset (_MenuOffset);
+            if (currentMEMesh.getName ().equals ("playerColor")) {
+                final GameColor playerColor = (GameColor) GameSettings.getInstance ().getPlayerColor (0);
+                ((MenuEntryColorSelector) currentMEMesh).setCurrentSelection (GameColor.getColorName (playerColor));
+            }
         }
 
         _viewMatrix = new Matrix4 ();
@@ -187,12 +194,15 @@ public class NewGameScreen extends TroubleScreen
 
     private void renderLogo (final GL11 gl)
     {
+        final Color currentColor = ApplicationSettings.getInstance ().getLogo ().getColor ();
+
         final int frontAndOrBack = GL10.GL_FRONT;
         final float [] matSpecular = { 1.0f, 1.0f, 1.0f, 1.0f };
         final float [] matShininess = { 7.0f, 0.0f, 0.0f, 0.0f };
 
         gl.glPushMatrix ();
         gl.glTranslatef (0.0f, 1.0f, 0.3f);
+        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
         gl.glMaterialfv (frontAndOrBack, GL10.GL_SPECULAR, matSpecular, 0);
         gl.glMaterialfv (frontAndOrBack, GL10.GL_SHININESS, matShininess, 0);
         _logo.getMesh ().render ();
@@ -201,6 +211,8 @@ public class NewGameScreen extends TroubleScreen
 
     private void renderMenu (final GL11 gl)
     {
+        final Color currentColor = ApplicationSettings.getInstance ().getLogo ().getColor ();
+
         final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
         final Vector3 menuOffset = new Vector3 (0.0f, 0.0f, 0.0f);
         while (currentMesh.hasNext ()) {
@@ -208,7 +220,7 @@ public class NewGameScreen extends TroubleScreen
             if (!currentMesh.hasNext ()) {
                 menuOffset.y -= 0.7f;
             }
-            currentMEMesh.render (gl, menuOffset);
+            currentMEMesh.render (gl, menuOffset, currentColor);
             menuOffset.y -= 0.7f;
         }
     }

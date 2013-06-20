@@ -5,6 +5,7 @@
  */
 package com.innovail.trouble.uicomponent;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
@@ -60,12 +61,13 @@ public abstract class MenuEntry extends GameMesh
         return _type;
     }
 
+    public abstract boolean handleIntersect (Ray touchRay);
+
     public void processParams (final Parameters params)
     {}
 
-    public abstract void render (final GL11 gl, final Vector3 menuOffset);
+    public abstract void render (final GL11 gl, final Vector3 menuOffset,
+                                 final Color color);
 
     public abstract void setOffset (final Vector3 offsetPosition);
-    
-    public abstract boolean handleIntersect (Ray touchRay);
 }

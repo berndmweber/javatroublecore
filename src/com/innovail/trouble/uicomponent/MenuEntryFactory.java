@@ -29,6 +29,8 @@ public class MenuEntryFactory
         switch (tType) {
         case COUNT:
             return new MenuEntryCount (name, params);
+        case COLOR:
+            return new MenuEntryColorSelector (name, params);
         case MESH:
         default:
             return new MenuEntryMesh (name);

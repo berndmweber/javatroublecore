@@ -103,7 +103,7 @@ public class SettingLoader
                     for (int j = 0; j < entries.size; j++) {
                         final Element entry = entries.get (j);
                         if (entry != null) {
-                            Parameters params = new StandardParameters ();
+                            final Parameters params = new StandardParameters ();
                             params.setParameter ("mincount", entry.getInt ("mincount", 0));
                             params.setParameter ("maxcount", entry.getInt ("maxcount", 0));
                             ApplicationSettings.getInstance ().setMenuEntry (menu.getAttribute ("type") + "Menu",

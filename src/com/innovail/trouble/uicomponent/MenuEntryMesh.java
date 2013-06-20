@@ -6,6 +6,7 @@
 package com.innovail.trouble.uicomponent;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.math.Intersector;
@@ -41,10 +42,11 @@ public class MenuEntryMesh extends MenuEntry
     }
 
     @Override
-    public void render (final GL11 gl, final Vector3 menuOffset)
+    public void render (final GL11 gl, final Vector3 menuOffset, final Color color)
     {
         gl.glPushMatrix ();
         gl.glTranslatef (_entryPosition.x + menuOffset.x, _entryPosition.y + menuOffset.y, _entryPosition.z + menuOffset.z);
+        gl.glColor4f (color.r, color.g, color.b, color.a);
         this.getMesh ().render ();
         gl.glPopMatrix ();
 
