@@ -11,9 +11,11 @@ import java.util.Map;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL11;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.Ray;
 
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.graphics.GameFont;
@@ -73,6 +75,23 @@ public class MenuEntryCount extends MenuEntry
         return _minCount;
     }
 
+    @Override
+    public boolean handleIntersect (Ray touchRay)
+    {
+        if (Intersector.intersectRayBoundsFast (touchRay, _manipulators.get (SmallerKey).getBoundingBox ())) {
+            if (_DEBUG) {
+                Gdx.app.log (TAG, "Decreasing count");
+            }
+            setCurrentCount (getCurrentCount() - 1);
+        } else if (Intersector.intersectRayBoundsFast (touchRay, _manipulators.get (LargerKey).getBoundingBox ())) {
+            if (_DEBUG) {
+                Gdx.app.log (TAG, "Increasing count");
+            }
+            setCurrentCount (getCurrentCount() + 1);
+        }
+        return false;
+    }
+
     private void initialize ()
     {
         _type = TypeEnum.COUNT;
@@ -112,7 +131,7 @@ public class MenuEntryCount extends MenuEntry
 
         final Matrix4 transform = new Matrix4 ();
         final Matrix4 tmp = new Matrix4 ();
-        transform.setToTranslation (menuOffset.x, menuOffset.y, menuOffset.z);
+        transform.setToTranslation (position.x + menuOffset.x, position.y + menuOffset.y, position.z + menuOffset.z);
         transform.mul (tmp);
         mesh.transformBoundingBox (transform);
 
@@ -176,11 +195,19 @@ public class MenuEntryCount extends MenuEntry
         float totalX = -tDim.x;
         _manipPosition.put (LargerKey, new Vector3 (-offsetPosition.x + totalX, offsetPosition.y, offsetPosition.z));
 
-        final String currentCount = Integer.toString (_currentCount);
-        tBB = _manipulators.get (currentCount).getBoundingBox ();
-        tDim = tBB.getDimensions ();
-        totalX += -ManipulatorGap - tDim.x;
-        _manipPosition.put (currentCount, new Vector3 (-offsetPosition.x + totalX, offsetPosition.y, offsetPosition.z));
+        /* TODO: First evaluate the max size, then assign positions. */
+        float maxCountX = 0.0f;
+        for (int i = _minCount; i <= _maxCount; i++) {
+            final String currentCount = Integer.toString (i);
+            tBB = _manipulators.get (currentCount).getBoundingBox ();
+            tDim = tBB.getDimensions ();
+            final float tempX = -ManipulatorGap - tDim.x;
+            if (tempX < maxCountX) {
+                maxCountX = tempX;
+            }
+            _manipPosition.put (currentCount, new Vector3 (-offsetPosition.x + totalX + tempX, offsetPosition.y, offsetPosition.z));
+        }
+        totalX += maxCountX;
 
         tBB = _manipulators.get (SmallerKey).getBoundingBox ();
         tDim = tBB.getDimensions ();

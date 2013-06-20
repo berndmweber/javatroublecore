@@ -8,9 +8,11 @@ package com.innovail.trouble.uicomponent;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL11;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.Ray;
 
 /**
  * 
@@ -30,6 +32,15 @@ public class MenuEntryMesh extends MenuEntry
     }
 
     @Override
+    public boolean handleIntersect (final Ray touchRay)
+    {
+        if (Intersector.intersectRayBoundsFast (touchRay, this.getBoundingBox ())) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public void render (final GL11 gl, final Vector3 menuOffset)
     {
         gl.glPushMatrix ();
@@ -39,7 +50,7 @@ public class MenuEntryMesh extends MenuEntry
 
         final Matrix4 transform = new Matrix4 ();
         final Matrix4 tmp = new Matrix4 ();
-        transform.setToTranslation (menuOffset.x, menuOffset.y, menuOffset.z);
+        transform.setToTranslation (_entryPosition.x + menuOffset.x, _entryPosition.y + menuOffset.y, _entryPosition.z + menuOffset.z);
         transform.mul (tmp);
         this.transformBoundingBox (transform);
 

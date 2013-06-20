@@ -7,6 +7,7 @@ package com.innovail.trouble.uicomponent;
 
 import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.graphics.GameFont;
@@ -65,4 +66,6 @@ public abstract class MenuEntry extends GameMesh
     public abstract void render (final GL11 gl, final Vector3 menuOffset);
 
     public abstract void setOffset (final Vector3 offsetPosition);
+    
+    public abstract boolean handleIntersect (Ray touchRay);
 }

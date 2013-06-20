@@ -20,6 +20,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 
 import com.innovail.trouble.core.ApplicationSettings;
 import com.innovail.trouble.core.TroubleApplicationState;
@@ -67,7 +68,7 @@ public class NewGameScreen extends TroubleScreen
 
         final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
         while (currentMesh.hasNext ()) {
-            MenuEntry currentMEMesh = (MenuEntry) currentMesh.next ();
+            final MenuEntry currentMEMesh = (MenuEntry) currentMesh.next ();
             currentMEMesh.setOffset (_MenuOffset);
         }
 
@@ -126,29 +127,28 @@ public class NewGameScreen extends TroubleScreen
                                     final int pointer, final int button)
             {
                 if (!_isDragged || (_dragEvents < MIN_NUMBER_OF_DRAGS)) {
-//                  final Iterator <GameMesh> currentMesh = _menuEntries.iterator ();
-//                  int j = 0;
-//                  final Ray touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
-//                  if (_DEBUG) {
-//                      Gdx.app.log (TAG, "Touch position - x: " + x + " - y: " + y);
-//                      Gdx.app.log (TAG, "Touch ray - " + touchRay.toString ());
-//                  }
-//                  while (currentMesh.hasNext ()) {
-//                      final MenuEntryMesh currentEntry = (MenuEntryMesh)currentMesh.next ();
-//                      if (touchRay != null) {
-//                          if (_DEBUG) {
-//                              Gdx.app.log (TAG, "currentEntry BB - " + currentEntry.getBoundingBox ().toString ());
-//                          }
-//                          if (Intersector.intersectRayBoundsFast (touchRay, currentEntry.getBoundingBox ())) {
-//                              _currentState = currentEntry.getName ();
-//                              Gdx.app.log (TAG, "Mesh " + j + " touched -> " + _currentState);
-//                              break;
-//                          }
-//                      }
-//                      j++;
-//                  }
+                    final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
+                    int j = 0;
+                    final Ray touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
+                    if (_DEBUG) {
+                        Gdx.app.log (TAG, "Touch position - x: " + x + " - y: " + y);
+                        Gdx.app.log (TAG, "Touch ray - " + touchRay.toString ());
+                    }
+                    while (currentMesh.hasNext ()) {
+                        final MenuEntry currentEntry = (MenuEntry) currentMesh.next ();
+                        if (touchRay != null) {
+                            if (_DEBUG) {
+                                Gdx.app.log (TAG, "currentEntry BB - " + currentEntry.getBoundingBox ().toString ());
+                            }
+                            if (currentEntry.handleIntersect (touchRay)) {
+                                _currentState = currentEntry.getName ();
+                                Gdx.app.log (TAG, "Mesh " + j + " touched -> " + _currentState);
+                                break;
+                            }
+                        }
+                        j++;
+                    }
                 }
-                _currentState = TroubleApplicationState.GAME;
                 return super.touchUp (x, y, pointer, button);
             }
         });
@@ -205,6 +205,9 @@ public class NewGameScreen extends TroubleScreen
         final Vector3 menuOffset = new Vector3 (0.0f, 0.0f, 0.0f);
         while (currentMesh.hasNext ()) {
             final MenuEntry currentMEMesh = (MenuEntry) currentMesh.next ();
+            if (!currentMesh.hasNext ()) {
+                menuOffset.y -= 0.7f;
+            }
             currentMEMesh.render (gl, menuOffset);
             menuOffset.y -= 0.7f;
         }

@@ -28,6 +28,7 @@ import com.innovail.trouble.graphics.GameFont;
 import com.innovail.trouble.graphics.GameFont.FontType;
 import com.innovail.trouble.graphics.GameMesh;
 import com.innovail.trouble.uicomponent.BackgroundImage;
+import com.innovail.trouble.uicomponent.MenuEntry;
 import com.innovail.trouble.uicomponent.MenuEntryMesh;
 import com.innovail.trouble.utils.GameInputAdapter;
 
@@ -153,7 +154,7 @@ public class MainMenuScreen extends TroubleScreen
                         Gdx.app.log (TAG, "Touch ray - " + touchRay.toString ());
                     }
                     while (currentMesh.hasNext ()) {
-                        final MenuEntryMesh currentEntry = (MenuEntryMesh) currentMesh.next ();
+                        final MenuEntry currentEntry = (MenuEntry) currentMesh.next ();
                         if (touchRay != null) {
                             if (_DEBUG) {
                                 Gdx.app.log (TAG, "currentEntry BB - " + currentEntry.getBoundingBox ().toString ());
