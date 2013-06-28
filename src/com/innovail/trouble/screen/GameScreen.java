@@ -88,9 +88,9 @@ public class GameScreen extends TroubleScreen
     private final Vector2 _wobbleDirection;
 
     private final TroubleGame _myGame;
-    private final List <Spot> _spots;
+    private List <Spot> _spots;
     private Iterator <Spot> _spot;
-    private final List <Player> _players;
+    private List <Player> _players;
     private Iterator <Player> _player;
 
     public GameScreen ()
@@ -123,12 +123,9 @@ public class GameScreen extends TroubleScreen
         _wobbleDirection = new Vector2 (_UP, _DOWN);
 
         _myGame = new TroubleGame ();
-        _myGame.createGame ();
 
         _spotMesh = GameSettings.getInstance ().getSpotMesh ();
-        _spots = _myGame.getField ().getSpots ();
         _tokenMesh = GameSettings.getInstance ().getTokenMesh ();
-        _players = _myGame.getPlayers ();
 
         /* Let's do this early so that the resources are available */
         _diceMesh.getSound ();
@@ -329,7 +326,14 @@ public class GameScreen extends TroubleScreen
     {
         Gdx.app.log (TAG, "GameScreen()");
         super.init (full);
-    }
+
+        if (full) {
+            _myGame.createGame ();
+    
+            _spots = _myGame.getField ().getSpots ();
+            _players = _myGame.getPlayers ();
+        }
+}
 
     @Override
     protected void render (final GL11 gl, final float delta)

@@ -67,6 +67,11 @@ public abstract class MenuEntrySelector extends MenuEntry
         return _currentSelection;
     }
 
+    public String getSelected ()
+    {
+        return _selections.get (getCurrentSelection());
+    }
+
     @Override
     public boolean handleIntersect (final Ray touchRay)
     {
@@ -75,8 +80,10 @@ public abstract class MenuEntrySelector extends MenuEntry
         }
         if (Intersector.intersectRayBoundsFast (touchRay, _manipulators.get (LastKey).getBoundingBox ())) {
             setCurrentSelection (getCurrentSelection () - 1);
+            return true;
         } else if (Intersector.intersectRayBoundsFast (touchRay, _manipulators.get (NextKey).getBoundingBox ())) {
             setCurrentSelection (getCurrentSelection () + 1);
+            return true;
         }
         return false;
     }

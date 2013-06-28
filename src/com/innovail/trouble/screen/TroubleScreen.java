@@ -33,7 +33,7 @@ public abstract class TroubleScreen implements Screen
 
     public TroubleScreen ()
     {
-        init (true);
+        init (false);
     }
 
     public abstract void createInputProcessor ();
@@ -71,12 +71,12 @@ public abstract class TroubleScreen implements Screen
 
     public void init ()
     {
-        init (false);
+        init (true);
     }
 
     protected void init (final boolean full)
     {
-        if (!full) {
+        if (full) {
             setOwnState ();
         }
         createInputProcessor ();

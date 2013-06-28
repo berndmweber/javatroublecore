@@ -32,6 +32,7 @@ import com.innovail.trouble.graphics.GameMesh;
 import com.innovail.trouble.uicomponent.BackgroundImage;
 import com.innovail.trouble.uicomponent.MenuEntry;
 import com.innovail.trouble.uicomponent.MenuEntryColorSelector;
+import com.innovail.trouble.uicomponent.MenuEntryCount;
 import com.innovail.trouble.utils.GameInputAdapter;
 
 /**
@@ -76,6 +77,10 @@ public class NewGameScreen extends TroubleScreen
             if (currentMEMesh.getName ().equals ("playerColor")) {
                 final GameColor playerColor = (GameColor) GameSettings.getInstance ().getPlayerColor (0);
                 ((MenuEntryColorSelector) currentMEMesh).setCurrentSelection (GameColor.getColorName (playerColor));
+            }
+            if (currentMEMesh.getName ().equals ("players")) {
+                final int players = GameSettings.getInstance ().getNumberOfPlayers();
+                ((MenuEntryCount) currentMEMesh).setCurrentCount(players);
             }
         }
 
@@ -148,7 +153,15 @@ public class NewGameScreen extends TroubleScreen
                                 Gdx.app.log (TAG, "currentEntry BB - " + currentEntry.getBoundingBox ().toString ());
                             }
                             if (currentEntry.handleIntersect (touchRay)) {
-                                _currentState = currentEntry.getName ();
+                                if (currentEntry.getName ().equals ("playerColor")) {
+                                    final Color playerColor = GameColor.getColor (((MenuEntryColorSelector) currentEntry).getSelected ());
+                                    GameSettings.getInstance ().setPlayerColor (0, playerColor);
+                                } else if (currentEntry.getName ().equals ("players")) {
+                                    final int players = ((MenuEntryCount) currentEntry).getCurrentCount ();
+                                    GameSettings.getInstance ().setNumberOfPlayers (players);
+                                } else {
+                                    _currentState = currentEntry.getName ();
+                                }
                                 Gdx.app.log (TAG, "Mesh " + j + " touched -> " + _currentState);
                                 break;
                             }

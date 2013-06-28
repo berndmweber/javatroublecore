@@ -84,11 +84,13 @@ public class MenuEntryCount extends MenuEntry
                 Gdx.app.log (TAG, "Decreasing count");
             }
             setCurrentCount (getCurrentCount() - 1);
+            return true;
         } else if (Intersector.intersectRayBoundsFast (touchRay, _manipulators.get (LargerKey).getBoundingBox ())) {
             if (_DEBUG) {
                 Gdx.app.log (TAG, "Increasing count");
             }
             setCurrentCount (getCurrentCount() + 1);
+            return true;
         }
         return false;
     }
