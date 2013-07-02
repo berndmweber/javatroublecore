@@ -17,18 +17,18 @@ public class Token
 {
     private static final int NUMBER_OF_STEPS = 20;
 
-    private final Player _owner;
-    private Spot _position;
-    private Spot _potentialPosition;
+    private final Player     _owner;
+    private Spot             _position;
+    private Spot             _potentialPosition;
 
-    private Spot _oldPosition;
-    private Spot _nextPosition;
+    private Spot             _oldPosition;
+    private Spot             _nextPosition;
 
-    private boolean _isSelected = false;
-    private boolean _isMoving = false;
-    private boolean _doneMoving = false;
+    private boolean          _isSelected     = false;
+    private boolean          _isMoving       = false;
+    private boolean          _doneMoving     = false;
 
-    private int _moveStepsLeft = 0;
+    private int              _moveStepsLeft  = 0;
 
     public Token (final Player player)
     {

@@ -149,6 +149,15 @@ public class Spot
         return _isStart;
     }
 
+    public boolean isStart (final Player player)
+    {
+        if ((_owner != null) && _owner.equals (player)) {
+            return _isStart;
+        } else {
+            return false;
+        }
+    }
+
     public boolean isTurnout ()
     {
         return _isTurnOut;

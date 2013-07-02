@@ -19,12 +19,12 @@ import com.innovail.trouble.core.GameSettings;
 public class Player
 {
     private final List <Token> _tokens;
-    private final List <Spot> _spots;
-    private Color _color;
-    private String _name;
-    private final int _number;
-    private boolean _isActive = false;
-    private boolean _hasFinished = false;
+    private final List <Spot>  _spots;
+    private Color              _color;
+    private String             _name;
+    private final int          _number;
+    private boolean            _isActive    = false;
+    private boolean            _hasFinished = false;
 
     public Player (final int playerNumber)
     {
@@ -189,7 +189,7 @@ public class Player
 
         final Iterator <Token> tokens = _tokens.iterator ();
         while (tokens.hasNext ()) {
-            if (tokens.next ().getPosition ().isStart ()) {
+            if (tokens.next ().getPosition ().isStart (this)) {
                 onStart = true;
                 break;
             }
