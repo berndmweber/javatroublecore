@@ -24,8 +24,8 @@ import com.innovail.trouble.graphics.GameColor;
 public class SettingLoader
 {
     private static final String TAG = "SettingLoader";
-    private static FileHandle defaultSettingsFile;
-    private static Element defaultSettings;
+    private static FileHandle   defaultSettingsFile;
+    private static Element      defaultSettings;
 
     public static void loadSettings ()
     {
@@ -104,13 +104,16 @@ public class SettingLoader
                         final Element entry = entries.get (j);
                         if (entry != null) {
                             final Parameters params = new StandardParameters ();
-                            params.setParameter ("mincount", entry.getInt ("mincount", 0));
-                            params.setParameter ("maxcount", entry.getInt ("maxcount", 0));
+                            params.setParameter ("mincount",
+                                                 entry.getInt ("mincount", 0));
+                            params.setParameter ("maxcount",
+                                                 entry.getInt ("maxcount", 0));
                             ApplicationSettings.getInstance ().setMenuEntry (menu.getAttribute ("type") + "Menu",
                                                                              entry.getInt ("index"),
                                                                              entry.getAttribute ("name"),
                                                                              entry.getAttribute ("text"),
-                                                                             entry.getAttribute ("type", null),
+                                                                             entry.getAttribute ("type",
+                                                                                                 null),
                                                                              params);
 
                         }
@@ -134,8 +137,8 @@ public class SettingLoader
                 if (colorE != null) {
                     final Color color = new GameColor (colorE.getAttribute ("name"));
                     ApplicationSettings.getInstance ().setBackArrow (current.getAttribute ("file"),
-                                                                    color,
-                                                                    current.getBoolean ("is_internal"));
+                                                                     color,
+                                                                     current.getBoolean ("is_internal"));
                 } else {
                     ApplicationSettings.getInstance ().setBackArrow (current.getAttribute ("file"),
                                                                      current.getBoolean ("is_internal"));
@@ -146,7 +149,13 @@ public class SettingLoader
 
     private static void parseGameSettings (final Element gameSettings)
     {
-        Element current = gameSettings.getChildByName ("numberofplayers");
+        Element current = gameSettings.getChildByName ("field");
+        if (current != null) {
+            GameSettings.getInstance ().setFieldList (current.getAttribute ("default"),
+                                                      current.getAttribute ("extension"),
+                                                      current.getBoolean ("is_internal"));
+        }
+        current = gameSettings.getChildByName ("numberofplayers");
         if (current != null) {
             GameSettings.getInstance ().setNumberOfPlayers (current.getInt ("default"));
             GameSettings.getInstance ().setMinimumNumberOfPlayers (current.getInt ("minimum"));
@@ -171,7 +180,8 @@ public class SettingLoader
                     final Element player = players.get (i);
                     final Element colorE = player.getChildByName ("color");
                     final Color color = new GameColor (colorE.getAttribute ("name"));
-                    GameSettings.getInstance ().setPlayerColor (player.getInt ("number") - 1, color);
+                    GameSettings.getInstance ().setPlayerColor (player.getInt ("number") - 1,
+                                                                color);
                 }
             }
         }
@@ -215,10 +225,12 @@ public class SettingLoader
         }
         current = gameSettings.getChildByName ("tokens");
         if (current != null) {
-            GameSettings.getInstance ().setTokenMesh (current.getAttribute ("file"), current.getBoolean ("is_internal"));
+            GameSettings.getInstance ().setTokenMesh (current.getAttribute ("file"),
+                                                      current.getBoolean ("is_internal"));
             final Element sound = current.getChildByName ("sound");
             if (sound != null) {
-                GameSettings.getInstance ().setTokenSound (sound.getAttribute ("file"), sound.getBoolean ("is_internal"));
+                GameSettings.getInstance ().setTokenSound (sound.getAttribute ("file"),
+                                                           sound.getBoolean ("is_internal"));
             }
         }
         current = gameSettings.getChildByName ("dice");
@@ -230,7 +242,8 @@ public class SettingLoader
             GameSettings.getInstance ().setNumberOfDice (current.getInt ("number"));
             final Element sound = current.getChildByName ("sound");
             if (sound != null) {
-                GameSettings.getInstance ().setDiceSound (sound.getAttribute ("file"), sound.getBoolean ("is_internal"));
+                GameSettings.getInstance ().setDiceSound (sound.getAttribute ("file"),
+                                                          sound.getBoolean ("is_internal"));
             }
         }
         current = gameSettings.getChildByName ("turnout");

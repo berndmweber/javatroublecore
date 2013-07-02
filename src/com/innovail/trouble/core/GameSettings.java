@@ -10,9 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 
+import com.innovail.trouble.core.gameelement.PreSpot;
 import com.innovail.trouble.graphics.GameMesh;
+import com.innovail.trouble.utils.FieldLoader;
 
 /**
  * 
@@ -20,34 +24,42 @@ import com.innovail.trouble.graphics.GameMesh;
 public final class GameSettings
 {
     /* SETTINGS */
-    private int _NumberOfPlayers = 0;
+    private static final String    FieldFilePath           = "configs/";
+    private final List <String>    _FieldFiles;
+    private String                 _defaultFieldFileName;
+    private String                 _fieldFileExtension;
+    private boolean                _fieldFileIsInternal;
+    private String                 _currentFieldName;
 
-    private int _MinimumNumberOfPlayers = 0;
+    private int                    _NumberOfPlayers        = 0;
 
-    private int _NumberOfDice = 0;
+    private int                    _MinimumNumberOfPlayers = 0;
+    private int                    _MaximumNumberOfPlayers = 0;
 
-    private int _TurnOutValue = 0;
+    private int                    _NumberOfDice           = 0;
 
-    private int _TurnOutRetries = 0;
+    private int                    _TurnOutValue           = 0;
+
+    private int                    _TurnOutRetries         = 0;
 
     private Map <Integer, Integer> _NumberOfTokensPerPlayer;
 
     private Map <Integer, Integer> _NumberOfNormalSpots;
 
-    private Map <Integer, Color> _PlayerColors;
+    private Map <Integer, Color>   _PlayerColors;
 
-    private GameMesh _SpotMesh;
+    private GameMesh               _SpotMesh;
 
-    private GameMesh _TokenMesh;
+    private GameMesh               _TokenMesh;
 
-    private GameMesh _DiceMesh;
+    private GameMesh               _DiceMesh;
 
-    private GameMesh _PlayerMesh;
+    private GameMesh               _PlayerMesh;
 
-    private List <GameMesh> _PlayerNumberMesh;
+    private List <GameMesh>        _PlayerNumberMesh;
     /* END SETTINGS */
 
-    private static GameSettings instance;
+    private static GameSettings    instance;
 
     public static GameSettings getInstance ()
     {
@@ -58,7 +70,9 @@ public final class GameSettings
     };
 
     private GameSettings ()
-    {}
+    {
+        _FieldFiles = new ArrayList <String> ();
+    }
 
     public void addPlayerNumber (final String path, final boolean isInternal)
     {
@@ -77,9 +91,29 @@ public final class GameSettings
         _PlayerNumberMesh.add (new GameMesh (path, color, isInternal));
     }
 
+    public List <PreSpot> getCurrentField ()
+    {
+        if (!_FieldFiles.isEmpty ()) {
+            final String fileName = FieldFilePath + _currentFieldName + "." + _fieldFileExtension;
+            FileHandle file;
+            if (_fieldFileIsInternal) {
+                file = Gdx.files.internal (fileName);
+            } else {
+                file = Gdx.files.external (fileName);
+            }
+            return FieldLoader.getField (file);
+        }
+        return null;
+    }
+
     public GameMesh getDiceMesh ()
     {
         return _DiceMesh;
+    }
+
+    public String [] getFieldList ()
+    {
+        return (String []) _FieldFiles.toArray ();
     }
 
     public int getMinimumNumberOfPlayers ()
@@ -176,6 +210,40 @@ public final class GameSettings
         }
     }
 
+    public void setFieldList (final String defaultField,
+                              final String extension, final boolean isInternal)
+    {
+        if ((extension != null) && !extension.isEmpty ()) {
+            _fieldFileExtension = extension;
+            _fieldFileIsInternal = isInternal;
+            FileHandle [] list;
+            if (isInternal) {
+                list = Gdx.files.internal (GameApplication.InternalPathPrefix + FieldFilePath).list (extension);
+            } else {
+                list = Gdx.files.external (FieldFilePath).list (extension);
+            }
+            for (final FileHandle file : list) {
+                _FieldFiles.add (file.nameWithoutExtension ());
+            }
+            if ((defaultField != null) && !defaultField.isEmpty ()) {
+                _defaultFieldFileName = defaultField;
+                _currentFieldName = _defaultFieldFileName;
+            }
+        }
+        if (!_FieldFiles.isEmpty ()) {
+            final String fileName = FieldFilePath + _defaultFieldFileName + "." + _fieldFileExtension;
+            FileHandle file;
+            if (_fieldFileIsInternal) {
+                file = Gdx.files.internal (fileName);
+            } else {
+                file = Gdx.files.external (fileName);
+            }
+            final int [] noOfPlayers = FieldLoader.getPlayerInfo (file);
+            _MinimumNumberOfPlayers = noOfPlayers[0];
+            _MaximumNumberOfPlayers = noOfPlayers[1];
+        }
+    }
+
     public void setMinimumNumberOfPlayers (final int players)
     {
         _MinimumNumberOfPlayers = players;
@@ -191,7 +259,8 @@ public final class GameSettings
         if (_NumberOfNormalSpots == null) {
             _NumberOfNormalSpots = new HashMap <Integer, Integer> ();
         }
-        _NumberOfNormalSpots.put (Integer.valueOf (players), Integer.valueOf (spots));
+        _NumberOfNormalSpots.put (Integer.valueOf (players),
+                                  Integer.valueOf (spots));
     }
 
     public void setNumberOfPlayers (final int players)
@@ -204,7 +273,8 @@ public final class GameSettings
         if (_NumberOfTokensPerPlayer == null) {
             _NumberOfTokensPerPlayer = new HashMap <Integer, Integer> ();
         }
-        _NumberOfTokensPerPlayer.put (Integer.valueOf (players), Integer.valueOf (tokens));
+        _NumberOfTokensPerPlayer.put (Integer.valueOf (players),
+                                      Integer.valueOf (tokens));
     }
 
     public void setPlayerColor (final int player, final Color color)

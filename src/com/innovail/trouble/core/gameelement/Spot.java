@@ -5,6 +5,8 @@
  */
 package com.innovail.trouble.core.gameelement;
 
+import java.util.List;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 
@@ -23,23 +25,6 @@ public class Spot
         SPOT_IS_TURN_OUT
     }
 
-    private boolean _isHome = false;
-
-    private boolean _isStart = false;
-    private boolean _isFinish = false;
-    private boolean _isTurnOut = false;
-    private Token _currentToken;
-    private Token _potentialToken;
-
-    private Player _owner;
-    private Spot _nextSpot;
-
-    private Spot _nextSpotWhenTurnOut;
-
-    private final Color _color;
-
-    private Vector3 _position;
-
     public static Spot createSpot (final Attributes attribute)
     {
         return createSpot (attribute, null);
@@ -50,30 +35,53 @@ public class Spot
     {
         final Spot spot = new Spot ();
 
-        switch (attribute) {
+        spot.configureSpot (attribute, player);
+
+        return spot;
+    }
+
+    private boolean     _isHome    = false;
+    private boolean     _isStart   = false;
+    private boolean     _isFinish  = false;
+    private boolean     _isTurnOut = false;
+
+    private Token       _currentToken;
+    private Token       _potentialToken;
+
+    private Player      _owner;
+
+    private Spot        _nextSpot;
+
+    private Spot        _nextSpotWhenTurnOut;
+
+    private final Color _color;
+
+    private Vector3     _position;
+
+    public Spot ()
+    {
+        _color = GameSettings.getInstance ().getSpotMesh ().getColor ();
+    }
+
+    public void configureSpot (final Attributes type, final Player player)
+    {
+        switch (type) {
         case SPOT_IS_HOME:
-            spot.makeHome (player);
+            makeHome (player);
             break;
         case SPOT_IS_START:
-            spot.makeStart (player);
+            makeStart (player);
             break;
         case SPOT_IS_TURN_OUT:
-            spot.makeTurnout (player);
+            makeTurnout (player);
             break;
         case SPOT_IS_FINISH:
-            spot.makeFinish (player);
+            makeFinish (player);
             break;
         case SPOT_IS_NORMAL:
         default:
             break;
         }
-
-        return spot;
-    }
-
-    public Spot ()
-    {
-        _color = GameSettings.getInstance ().getSpotMesh ().getColor ();
     }
 
     public Color getColor ()
@@ -150,6 +158,7 @@ public class Spot
     {
         if (player != null) {
             _owner = player;
+            player.addOwnerSpot (this);
             _isFinish = true;
         }
     }
@@ -158,6 +167,14 @@ public class Spot
     {
         if (player != null) {
             _owner = player;
+            player.addOwnerSpot (this);
+            final List <Token> tokens = player.getTokens ();
+            for (final Token token : tokens) {
+                if (token.getPosition () == null) {
+                    token.setPosition (this);
+                    break;
+                }
+            }
             _isHome = true;
         }
     }
@@ -166,6 +183,7 @@ public class Spot
     {
         if (player != null) {
             _owner = player;
+            player.addOwnerSpot (this);
             _isStart = true;
         }
     }
@@ -174,6 +192,7 @@ public class Spot
     {
         if (player != null) {
             _owner = player;
+            player.addOwnerSpot (this);
             _isTurnOut = true;
         }
     }
