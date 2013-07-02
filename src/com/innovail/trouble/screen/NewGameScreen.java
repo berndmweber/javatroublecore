@@ -75,18 +75,21 @@ public class NewGameScreen extends TroubleScreen
         while (currentMesh.hasNext ()) {
             final MenuEntry currentMEMesh = (MenuEntry) currentMesh.next ();
             if (currentMEMesh.getName ().equals ("field")) {
-                for (final String field : GameSettings.getInstance ().getFieldList ()) {
+                final String [] fieldList = GameSettings.getInstance ().getFieldList ();
+                int i = 0;
+                for (final String field : fieldList) {
                     ((MenuEntryTextSelector) currentMEMesh).addEntry (field);
+                    if (field.equals (GameSettings.getInstance ().getDefaultFieldName ())) {
+                        ((MenuEntryTextSelector) currentMEMesh).setCurrentSelection (i);
+                    }
+                    i++;
                 }
-                ((MenuEntryTextSelector) currentMEMesh).setCurrentSelection (0);
             }
             if (currentMEMesh.getName ().equals ("playerColor")) {
                 final GameColor playerColor = (GameColor) GameSettings.getInstance ().getPlayerColor (0);
                 ((MenuEntryColorSelector) currentMEMesh).setCurrentSelection (GameColor.getColorName (playerColor));
             }
             if (currentMEMesh.getName ().equals ("players")) {
-                final int currentPlayers = GameSettings.getInstance ().getNumberOfPlayers ();
-                ((MenuEntryCount) currentMEMesh).setCurrentCount (currentPlayers);
                 final int minPlayers = GameSettings.getInstance ().getMinimumNumberOfPlayers ();
                 ((MenuEntryCount) currentMEMesh).setMinCount (minPlayers);
                 final int maxPlayers = GameSettings.getInstance ().getMaximumNumberOfPlayers ();
@@ -181,7 +184,18 @@ public class NewGameScreen extends TroubleScreen
                                     final int players = ((MenuEntryCount) currentEntry).getCurrentCount ();
                                     GameSettings.getInstance ().setNumberOfPlayers (players);
                                 } else if (currentEntry.getName ().equals ("field")) {
-                                    /* TODO: Handle field selection */
+                                    final String field = ((MenuEntryTextSelector) currentEntry).getSelected ();
+                                    GameSettings.getInstance ().setCurrentField (field);
+                                    final Iterator <GameMesh> currentM = _menuEntriesList.iterator ();
+                                    while (currentM.hasNext ()) {
+                                        final MenuEntry currentMEMesh = (MenuEntry) currentM.next ();
+                                        if (currentMEMesh.getName ().equals ("players")) {
+                                            final int minPlayers = GameSettings.getInstance ().getMinimumNumberOfPlayers ();
+                                            ((MenuEntryCount) currentMEMesh).setMinCount (minPlayers);
+                                            final int maxPlayers = GameSettings.getInstance ().getMaximumNumberOfPlayers ();
+                                            ((MenuEntryCount) currentMEMesh).setMaxCount (maxPlayers);
+                                        }
+                                    }
                                 } else {
                                     _currentState = currentEntry.getName ();
                                 }

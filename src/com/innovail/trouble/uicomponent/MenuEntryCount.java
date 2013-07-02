@@ -176,6 +176,9 @@ public class MenuEntryCount extends MenuEntry
     public void setMaxCount (final int maxCount)
     {
         _maxCount = maxCount;
+        if (_currentCount > _maxCount) {
+            _currentCount = _maxCount;
+        }
         if (_manipulators != null) {
             for (int i = _minCount; i <= _maxCount; i++) {
                 if (!_manipulators.containsKey (Integer.toString (i))) {

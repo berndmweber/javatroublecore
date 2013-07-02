@@ -106,6 +106,11 @@ public final class GameSettings
         return null;
     }
 
+    public String getDefaultFieldName ()
+    {
+        return _defaultFieldFileName;
+    }
+
     public GameMesh getDiceMesh ()
     {
         return _DiceMesh;
@@ -201,6 +206,31 @@ public final class GameSettings
         return _TurnOutValue;
     }
 
+    private void retrievePlayerInfoFromField (final String field)
+    {
+        if (!_FieldFiles.isEmpty ()) {
+            final String fileName = FieldFilePath + field + "." + _fieldFileExtension;
+            FileHandle file;
+            if (_fieldFileIsInternal) {
+                file = Gdx.files.internal (fileName);
+            } else {
+                file = Gdx.files.external (fileName);
+            }
+            final int [] noOfPlayers = FieldLoader.getPlayerInfo (file);
+            setMinimumNumberOfPlayers (noOfPlayers[0]);
+            setMaximumNumberOfPlayers (noOfPlayers[1]);
+            setNumberOfPlayers (noOfPlayers[1]);
+        }
+    }
+
+    public void setCurrentField (final String field)
+    {
+        if (!_FieldFiles.isEmpty ()) {
+            _currentFieldName = field;
+            retrievePlayerInfoFromField (field);
+        }
+    }
+
     public void setDiceMesh (final String path, final boolean isInternal,
                              final String texturePath,
                              final String textureColorFormat)
@@ -235,19 +265,7 @@ public final class GameSettings
                 _currentFieldName = _defaultFieldFileName;
             }
         }
-        if (!_FieldFiles.isEmpty ()) {
-            final String fileName = FieldFilePath + _defaultFieldFileName + "." + _fieldFileExtension;
-            FileHandle file;
-            if (_fieldFileIsInternal) {
-                file = Gdx.files.internal (fileName);
-            } else {
-                file = Gdx.files.external (fileName);
-            }
-            final int [] noOfPlayers = FieldLoader.getPlayerInfo (file);
-            setMinimumNumberOfPlayers (noOfPlayers[0]);
-            setMaximumNumberOfPlayers (noOfPlayers[1]);
-            setNumberOfPlayers (noOfPlayers[1]);
-        }
+        retrievePlayerInfoFromField (_currentFieldName);
     }
 
     public void setMaximumNumberOfPlayers (final int players)
