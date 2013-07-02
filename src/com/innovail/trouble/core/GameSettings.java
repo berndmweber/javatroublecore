@@ -113,7 +113,7 @@ public final class GameSettings
 
     public String [] getFieldList ()
     {
-        return (String []) _FieldFiles.toArray ();
+        return _FieldFiles.toArray (new String [0]);
     }
 
     public int getMaximumNumberOfPlayers ()

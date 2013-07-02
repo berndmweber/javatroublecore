@@ -58,6 +58,11 @@ public final class Field
                 if (nextTOSpot != null) {
                     currentSpot.setNextTurnOutSpot (instance._spots.get (preSpots.indexOf (nextTOSpot)));
                 }
+                /*
+                 * We need to do this, but only once, since the OpenGl
+                 * coordinate system has the (0,0) point in the center. Our
+                 * coordinates start on the top left.
+                 */
                 currentSpot.setPosition (normalizeVector (preSpot.getVectorPosition ()));
                 spotIndex++;
             }

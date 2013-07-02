@@ -22,7 +22,7 @@ import com.innovail.trouble.utils.Parameters;
 public abstract class MenuEntry extends GameMesh
 {
     public static enum TypeEnum {
-        MESH, COUNT, COLOR,
+        MESH, COUNT, COLOR, TEXTSELECTOR
     }
 
     public static TypeEnum getEnum (final String type)
@@ -31,9 +31,9 @@ public abstract class MenuEntry extends GameMesh
     }
 
     protected final String _name;
-    protected TypeEnum _type = TypeEnum.MESH;
+    protected TypeEnum     _type = TypeEnum.MESH;
 
-    protected Vector3 _entryPosition;
+    protected Vector3      _entryPosition;
 
     /**
      * 

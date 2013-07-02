@@ -31,18 +31,18 @@ import com.innovail.trouble.utils.Parameters;
  */
 public abstract class MenuEntrySelector extends MenuEntry
 {
-    private static final String TAG = "MenuEntrySelector";
+    private static final String      TAG               = "MenuEntrySelector";
 
-    protected static final boolean _DEBUG = false;
+    protected static final boolean   _DEBUG            = false;
 
-    protected static final float ManipulatorGap = 0.25f;
+    protected static final float     ManipulatorGap    = 0.25f;
 
-    protected static final String LastKey = "<";
-    protected static final String NextKey = ">";
+    protected static final String    LastKey           = "<";
+    protected static final String    NextKey           = ">";
 
-    protected List <String> _selections;
-    protected int _currentSelection = 0;
-    protected Map <String, Vector3> _manipPosition;
+    protected List <String>          _selections;
+    protected int                    _currentSelection = 0;
+    protected Map <String, Vector3>  _manipPosition;
 
     protected Map <String, GameMesh> _manipulators;
 
@@ -69,7 +69,7 @@ public abstract class MenuEntrySelector extends MenuEntry
 
     public String getSelected ()
     {
-        return _selections.get (getCurrentSelection());
+        return _selections.get (getCurrentSelection ());
     }
 
     @Override
@@ -78,10 +78,12 @@ public abstract class MenuEntrySelector extends MenuEntry
         if (_DEBUG) {
             Gdx.app.log (TAG, "Handling selection");
         }
-        if (Intersector.intersectRayBoundsFast (touchRay, _manipulators.get (LastKey).getBoundingBox ())) {
+        if (Intersector.intersectRayBoundsFast (touchRay,
+                                                _manipulators.get (LastKey).getBoundingBox ())) {
             setCurrentSelection (getCurrentSelection () - 1);
             return true;
-        } else if (Intersector.intersectRayBoundsFast (touchRay, _manipulators.get (NextKey).getBoundingBox ())) {
+        } else if (Intersector.intersectRayBoundsFast (touchRay,
+                                                       _manipulators.get (NextKey).getBoundingBox ())) {
             setCurrentSelection (getCurrentSelection () + 1);
             return true;
         }
@@ -91,8 +93,10 @@ public abstract class MenuEntrySelector extends MenuEntry
     private void initialize ()
     {
         _manipulators = new HashMap <String, GameMesh> ();
-        _manipulators.put (LastKey, new GameMesh (ApplicationSettings.getInstance ().getGameFont (GameFont.typeToString (FontType.MESH)).getMeshFont ().createStillModel (LastKey)));
-        _manipulators.put (NextKey, new GameMesh (ApplicationSettings.getInstance ().getGameFont (GameFont.typeToString (FontType.MESH)).getMeshFont ().createStillModel (NextKey)));
+        _manipulators.put (LastKey,
+                           new GameMesh (ApplicationSettings.getInstance ().getGameFont (GameFont.typeToString (FontType.MESH)).getMeshFont ().createStillModel (LastKey)));
+        _manipulators.put (NextKey,
+                           new GameMesh (ApplicationSettings.getInstance ().getGameFont (GameFont.typeToString (FontType.MESH)).getMeshFont ().createStillModel (NextKey)));
     }
 
     @Override
@@ -108,11 +112,16 @@ public abstract class MenuEntrySelector extends MenuEntry
         render (gl, menuOffset, this, _entryPosition, color);
         if ((_manipulators != null) && !_manipulators.isEmpty ()) {
             if (_selections.size () > 1) {
-                render (gl, menuOffset, _manipulators.get (LastKey), _manipPosition.get (LastKey), color);
+                render (gl, menuOffset, _manipulators.get (LastKey),
+                        _manipPosition.get (LastKey), color);
             }
-            render (gl, menuOffset, _manipulators.get (_selections.get (_currentSelection)), _manipPosition.get (_selections.get (_currentSelection)), color);
+            render (gl, menuOffset,
+                    _manipulators.get (_selections.get (_currentSelection)),
+                    _manipPosition.get (_selections.get (_currentSelection)),
+                    color);
             if (_selections.size () > 1) {
-                render (gl, menuOffset, _manipulators.get (NextKey), _manipPosition.get (NextKey), color);
+                render (gl, menuOffset, _manipulators.get (NextKey),
+                        _manipPosition.get (NextKey), color);
             }
         }
     }
@@ -122,14 +131,17 @@ public abstract class MenuEntrySelector extends MenuEntry
                         final Color color)
     {
         gl.glPushMatrix ();
-        gl.glTranslatef (position.x + menuOffset.x, position.y + menuOffset.y, position.z + menuOffset.z);
+        gl.glTranslatef (position.x + menuOffset.x, position.y + menuOffset.y,
+                         position.z + menuOffset.z);
         gl.glColor4f (color.r, color.g, color.b, color.a);
         mesh.getMesh ().render ();
         gl.glPopMatrix ();
 
         final Matrix4 transform = new Matrix4 ();
         final Matrix4 tmp = new Matrix4 ();
-        transform.setToTranslation (position.x + menuOffset.x, position.y + menuOffset.y, position.z + menuOffset.z);
+        transform.setToTranslation (position.x + menuOffset.x,
+                                    position.y + menuOffset.y,
+                                    position.z + menuOffset.z);
         transform.mul (tmp);
         mesh.transformBoundingBox (transform);
 
@@ -151,7 +163,8 @@ public abstract class MenuEntrySelector extends MenuEntry
         }
         _currentSelection = selection;
         if (_DEBUG) {
-            Gdx.app.log (TAG, "Current Selection: " + String.valueOf (_currentSelection));
+            Gdx.app.log (TAG,
+                         "Current Selection: " + String.valueOf (_currentSelection));
         }
     }
 
@@ -160,33 +173,42 @@ public abstract class MenuEntrySelector extends MenuEntry
     {
         BoundingBox tBB = this.getBoundingBox ();
         Vector3 tDim = tBB.getDimensions ();
-        _entryPosition = new Vector3 (offsetPosition.x + tDim.x / 2, offsetPosition.y, offsetPosition.z);
+        _entryPosition = new Vector3 (offsetPosition.x + (tDim.x / 2), offsetPosition.y, offsetPosition.z);
         if (_manipPosition == null) {
             _manipPosition = new HashMap <String, Vector3> ();
         }
         tBB = _manipulators.get (NextKey).getBoundingBox ();
         tDim = tBB.getDimensions ();
-        float totalX = -tDim.x;
-        _manipPosition.put (NextKey, new Vector3 (-offsetPosition.x + totalX, offsetPosition.y, offsetPosition.z));
+        float totalX = -tDim.x / 2;
+        _manipPosition.put (NextKey,
+                            new Vector3 (-offsetPosition.x + totalX, offsetPosition.y, offsetPosition.z));
 
-        /* TODO: First evaluate the max size, then assign positions. */
-        float maxCountX = 0.0f;
-        for (int i = 0; i < _selections.size (); i++) {
+        totalX -= ManipulatorGap;
+        final int selectionsSize = _selections.size ();
+        float maxSizeX = 0.0f;
+        final float [] xSize = new float [selectionsSize];
+        for (int i = 0; i < selectionsSize; i++) {
             final String currentSelection = _selections.get (i);
             tBB = _manipulators.get (currentSelection).getBoundingBox ();
             tDim = tBB.getDimensions ();
-            final float tempX = -ManipulatorGap - tDim.x;
-            if (tempX < maxCountX) {
-                maxCountX = tempX;
+            xSize[i] = tDim.x;
+            if (tDim.x > maxSizeX) {
+                maxSizeX = tDim.x;
             }
-            _manipPosition.put (currentSelection, new Vector3 (-offsetPosition.x + totalX + tempX, offsetPosition.y, offsetPosition.z));
         }
-        totalX += maxCountX;
+        for (int i = 0; i < selectionsSize; i++) {
+            final String currentSelection = _selections.get (i);
+            final float actualX = (maxSizeX / 2) + (xSize[i] / 2);
+            _manipPosition.put (currentSelection,
+                                new Vector3 ((-offsetPosition.x + totalX) - (actualX / 2), offsetPosition.y, offsetPosition.z));
+        }
+        totalX -= maxSizeX;
 
         tBB = _manipulators.get (LastKey).getBoundingBox ();
         tDim = tBB.getDimensions ();
-        totalX += -ManipulatorGap - tDim.x;
-        _manipPosition.put (LastKey, new Vector3 (-offsetPosition.x + totalX, offsetPosition.y, offsetPosition.z));
+        totalX -= ((ManipulatorGap / 2) + (tDim.x / 2));
+        _manipPosition.put (LastKey,
+                            new Vector3 (-offsetPosition.x + totalX, offsetPosition.y, offsetPosition.z));
     }
 
     protected void setSelection (final String entry)

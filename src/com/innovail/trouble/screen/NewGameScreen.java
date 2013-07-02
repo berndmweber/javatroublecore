@@ -33,6 +33,7 @@ import com.innovail.trouble.uicomponent.BackgroundImage;
 import com.innovail.trouble.uicomponent.MenuEntry;
 import com.innovail.trouble.uicomponent.MenuEntryColorSelector;
 import com.innovail.trouble.uicomponent.MenuEntryCount;
+import com.innovail.trouble.uicomponent.MenuEntryTextSelector;
 import com.innovail.trouble.utils.GameInputAdapter;
 
 /**
@@ -53,7 +54,7 @@ public class NewGameScreen extends TroubleScreen
     private final Matrix4         _viewMatrix;
     private final Matrix4         _transformMatrix;
 
-    private static final Vector3  _MenuOffset = new Vector3 (-4.0f, 0.0f, -1.0f);
+    private static final Vector3  _MenuOffset = new Vector3 (-6.0f, 0.0f, -1.5f);
 
     StillModel                    text;
 
@@ -73,7 +74,12 @@ public class NewGameScreen extends TroubleScreen
         final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
         while (currentMesh.hasNext ()) {
             final MenuEntry currentMEMesh = (MenuEntry) currentMesh.next ();
-            currentMEMesh.setOffset (_MenuOffset);
+            if (currentMEMesh.getName ().equals ("field")) {
+                for (final String field : GameSettings.getInstance ().getFieldList ()) {
+                    ((MenuEntryTextSelector) currentMEMesh).addEntry (field);
+                }
+                ((MenuEntryTextSelector) currentMEMesh).setCurrentSelection (0);
+            }
             if (currentMEMesh.getName ().equals ("playerColor")) {
                 final GameColor playerColor = (GameColor) GameSettings.getInstance ().getPlayerColor (0);
                 ((MenuEntryColorSelector) currentMEMesh).setCurrentSelection (GameColor.getColorName (playerColor));
@@ -86,6 +92,7 @@ public class NewGameScreen extends TroubleScreen
                 final int maxPlayers = GameSettings.getInstance ().getMaximumNumberOfPlayers ();
                 ((MenuEntryCount) currentMEMesh).setMaxCount (maxPlayers);
             }
+            currentMEMesh.setOffset (_MenuOffset);
         }
 
         _viewMatrix = new Matrix4 ();
@@ -173,6 +180,8 @@ public class NewGameScreen extends TroubleScreen
                                 } else if (currentEntry.getName ().equals ("players")) {
                                     final int players = ((MenuEntryCount) currentEntry).getCurrentCount ();
                                     GameSettings.getInstance ().setNumberOfPlayers (players);
+                                } else if (currentEntry.getName ().equals ("field")) {
+                                    /* TODO: Handle field selection */
                                 } else {
                                     _currentState = currentEntry.getName ();
                                 }
