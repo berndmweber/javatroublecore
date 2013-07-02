@@ -40,22 +40,22 @@ import com.innovail.trouble.utils.GameInputAdapter;
  */
 public class NewGameScreen extends TroubleScreen
 {
-    private static final String TAG = "NewGameScreen";
-    private static final String AppPartName = TroubleApplicationState.NEW_GAME;
+    private static final String   TAG         = "NewGameScreen";
+    private static final String   AppPartName = TroubleApplicationState.NEW_GAME;
 
-    private final BitmapFont _menuFont;
-    private final SpriteBatch _spriteBatch;
+    private final BitmapFont      _menuFont;
+    private final SpriteBatch     _spriteBatch;
     private final BackgroundImage _backgroundImage;
 
-    private final GameMesh _logo;
+    private final GameMesh        _logo;
     private final List <GameMesh> _menuEntriesList;
 
-    private final Matrix4 _viewMatrix;
-    private final Matrix4 _transformMatrix;
+    private final Matrix4         _viewMatrix;
+    private final Matrix4         _transformMatrix;
 
-    private static final Vector3 _MenuOffset = new Vector3 (-4.0f, 0.0f, -1.0f);
+    private static final Vector3  _MenuOffset = new Vector3 (-4.0f, 0.0f, -1.0f);
 
-    StillModel text;
+    StillModel                    text;
 
     public NewGameScreen ()
     {
@@ -79,8 +79,12 @@ public class NewGameScreen extends TroubleScreen
                 ((MenuEntryColorSelector) currentMEMesh).setCurrentSelection (GameColor.getColorName (playerColor));
             }
             if (currentMEMesh.getName ().equals ("players")) {
-                final int players = GameSettings.getInstance ().getNumberOfPlayers();
-                ((MenuEntryCount) currentMEMesh).setCurrentCount(players);
+                final int currentPlayers = GameSettings.getInstance ().getNumberOfPlayers ();
+                ((MenuEntryCount) currentMEMesh).setCurrentCount (currentPlayers);
+                final int minPlayers = GameSettings.getInstance ().getMinimumNumberOfPlayers ();
+                ((MenuEntryCount) currentMEMesh).setMinCount (minPlayers);
+                final int maxPlayers = GameSettings.getInstance ().getMaximumNumberOfPlayers ();
+                ((MenuEntryCount) currentMEMesh).setMaxCount (maxPlayers);
             }
         }
 
@@ -116,11 +120,13 @@ public class NewGameScreen extends TroubleScreen
                 case Input.Keys.R:
                     if (_filling) {
                         Gdx.app.log (TAG, "keyDown() - wireframing");
-                        Gdx.gl11.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_LINE);
+                        Gdx.gl11.glPolygonMode (GL10.GL_FRONT_AND_BACK,
+                                                GL10.GL_LINE);
                         _filling = false;
                     } else {
                         Gdx.app.log (TAG, "keyDown() - Filling");
-                        Gdx.gl11.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
+                        Gdx.gl11.glPolygonMode (GL10.GL_FRONT_AND_BACK,
+                                                GL10.GL_FILL);
                         _filling = true;
                     }
                     break;
@@ -141,28 +147,37 @@ public class NewGameScreen extends TroubleScreen
                 if (!_isDragged || (_dragEvents < MIN_NUMBER_OF_DRAGS)) {
                     final Iterator <GameMesh> currentMesh = _menuEntriesList.iterator ();
                     int j = 0;
-                    final Ray touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
+                    final Ray touchRay = _camera.getPickRay (x,
+                                                             y,
+                                                             0,
+                                                             0,
+                                                             Gdx.graphics.getWidth (),
+                                                             Gdx.graphics.getHeight ());
                     if (_DEBUG) {
-                        Gdx.app.log (TAG, "Touch position - x: " + x + " - y: " + y);
+                        Gdx.app.log (TAG,
+                                     "Touch position - x: " + x + " - y: " + y);
                         Gdx.app.log (TAG, "Touch ray - " + touchRay.toString ());
                     }
                     while (currentMesh.hasNext ()) {
                         final MenuEntry currentEntry = (MenuEntry) currentMesh.next ();
                         if (touchRay != null) {
                             if (_DEBUG) {
-                                Gdx.app.log (TAG, "currentEntry BB - " + currentEntry.getBoundingBox ().toString ());
+                                Gdx.app.log (TAG,
+                                             "currentEntry BB - " + currentEntry.getBoundingBox ().toString ());
                             }
                             if (currentEntry.handleIntersect (touchRay)) {
                                 if (currentEntry.getName ().equals ("playerColor")) {
                                     final Color playerColor = GameColor.getColor (((MenuEntryColorSelector) currentEntry).getSelected ());
-                                    GameSettings.getInstance ().setPlayerColor (0, playerColor);
+                                    GameSettings.getInstance ().setPlayerColor (0,
+                                                                                playerColor);
                                 } else if (currentEntry.getName ().equals ("players")) {
                                     final int players = ((MenuEntryCount) currentEntry).getCurrentCount ();
                                     GameSettings.getInstance ().setNumberOfPlayers (players);
                                 } else {
                                     _currentState = currentEntry.getName ();
                                 }
-                                Gdx.app.log (TAG, "Mesh " + j + " touched -> " + _currentState);
+                                Gdx.app.log (TAG,
+                                             "Mesh " + j + " touched -> " + _currentState);
                                 break;
                             }
                         }
@@ -195,13 +210,17 @@ public class NewGameScreen extends TroubleScreen
         _spriteBatch.begin ();
         _spriteBatch.disableBlending ();
         _spriteBatch.setColor (Color.WHITE);
-        _spriteBatch.draw ((Texture) _backgroundImage.getImageObject (), 0, 0, width, height, 0, 0, _backgroundImage.getWidth (), _backgroundImage.getHeight (), false, false);
+        _spriteBatch.draw ((Texture) _backgroundImage.getImageObject (), 0, 0,
+                           width, height, 0, 0, _backgroundImage.getWidth (),
+                           _backgroundImage.getHeight (), false, false);
         _spriteBatch.enableBlending ();
         _spriteBatch.setBlendFunction (GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);
         final String text = ApplicationSettings.getInstance ().getCopyRightNotice ();
         final float textWidth = _menuFont.getBounds (text).width;
         final float textHeight = _menuFont.getBounds (text).height;
-        _menuFont.draw (_spriteBatch, text, Gdx.graphics.getWidth () / 2 - textWidth / 2, textHeight + 5);
+        _menuFont.draw (_spriteBatch, text,
+                        (Gdx.graphics.getWidth () / 2) - (textWidth / 2),
+                        textHeight + 5);
         _spriteBatch.end ();
     }
 
@@ -215,7 +234,8 @@ public class NewGameScreen extends TroubleScreen
 
         gl.glPushMatrix ();
         gl.glTranslatef (0.0f, 1.0f, 0.3f);
-        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b,
+                      currentColor.a);
         gl.glMaterialfv (frontAndOrBack, GL10.GL_SPECULAR, matSpecular, 0);
         gl.glMaterialfv (frontAndOrBack, GL10.GL_SHININESS, matShininess, 0);
         _logo.getMesh ().render ();
@@ -241,7 +261,8 @@ public class NewGameScreen extends TroubleScreen
     @Override
     protected void setLighting (final GL11 gl)
     {
-        setLighting (gl, ApplicationSettings.getInstance ().getLogo ().getColor ());
+        setLighting (gl,
+                     ApplicationSettings.getInstance ().getLogo ().getColor ());
     }
 
     @Override

@@ -155,11 +155,6 @@ public class SettingLoader
                                                       current.getAttribute ("extension"),
                                                       current.getBoolean ("is_internal"));
         }
-        current = gameSettings.getChildByName ("numberofplayers");
-        if (current != null) {
-            GameSettings.getInstance ().setNumberOfPlayers (current.getInt ("default"));
-            GameSettings.getInstance ().setMinimumNumberOfPlayers (current.getInt ("minimum"));
-        }
         final Array <Element> playersSettings = gameSettings.getChildrenByName ("players");
         if ((playersSettings != null) && (playersSettings.size > 0)) {
             for (int i = 0; i < playersSettings.size; i++) {

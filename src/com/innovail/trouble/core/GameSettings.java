@@ -116,6 +116,11 @@ public final class GameSettings
         return (String []) _FieldFiles.toArray ();
     }
 
+    public int getMaximumNumberOfPlayers ()
+    {
+        return _MaximumNumberOfPlayers;
+    }
+
     public int getMinimumNumberOfPlayers ()
     {
         return _MinimumNumberOfPlayers;
@@ -239,9 +244,15 @@ public final class GameSettings
                 file = Gdx.files.external (fileName);
             }
             final int [] noOfPlayers = FieldLoader.getPlayerInfo (file);
-            _MinimumNumberOfPlayers = noOfPlayers[0];
-            _MaximumNumberOfPlayers = noOfPlayers[1];
+            setMinimumNumberOfPlayers (noOfPlayers[0]);
+            setMaximumNumberOfPlayers (noOfPlayers[1]);
+            setNumberOfPlayers (noOfPlayers[1]);
         }
+    }
+
+    public void setMaximumNumberOfPlayers (final int players)
+    {
+        _MaximumNumberOfPlayers = players;
     }
 
     public void setMinimumNumberOfPlayers (final int players)
