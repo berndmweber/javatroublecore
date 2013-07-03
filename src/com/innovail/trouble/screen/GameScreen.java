@@ -40,58 +40,59 @@ import com.innovail.trouble.utils.MathUtils;
  */
 public class GameScreen extends TroubleScreen
 {
-    private static final String TAG = "GameScreen";
-    private static final String AppPartName = TroubleApplicationState.GAME;
+    private static final String   TAG                     = "GameScreen";
+    private static final String   AppPartName             = TroubleApplicationState.GAME;
 
-    private static final float [] NoMat = { 0.0f, 0.0f, 0.0f, 1.0f };
-    private static final int FrontAndOrBack = GL11.GL_FRONT_AND_BACK;
+    private static final float [] NoMat                   = { 0.0f, 0.0f, 0.0f,
+            1.0f                                         };
+    private static final int      FrontAndOrBack          = GL11.GL_FRONT_AND_BACK;
 
-    private static final float _UP = 1.0f;
-    private static final float _DOWN = -1.0f;
+    private static final float    _UP                     = 1.0f;
+    private static final float    _DOWN                   = -1.0f;
 
-    private final SpriteBatch _spriteBatch;
+    private final SpriteBatch     _spriteBatch;
     private final BackgroundImage _backgroundImage;
 
-    private final GameMesh _playerMesh;
+    private final GameMesh        _playerMesh;
     private final List <GameMesh> _playerNumberMesh;
-    private final GameMesh _backArrowMesh;
+    private final GameMesh        _backArrowMesh;
 
-    private final GameMesh _spotMesh;
-    private final GameMesh _diceMesh;
-    private final GameMesh _tokenMesh;
+    private final GameMesh        _spotMesh;
+    private final GameMesh        _diceMesh;
+    private final GameMesh        _tokenMesh;
 
-    private final Matrix4 _viewMatrix;
-    private final Matrix4 _transformMatrix;
-    private Ray _touchRay;
+    private final Matrix4         _viewMatrix;
+    private final Matrix4         _transformMatrix;
+    private Ray                   _touchRay;
 
-    private static final float _RotationAngleIncrease = 0.25f;
+    private static final float    _RotationAngleIncrease  = 0.25f;
 
-    private static final Vector3 _CameraLookAtPoint = new Vector3 (0.0f, 0.0f, 2.5f);
-    private static final Vector3 _CameraPos = new Vector3 (0.0f, 7.0f, 11.0f);
-    private final Vector2 _cameraRotationAngleIncrease;
+    private static final Vector3  _CameraLookAtPoint      = new Vector3 (0.0f, 0.0f, 2.5f);
+    private static final Vector3  _CameraPos              = new Vector3 (0.0f, 7.0f, 11.0f);
+    private final Vector2         _cameraRotationAngleIncrease;
 
-    private static final float [] _OverlayMaxAngles = { 66.0f, 90.0f };
-    private static final float [] _OverlayMaxAlphas = { 0.0f, 1.0f };
-    private static final float _AlphaValueIncrease = 0.5f;
-    private static final float _OverlayMaxVisibleTime = 0.7f;
-    private final float _overlayRadius;
-    private Vector3 _overlayPosition;
-    private Vector2 _overlayAngle;
-    private boolean _showOverlay = false;
-    private float _overlayAdditionalAngle = _OverlayMaxAngles[_MIN];
-    private float _overlayAlpha = _OverlayMaxAlphas[_MAX];
-    private float _overlayVisibleTime = 0.0f;
+    private static final float [] _OverlayMaxAngles       = { 66.0f, 90.0f };
+    private static final float [] _OverlayMaxAlphas       = { 0.0f, 1.0f };
+    private static final float    _AlphaValueIncrease     = 0.5f;
+    private static final float    _OverlayMaxVisibleTime  = 0.7f;
+    private final float           _overlayRadius;
+    private Vector3               _overlayPosition;
+    private Vector2               _overlayAngle;
+    private boolean               _showOverlay            = false;
+    private float                 _overlayAdditionalAngle = _OverlayMaxAngles[_MIN];
+    private float                 _overlayAlpha           = _OverlayMaxAlphas[_MAX];
+    private float                 _overlayVisibleTime     = 0.0f;
 
-    private static final float _SelectedYOffset = 0.05f;
-    private static final float [] _WobbleMaxAngles = { -0.5f, 0.5f };
-    private final Vector2 _wobbleAngle;
-    private final Vector2 _wobbleDirection;
+    private static final float    _SelectedYOffset        = 0.05f;
+    private static final float [] _WobbleMaxAngles        = { -0.5f, 0.5f };
+    private final Vector2         _wobbleAngle;
+    private final Vector2         _wobbleDirection;
 
-    private final TroubleGame _myGame;
-    private List <Spot> _spots;
-    private Iterator <Spot> _spot;
-    private List <Player> _players;
-    private Iterator <Player> _player;
+    private final TroubleGame     _myGame;
+    private List <Spot>           _spots;
+    private Iterator <Spot>       _spot;
+    private List <Player>         _players;
+    private Iterator <Player>     _player;
 
     public GameScreen ()
     {
@@ -109,12 +110,15 @@ public class GameScreen extends TroubleScreen
 
         final float aspectRatio = (float) Gdx.graphics.getWidth () / (float) Gdx.graphics.getHeight ();
         _camera = new GamePerspectiveCamera (67, 2f * aspectRatio, 2f);
-        ((GamePerspectiveCamera) _camera).lookAtPosition (_CameraLookAtPoint, _CameraPos);
+        ((GamePerspectiveCamera) _camera).lookAtPosition (_CameraLookAtPoint,
+                                                          _CameraPos);
         _cameraRotationAngleIncrease = new Vector2 ();
         _cameraRotationAngleIncrease.set (Vector2.Zero);
         _overlayRadius = ((GamePerspectiveCamera) _camera).getOverlayRadius ();
         _overlayAngle = ((GamePerspectiveCamera) _camera).getOverlayAngle ();
-        _overlayPosition = MathUtils.getSpherePosition (_CameraLookAtPoint, _overlayAngle, _overlayRadius);
+        _overlayPosition = MathUtils.getSpherePosition (_CameraLookAtPoint,
+                                                        _overlayAngle,
+                                                        _overlayRadius);
         /* Need to do this early to be able to calculate the right bounding box. */
         _backArrowMesh.getMesh ();
         calculateOverlayBoundingBox ();
@@ -135,19 +139,24 @@ public class GameScreen extends TroubleScreen
     private void calculateOverlayBoundingBox ()
     {
         _overlayAngle = ((GamePerspectiveCamera) _camera).getOverlayAngle ();
-        _overlayPosition = MathUtils.getSpherePosition (_CameraLookAtPoint, _overlayAngle, _overlayRadius);
+        _overlayPosition = MathUtils.getSpherePosition (_CameraLookAtPoint,
+                                                        _overlayAngle,
+                                                        _overlayRadius);
         final Matrix4 transform = new Matrix4 ();
         final Matrix4 tmp = new Matrix4 ();
-        transform.setToTranslation (_overlayPosition.x, _overlayPosition.y, _overlayPosition.z);
+        transform.setToTranslation (_overlayPosition.x, _overlayPosition.y,
+                                    _overlayPosition.z);
         tmp.setToRotation (0.0f, 1.0f, 0.0f, _overlayAngle.x);
         transform.mul (tmp);
-        tmp.setToRotation (1.0f, 0.0f, 0.0f, _overlayAngle.y + _overlayAdditionalAngle);
+        tmp.setToRotation (1.0f, 0.0f, 0.0f,
+                           _overlayAngle.y + _overlayAdditionalAngle);
         transform.mul (tmp);
         _backArrowMesh.transformBoundingBox (transform);
 
         if (_DEBUG) {
             Gdx.app.log (TAG, "Retrieved angles: " + _overlayAngle.toString ());
-            Gdx.app.log (TAG, "New Overlay position: " + _overlayPosition.toString ());
+            Gdx.app.log (TAG,
+                         "New Overlay position: " + _overlayPosition.toString ());
         }
     }
 
@@ -190,7 +199,7 @@ public class GameScreen extends TroubleScreen
     {
         Gdx.input.setInputProcessor (new GameInputAdapter () {
             private static final float _MaxAxisIncrease = 10.0f;
-            private final Vector2 _axisDiff = new Vector2 ();
+            private final Vector2      _axisDiff        = new Vector2 ();
 
             /*
              * (non-Javadoc)
@@ -208,33 +217,39 @@ public class GameScreen extends TroubleScreen
                 case Input.Keys.R:
                     if (_filling) {
                         Gdx.app.log (TAG, "keyDown() - wireframing");
-                        Gdx.gl11.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_LINE);
+                        Gdx.gl11.glPolygonMode (GL10.GL_FRONT_AND_BACK,
+                                                GL10.GL_LINE);
                         _filling = false;
                     } else {
                         Gdx.app.log (TAG, "keyDown() - Filling");
-                        Gdx.gl11.glPolygonMode (GL10.GL_FRONT_AND_BACK, GL10.GL_FILL);
+                        Gdx.gl11.glPolygonMode (GL10.GL_FRONT_AND_BACK,
+                                                GL10.GL_FILL);
                         _filling = true;
                     }
                     break;
                 case Input.Keys.UP:
                     Gdx.app.log (TAG, "keyDown() - UP");
                     _cameraRotationAngleIncrease.y--; // Y
-                    Gdx.app.log (TAG, "keyDown() - -Y angle: " + _cameraRotationAngleIncrease.y);
+                    Gdx.app.log (TAG,
+                                 "keyDown() - -Y angle: " + _cameraRotationAngleIncrease.y);
                     break;
                 case Input.Keys.DOWN:
                     Gdx.app.log (TAG, "keyDown() - DOWN");
                     _cameraRotationAngleIncrease.y++; // Y
-                    Gdx.app.log (TAG, "keyDown() - +Y angle: " + _cameraRotationAngleIncrease.y);
+                    Gdx.app.log (TAG,
+                                 "keyDown() - +Y angle: " + _cameraRotationAngleIncrease.y);
                     break;
                 case Input.Keys.LEFT:
                     Gdx.app.log (TAG, "keyDown() - LEFT");
                     _cameraRotationAngleIncrease.x--; // X
-                    Gdx.app.log (TAG, "keyDown() - -X angle: " + _cameraRotationAngleIncrease.x);
+                    Gdx.app.log (TAG,
+                                 "keyDown() - -X angle: " + _cameraRotationAngleIncrease.x);
                     break;
                 case Input.Keys.RIGHT:
                     Gdx.app.log (TAG, "keyDown() - RIGHT");
                     _cameraRotationAngleIncrease.x++; // X
-                    Gdx.app.log (TAG, "keyDown() - +X angle: " + _cameraRotationAngleIncrease.x);
+                    Gdx.app.log (TAG,
+                                 "keyDown() - +X angle: " + _cameraRotationAngleIncrease.x);
                     break;
                 default:
                     rv = false;
@@ -254,7 +269,8 @@ public class GameScreen extends TroubleScreen
             {
                 if (_dragEvents >= MIN_NUMBER_OF_DRAGS) {
                     if (_DEBUG) {
-                        Gdx.app.log (TAG, "Touch dragged position - x: " + x + " - y: " + y);
+                        Gdx.app.log (TAG,
+                                     "Touch dragged position - x: " + x + " - y: " + y);
                     }
                     _axisDiff.set (_lastPosition);
                     _axisDiff.sub (x, y);
@@ -278,18 +294,25 @@ public class GameScreen extends TroubleScreen
                                     final int pointer, final int button)
             {
                 if (!_isDragged || (_dragEvents < MIN_NUMBER_OF_DRAGS)) {
-                    _touchRay = _camera.getPickRay (x, y, 0, 0, Gdx.graphics.getWidth (), Gdx.graphics.getHeight ());
+                    _touchRay = _camera.getPickRay (x, y, 0, 0,
+                                                    Gdx.graphics.getWidth (),
+                                                    Gdx.graphics.getHeight ());
                     if (_DEBUG) {
-                        Gdx.app.log (TAG, "Touch position - x: " + x + " - y: " + y);
-                        Gdx.app.log (TAG, "Touch ray - " + _touchRay.toString ());
+                        Gdx.app.log (TAG,
+                                     "Touch position - x: " + x + " - y: " + y);
+                        Gdx.app.log (TAG,
+                                     "Touch ray - " + _touchRay.toString ());
                     }
                     if (_touchRay != null) {
                         if (_DEBUG) {
-                            Gdx.app.log (TAG, "currentEntry BB - " + _diceMesh.getBoundingBox ().toString ());
+                            Gdx.app.log (TAG,
+                                         "currentEntry BB - " + _diceMesh.getBoundingBox ().toString ());
                         }
-                        if (Intersector.intersectRayBoundsFast (_touchRay, _backArrowMesh.getBoundingBox ())) {
+                        if (Intersector.intersectRayBoundsFast (_touchRay,
+                                                                _backArrowMesh.getBoundingBox ())) {
                             _currentState = TroubleApplicationState.MAIN_MENU;
-                        } else if (Intersector.intersectRayBoundsFast (_touchRay, _diceMesh.getBoundingBox ())) {
+                        } else if (Intersector.intersectRayBoundsFast (_touchRay,
+                                                                       _diceMesh.getBoundingBox ())) {
                             if (_myGame.canRollDice ()) {
                                 _diceMesh.getSound ().play ();
                                 _myGame.rollDice ();
@@ -300,9 +323,12 @@ public class GameScreen extends TroubleScreen
                                 final Token token = tokens.next ();
                                 final Spot currentSpot = token.getPosition ();
                                 final Matrix4 transform = new Matrix4 ();
-                                transform.setToTranslation (currentSpot.getPosition ().x, currentSpot.getPosition ().y, currentSpot.getPosition ().z);
+                                transform.setToTranslation (currentSpot.getPosition ().x,
+                                                            currentSpot.getPosition ().y,
+                                                            currentSpot.getPosition ().z);
                                 _tokenMesh.transformBoundingBox (transform);
-                                if (Intersector.intersectRayBoundsFast (_touchRay, _tokenMesh.getBoundingBox ())) {
+                                if (Intersector.intersectRayBoundsFast (_touchRay,
+                                                                        _tokenMesh.getBoundingBox ())) {
                                     _myGame.selectToken (token);
                                     break;
                                 }
@@ -328,12 +354,15 @@ public class GameScreen extends TroubleScreen
         super.init (full);
 
         if (full) {
+            if (_myGame.isFinished ()) {
+                _myGame.resetGame ();
+            }
             _myGame.createGame ();
-    
+
             _spots = _myGame.getField ().getSpots ();
             _players = _myGame.getPlayers ();
         }
-}
+    }
 
     @Override
     protected void render (final GL11 gl, final float delta)
@@ -360,7 +389,9 @@ public class GameScreen extends TroubleScreen
         final Color currentColor = _myGame.getActivePlayer ().getColor ();
 
         subRenderOverlay (gl, _playerMesh, currentColor);
-        subRenderOverlay (gl, _playerNumberMesh.get (_myGame.getActivePlayer ().getNumber ()), currentColor);
+        subRenderOverlay (gl,
+                          _playerNumberMesh.get (_myGame.getActivePlayer ().getNumber ()),
+                          currentColor);
 
         if (_overlayVisibleTime > _OverlayMaxVisibleTime) {
             if (_overlayAlpha > _OverlayMaxAlphas[_MIN]) {
@@ -378,7 +409,9 @@ public class GameScreen extends TroubleScreen
         _spriteBatch.begin ();
         _spriteBatch.disableBlending ();
         _spriteBatch.setColor (Color.WHITE);
-        _spriteBatch.draw ((Texture) _backgroundImage.getImageObject (), 0, 0, width, height, 0, 0, _backgroundImage.getWidth (), _backgroundImage.getHeight (), false, false);
+        _spriteBatch.draw ((Texture) _backgroundImage.getImageObject (), 0, 0,
+                           width, height, 0, 0, _backgroundImage.getWidth (),
+                           _backgroundImage.getHeight (), false, false);
         _spriteBatch.end ();
     }
 
@@ -399,7 +432,8 @@ public class GameScreen extends TroubleScreen
         }
 
         final Color currentColor = Color.WHITE;
-        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b,
+                      currentColor.a);
         _diceMesh.getMesh ().render ();
         gl.glPopMatrix ();
 
@@ -418,18 +452,21 @@ public class GameScreen extends TroubleScreen
                 if ((currentSpot.getPotentialToken () != null) || ((currentSpot.getCurrentToken () != null) && (currentSpot.getCurrentToken ().isSelected () && currentSpot.getCurrentToken ().isMoving ()))) {
                     currentPosition.y += _SelectedYOffset;
                     final float [] matEmission = {
-                                                  currentColor.r == 1.0f ? currentColor.r : 0.3f,
-                                                  currentColor.g == 1.0f ? currentColor.g : 0.3f,
-                                                  currentColor.b == 1.0f ? currentColor.b : 0.3f,
-                                                  1.0f };
-                    gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, matEmission, 0);
+                            currentColor.r == 1.0f ? currentColor.r : 0.3f,
+                            currentColor.g == 1.0f ? currentColor.g : 0.3f,
+                            currentColor.b == 1.0f ? currentColor.b : 0.3f,
+                            1.0f };
+                    gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION,
+                                     matEmission, 0);
                     gl.glRotatef (_wobbleAngle.x, 1.0f, 0.0f, 0.0f);
                     gl.glRotatef (_wobbleAngle.y, 0.0f, 0.0f, 1.0f);
                 } else {
                     gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, NoMat, 0);
                 }
-                gl.glTranslatef (currentPosition.x, currentPosition.y, currentPosition.z);
-                gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+                gl.glTranslatef (currentPosition.x, currentPosition.y,
+                                 currentPosition.z);
+                gl.glColor4f (currentColor.r, currentColor.g, currentColor.b,
+                              currentColor.a);
                 _spotMesh.getMesh ().render ();
                 gl.glPopMatrix ();
             }
@@ -439,11 +476,14 @@ public class GameScreen extends TroubleScreen
     private void renderOverlay (final GL11 gl)
     {
         gl.glPushMatrix ();
-        gl.glTranslatef (_overlayPosition.x, _overlayPosition.y, _overlayPosition.z);
+        gl.glTranslatef (_overlayPosition.x, _overlayPosition.y,
+                         _overlayPosition.z);
         gl.glRotatef (_overlayAngle.x, 0.0f, 1.0f, 0.0f);
-        gl.glRotatef (_overlayAngle.y + _overlayAdditionalAngle, 1.0f, 0.0f, 0.0f);
+        gl.glRotatef (_overlayAngle.y + _overlayAdditionalAngle, 1.0f, 0.0f,
+                      0.0f);
         final Color currentColor = _backArrowMesh.getColor ();
-        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+        gl.glColor4f (currentColor.r, currentColor.g, currentColor.b,
+                      currentColor.a);
         _backArrowMesh.getMesh ().render ();
         gl.glPopMatrix ();
         if (_DEBUG) {
@@ -487,26 +527,31 @@ public class GameScreen extends TroubleScreen
                         if (currentToken.isSelected ()) {
                             currentPosition.y += _SelectedYOffset;
                         }
-                        gl.glTranslatef (currentPosition.x, currentPosition.y, currentPosition.z);
+                        gl.glTranslatef (currentPosition.x, currentPosition.y,
+                                         currentPosition.z);
                     } else {
                         final Vector3 currentPosition = currentToken.getCurrentMovePosition ();
                         currentPosition.y += _SelectedYOffset;
-                        gl.glTranslatef (currentPosition.x, currentPosition.y, currentPosition.z);
+                        gl.glTranslatef (currentPosition.x, currentPosition.y,
+                                         currentPosition.z);
                     }
                     final Color currentColor = currentPlayer.getColor ();
-                    gl.glColor4f (currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+                    gl.glColor4f (currentColor.r, currentColor.g,
+                                  currentColor.b, currentColor.a);
 
                     if (currentToken.isSelected ()) {
                         gl.glRotatef (_wobbleAngle.x, 1.0f, 0.0f, 0.0f);
                         gl.glRotatef (_wobbleAngle.y, 0.0f, 0.0f, 1.0f);
                         final float [] matEmission = {
-                                                      currentColor.r == 1.0f ? currentColor.r : 0.3f,
-                                                      currentColor.g == 1.0f ? currentColor.g : 0.3f,
-                                                      currentColor.b == 1.0f ? currentColor.b : 0.3f,
-                                                      1.0f };
-                        gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, matEmission, 0);
+                                currentColor.r == 1.0f ? currentColor.r : 0.3f,
+                                currentColor.g == 1.0f ? currentColor.g : 0.3f,
+                                currentColor.b == 1.0f ? currentColor.b : 0.3f,
+                                1.0f };
+                        gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION,
+                                         matEmission, 0);
                     } else {
-                        gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION, NoMat, 0);
+                        gl.glMaterialfv (FrontAndOrBack, GL10.GL_EMISSION,
+                                         NoMat, 0);
                     }
 
                     _tokenMesh.getMesh ().render ();
@@ -522,7 +567,7 @@ public class GameScreen extends TroubleScreen
         final Color lightColor = GameColor.getColor ("dark_grey");
 
         final float [] specular0 = { lightColor.r, lightColor.g, lightColor.b,
-                                    lightColor.a };
+                lightColor.a };
 
         final float [] position1 = { 10.0f, 5.0f, 1.0f, 1.0f };
         final float [] ambient1 = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -554,9 +599,11 @@ public class GameScreen extends TroubleScreen
                                    final Color color)
     {
         gl.glPushMatrix ();
-        gl.glTranslatef (_overlayPosition.x, _overlayPosition.y, _overlayPosition.z);
+        gl.glTranslatef (_overlayPosition.x, _overlayPosition.y,
+                         _overlayPosition.z);
         gl.glRotatef (_overlayAngle.x, 0.0f, 1.0f, 0.0f);
-        gl.glRotatef (_overlayAngle.y - _OverlayMaxAngles[_MAX], 1.0f, 0.0f, 0.0f);
+        gl.glRotatef (_overlayAngle.y - _OverlayMaxAngles[_MAX], 1.0f, 0.0f,
+                      0.0f);
         gl.glColor4f (color.r, color.g, color.b, _overlayAlpha);
         gl.glEnable (GL10.GL_BLEND);
         gl.glDepthMask (false);
