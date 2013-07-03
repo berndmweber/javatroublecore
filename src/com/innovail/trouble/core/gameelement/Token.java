@@ -15,7 +15,8 @@ import com.badlogic.gdx.math.Vector3;
  */
 public class Token
 {
-    private static final int NUMBER_OF_STEPS = 20;
+    private static final int NUMBER_OF_STEPS      = 20;
+    public static final int  AtHome               = -1;
 
     private final Player     _owner;
     private Spot             _position;
@@ -23,12 +24,16 @@ public class Token
 
     private Spot             _oldPosition;
     private Spot             _nextPosition;
+    private Spot             _myTurnOutPosition;
 
-    private boolean          _isSelected     = false;
-    private boolean          _isMoving       = false;
-    private boolean          _doneMoving     = false;
+    private boolean          _isSelected          = false;
+    private boolean          _isMoving            = false;
+    private boolean          _doneMoving          = false;
 
-    private int              _moveStepsLeft  = 0;
+    private int              _moveStepsLeft       = 0;
+
+    private int              _distanceToFinish    = AtHome;
+    private static int       _maxDistanceToFinish = AtHome;
 
     public Token (final Player player)
     {
@@ -59,6 +64,55 @@ public class Token
         currentPosition.add (_nextPosition.getPosition ());
 
         return currentPosition;
+    }
+
+    public int getDistanceToFinish ()
+    {
+        if (isOnStart ()) {
+            if (_maxDistanceToFinish == -1) {
+                int spotCount = 0;
+                Spot nextPosition = _position;
+                do {
+                    spotCount++;
+                    nextPosition = nextPosition.getNextSpot ();
+                } while (!nextPosition.isTurnout (_owner));
+                _myTurnOutPosition = nextPosition;
+                _maxDistanceToFinish = spotCount + 1;
+            }
+            return _maxDistanceToFinish;
+        }
+        return _distanceToFinish;
+    }
+
+    public int getDistanceToFinish (final boolean includeFinishSpots)
+    {
+        final int baseDistance = getDistanceToFinish ();
+        if (baseDistance != AtHome) {
+            if (_myTurnOutPosition == null) {
+                Spot nextPosition = _position;
+                while (!nextPosition.isTurnout (_owner)) {
+                    nextPosition = nextPosition.getNextSpot ();
+                }
+                _myTurnOutPosition = nextPosition;
+            }
+            Spot finishPosition;
+            if (baseDistance == 0) {
+                finishPosition = _position.getNextSpot ();
+            } else {
+                finishPosition = _myTurnOutPosition.getNextSpot (_owner);
+            }
+            int finishCount = 0, finishIterator = 1;
+            do {
+                if (finishPosition.getCurrentToken () == null) {
+                    finishCount = finishIterator;
+                }
+                finishIterator++;
+                finishPosition = finishPosition.getNextSpot ();
+            } while (finishPosition != null);
+
+            return baseDistance + finishCount;
+        }
+        return AtHome;
     }
 
     public Spot getMoveNextPosition ()
@@ -112,6 +166,14 @@ public class Token
         return _isMoving;
     }
 
+    public boolean isOnStart ()
+    {
+        if (_position.isStart (_owner)) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean isSelected ()
     {
         return _isSelected;
@@ -146,6 +208,7 @@ public class Token
         setSelected (true);
         _isMoving = true;
         _moveStepsLeft = NUMBER_OF_STEPS;
+        _distanceToFinish -= spots;
     }
 
     public void moveToHome ()
@@ -165,6 +228,7 @@ public class Token
         setSelected (true);
         _isMoving = true;
         _moveStepsLeft = NUMBER_OF_STEPS;
+        _distanceToFinish = AtHome;
     }
 
     public void moveToStart ()
@@ -179,6 +243,7 @@ public class Token
         setSelected (true);
         _isMoving = true;
         _moveStepsLeft = NUMBER_OF_STEPS;
+        _distanceToFinish = getDistanceToFinish ();
     }
 
     public void resetPotentialPosition ()

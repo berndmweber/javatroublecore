@@ -139,6 +139,15 @@ public class Spot
         return _isFinish;
     }
 
+    public boolean isFinish (final Player player)
+    {
+        if ((_owner != null) && _owner.equals (player)) {
+            return isFinish ();
+        } else {
+            return false;
+        }
+    }
+
     public boolean isHome ()
     {
         return _isHome;
@@ -152,7 +161,7 @@ public class Spot
     public boolean isStart (final Player player)
     {
         if ((_owner != null) && _owner.equals (player)) {
-            return _isStart;
+            return isStart ();
         } else {
             return false;
         }
@@ -161,6 +170,15 @@ public class Spot
     public boolean isTurnout ()
     {
         return _isTurnOut;
+    }
+
+    public boolean isTurnout (final Player player)
+    {
+        if ((_owner != null) && _owner.equals (player)) {
+            return isTurnout ();
+        } else {
+            return false;
+        }
     }
 
     public void makeFinish (final Player player)

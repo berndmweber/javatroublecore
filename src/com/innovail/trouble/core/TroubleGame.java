@@ -10,7 +10,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
 
+import com.innovail.trouble.core.TroubleGameAI.Difficulty;
+import com.innovail.trouble.core.TroubleGameAI.Policy;
 import com.innovail.trouble.core.gameelement.Dice;
 import com.innovail.trouble.core.gameelement.Field;
 import com.innovail.trouble.core.gameelement.Player;
@@ -24,6 +27,7 @@ public class TroubleGame
     private enum GameState {
         EVALUATE_PLAYERS,
         ROLL_DIE,
+        ROLLING_DIE,
         SELECT_TOKEN,
         MOVE_TOKEN,
         REMOVE_FOE_TOKEN,
@@ -32,28 +36,30 @@ public class TroubleGame
         UNDEFINED
     }
 
-    private static final String TAG = "TroubleGame";
+    private static final String  TAG                 = "TroubleGame";
 
-    private static final boolean DEBUG = true;;
+    private static final boolean DEBUG               = true;
 
-    private List <Player> _players;
-    private Field _gameField;
-    private Dice _dice;
+    private List <Player>        _players;
+    private Field                _gameField;
+    private Dice                 _dice;
 
-    private GameState _currentState = GameState.ROLL_DIE;
-    private GameState _lastState = GameState.UNDEFINED;
+    private GameState            _currentState       = GameState.ROLL_DIE;
+    private GameState            _lastState          = GameState.UNDEFINED;
 
-    private boolean _hasRolled = false;
-    private boolean _hasSelected = false;
-    private boolean _playerChanged = false;
-    private boolean _tokenStartedMoving = false;
-    private boolean _tokenMoved = false;
-    private int _rollTrysLeft = 3;
+    private boolean              _doneRolling        = false;
+    private boolean              _hasRolled          = false;
+    private boolean              _hasSelected        = false;
+    private boolean              _playerChanged      = false;
+    private boolean              _tokenStartedMoving = false;
+    private boolean              _tokenMoved         = false;
+    private int                  _rollTrysLeft       = 3;
 
-    private Player _activePlayer;
-    private Token _movingToken;
-    private Token _foeToken;
-    private List <Token> _availableTokens;
+    private TroubleGameAI        _gameAI;
+    private Player               _activePlayer;
+    private Token                _movingToken;
+    private Token                _foeToken;
+    private List <Token>         _availableTokens;
 
     public boolean canRollDice ()
     {
@@ -71,15 +77,24 @@ public class TroubleGame
             numberOfPlayers = GameSettings.getInstance ().getMinimumNumberOfPlayers ();
         }
         for (int i = 0; i < numberOfPlayers; i++) {
-            _players.add (new Player (i));
-            _players.get (i).createTokens (GameSettings.getInstance ().getNumberOfTokensPerPlayer (numberOfPlayers));
+            final Player newPlayer = new Player (i);
+            _players.add (newPlayer);
+            newPlayer.createTokens (GameSettings.getInstance ().getNumberOfTokensPerPlayer (numberOfPlayers));
         }
-        _activePlayer = _players.get (0);
-        _activePlayer.makeActive ();
+        _activePlayer = _players.get (MathUtils.random (0, numberOfPlayers - 1));
+        final Player humanPlayer = _players.get (0);
+        humanPlayer.makeHuman (true);
+        humanPlayer.makeActive ();
 
         _gameField = Field.createField (_players);
         _dice = new Dice (GameSettings.getInstance ().getNumberOfDice ());
         _availableTokens = new ArrayList <Token> ();
+        _gameAI = new TroubleGameAI (Policy.AGGRESSIVE, Difficulty.HARD);
+    }
+
+    public void doneRolling ()
+    {
+        _doneRolling = true;
     }
 
     private void evaluatePlayersHandler ()
@@ -130,7 +145,7 @@ public class TroubleGame
 
     private void getNextPlayer ()
     {
-        if (_players.indexOf (_activePlayer) == _players.size () - 1) {
+        if (_players.indexOf (_activePlayer) == (_players.size () - 1)) {
             _activePlayer = _players.get (0);
         } else {
             _activePlayer = _players.get (_players.indexOf (_activePlayer) + 1);
@@ -149,6 +164,14 @@ public class TroubleGame
     public boolean isFinished ()
     {
         if (_currentState == GameState.END_GAME) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isRolling ()
+    {
+        if (_currentState == GameState.ROLLING_DIE) {
             return true;
         }
         return false;
@@ -214,6 +237,11 @@ public class TroubleGame
         }
     }
 
+    public void resetGame ()
+    {
+        _currentState = GameState.EVALUATE_PLAYERS;
+    }
+
     public void rollDice ()
     {
         if (canRollDice ()) {
@@ -226,6 +254,18 @@ public class TroubleGame
     {
         if (_hasRolled) {
             _hasRolled = false;
+            if (!_activePlayer.isHuman ()) {
+                _currentState = GameState.ROLLING_DIE;
+            } else {
+                _currentState = GameState.SELECT_TOKEN;
+            }
+        }
+    }
+
+    private void rollingDiceHandler ()
+    {
+        if (_doneRolling) {
+            _doneRolling = false;
             _currentState = GameState.SELECT_TOKEN;
         }
     }
@@ -282,9 +322,12 @@ public class TroubleGame
                 }
             }
         } else {
-            if ((_availableTokens.size () == 1) && (!_hasSelected)) {
+            if ((_availableTokens.size () == 1) && !_hasSelected) {
                 selectToken (_availableTokens.get (0));
             } else {
+                if (!_activePlayer.isHuman () && !_hasSelected) {
+                    _gameAI.moveTokens (this, _availableTokens, diceValue);
+                }
                 if (_hasSelected) {
                     _availableTokens.clear ();
                     _hasSelected = false;
@@ -319,6 +362,9 @@ public class TroubleGame
             break;
         case ROLL_DIE:
             rollDiceHandler ();
+            break;
+        case ROLLING_DIE:
+            rollingDiceHandler ();
             break;
         case SELECT_TOKEN:
             selectTokenHandler ();

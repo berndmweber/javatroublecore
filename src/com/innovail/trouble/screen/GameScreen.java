@@ -82,6 +82,7 @@ public class GameScreen extends TroubleScreen
     private float                 _overlayAdditionalAngle = _OverlayMaxAngles[_MIN];
     private float                 _overlayAlpha           = _OverlayMaxAlphas[_MAX];
     private float                 _overlayVisibleTime     = 0.0f;
+    private float                 _rollAudibleTime        = 0.0f;
 
     private static final float    _SelectedYOffset        = 0.05f;
     private static final float [] _WobbleMaxAngles        = { -0.5f, 0.5f };
@@ -633,6 +634,18 @@ public class GameScreen extends TroubleScreen
         }
         if (_myGame.tokenStartedMoving ()) {
             _tokenMesh.getSound ().play ();
+        }
+        if (_myGame.canRollDice () && !_myGame.getActivePlayer ().isHuman ()) {
+            _diceMesh.getSound ().play ();
+            _myGame.rollDice ();
+        }
+        if (_myGame.isRolling ()) {
+            if (_rollAudibleTime > _OverlayMaxVisibleTime) {
+                _rollAudibleTime = 0.0f;
+                _myGame.doneRolling ();
+            } else {
+                _rollAudibleTime += delta;
+            }
         }
     }
 }

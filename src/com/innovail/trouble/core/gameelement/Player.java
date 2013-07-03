@@ -25,6 +25,7 @@ public class Player
     private final int          _number;
     private boolean            _isActive    = false;
     private boolean            _hasFinished = false;
+    private boolean            _isHuman     = false;
 
     public Player (final int playerNumber)
     {
@@ -251,9 +252,19 @@ public class Player
         return _isActive;
     }
 
+    public boolean isHuman ()
+    {
+        return _isHuman;
+    }
+
     public void makeActive ()
     {
         _isActive = true;
+    }
+
+    public void makeHuman (final boolean humanize)
+    {
+        _isHuman = humanize;
     }
 
     public void setColor (final Color color)
